@@ -76,12 +76,12 @@ layout: default
   border-spacing: 0;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #1e1e2e;
+  background-color: #000000;
   font-size: 0.8rem;
 }
 
 .competitor-table th {
-  background-color: #a78bfa;
+  background-color: #333333;
   color: white;
   font-weight: 600;
   padding: 0.75rem;
@@ -96,9 +96,9 @@ layout: default
 
 .competitor-table td {
   padding: 0.75rem;
-  border-bottom: 1px solid #2d2d3a;
+  border-bottom: 1px solid #333333;
   text-align: center;
-  color: #e2e2e2;
+  color: #ffffff;
 }
 
 .competitor-table td:first-child {
@@ -107,8 +107,8 @@ layout: default
 }
 
 .highlighted-row {
-  background-color: rgba(167, 139, 250, 0.15) !important;
-  border-left: 4px solid #a78bfa;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-left: 4px solid #ffffff;
 }
 
 .highlighted-row td {
@@ -116,7 +116,7 @@ layout: default
 }
 
 .highlighted-row td:first-child {
-  color: #c4b5fd;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -130,5 +130,4 @@ layout: default
     padding: 0.5rem;
   }
 }
-
 </style>
