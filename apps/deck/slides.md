@@ -19,6 +19,8 @@ drawings:
 transition: slide-left
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
+# force dark mode for all slides
+colorSchema: dark
 
 fonts:
   # basically the text
@@ -26,6 +28,9 @@ fonts:
 
   # for code blocks, inline code, etc.
   mono: Fira Code
+
+# Import custom CSS
+css: style.css
 ---
 
 # Anti-Sybil Solana Attestation Protocol

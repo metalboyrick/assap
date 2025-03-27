@@ -1,0 +1,30 @@
+/* Global styles for all slides */
+:root {
+  --slidev-theme-primary: #ffffff;
+}
+
+/* Apply black background to all slides by default */
+.slidev-layout {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure code blocks are readable against dark background */
+.slidev-code {
+  background-color: #121212 !important;
+}
+
+/* Ensure links are visible */
+a {
+  color: #00bcd4 !important;
+}
+
+/* Make headers stand out */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #ffffff !important;
+}
