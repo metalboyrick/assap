@@ -41,19 +41,19 @@ defineProps({
   align-items: flex-start;
   gap: 1rem;
   flex: 1;
-  background: #2a2a2a;
+  background: var(--slidev-theme-surface);
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid #444;
-  color: #ddd;
+  border: 1px solid var(--slidev-theme-border);
+  color: var(--slidev-theme-text);
 }
 
 .circle {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #444;
-  color: #eee;
+  background-color: var(--slidev-theme-border);
+  color: var(--slidev-theme-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,12 +67,12 @@ defineProps({
 .info h4 {
   margin: 0;
   font-size: 1.2rem;
-  color: #fff;
+  color: var(--slidev-theme-text);
 }
 
 .position {
   font-size: 0.9rem;
-  color: #999;
+  color: var(--slidev-theme-text-muted);
   font-weight: normal;
 }
 
@@ -81,7 +81,7 @@ defineProps({
   padding-left: 1.2rem;
   font-size: 0.9rem;
   line-height: 1.4;
-  color: #bbb;
+  color: var(--slidev-theme-text-muted);
 }
 
 .bio-list li {

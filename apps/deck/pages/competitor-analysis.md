@@ -76,13 +76,13 @@ layout: default
   border-spacing: 0;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #000000;
+  background-color: var(--slidev-theme-background);
   font-size: 0.8rem;
 }
 
 .competitor-table th {
-  background-color: #333333;
-  color: white;
+  background-color: var(--slidev-theme-border);
+  color: var(--slidev-theme-text);
   font-weight: 600;
   padding: 0.75rem;
   text-align: center;
@@ -96,9 +96,9 @@ layout: default
 
 .competitor-table td {
   padding: 0.75rem;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid var(--slidev-theme-border);
   text-align: center;
-  color: #ffffff;
+  color: var(--slidev-theme-text);
 }
 
 .competitor-table td:first-child {
@@ -107,8 +107,8 @@ layout: default
 }
 
 .highlighted-row {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-left: 4px solid #ffffff;
+  background-color: var(--slidev-theme-highlight);
+  border-left: 4px solid var(--slidev-theme-accent);
 }
 
 .highlighted-row td {
@@ -116,13 +116,13 @@ layout: default
 }
 
 .highlighted-row td:first-child {
-  color: #ffffff;
+  color: var(--slidev-theme-text);
   font-weight: 700;
 }
 
 @media (max-width: 768px) {
   .competitor-table table {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   
   .competitor-table th,

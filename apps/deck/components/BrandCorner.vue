@@ -8,8 +8,8 @@
 <style scoped>
 .brand-corner {
   position: fixed;
-  bottom: 0.3rem;
-  right: 0.5rem;
+  bottom: 0.5rem;
+  right: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -17,11 +17,12 @@
 }
 
 .flag {
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 
 .logo {
-  height: 3rem;
+  height: 2.5rem;
   width: auto;
+  filter: brightness(0.9);
 }
 </style>
