@@ -24,7 +24,7 @@ colorSchema: dark
 
 fonts:
   # basically the text
-  sans: Roboto Condensed
+  sans: Gidole
 
   # for code blocks, inline code, etc.
   mono: Fira Code
@@ -51,6 +51,7 @@ src: ./pages/problem-statement.md
 
 ```yaml
 src: ./pages/solution.md
+hide: true
 ```
 
 ---

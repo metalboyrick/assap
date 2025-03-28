@@ -2,7 +2,7 @@
 layout: default
 ---
 
-# Existing protocols exist, let's see where we stand
+# ⚔️ Let's see where we stand with existing protocols
 
 <div class="competitor-table">
   <table>

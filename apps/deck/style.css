@@ -14,7 +14,6 @@
 .slidev-layout {
   background-color: var(--slidev-theme-background) !important;
   color: var(--slidev-theme-text) !important;
-  font-family: "Roboto Condensed", sans-serif;
   padding: 2rem !important;
 }
 

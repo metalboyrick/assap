@@ -30,7 +30,7 @@ layout: default
     name="Farrel"
     position="Fullstack Engineer"
     :bio="[
-      'Worked with TACO and other major Indonesian corporations',
+      'Lead projects for Big Corporation uses such as Kalbe Farma and Asahimas Chemicals',
       'Expert in building scalable applications'
     ]"
   />
