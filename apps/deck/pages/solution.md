@@ -9,7 +9,7 @@ class: solution-slide
 ::left::
 
 <SectionCard title="Sybil-Resistant Verification" icon="🛡️">
-  <p>zkTLS-powered proof generation for verifiable traditional data</p>
+  <p>zkTLS-powered proof generation for verifiable data</p>
 </SectionCard>
 
 <SectionCard title="Programmable Attestations" icon="🔌">
@@ -17,7 +17,7 @@ class: solution-slide
 </SectionCard>
 
 <SectionCard title="Human-Friendly Interface" icon="📱">
-  <p>Mobile-first approach with familiar traditional UX</p>
+  <p>Mobile-first approach with familiar UX</p>
 </SectionCard>
 
 ::right::

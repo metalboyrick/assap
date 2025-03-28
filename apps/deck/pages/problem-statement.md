@@ -10,7 +10,7 @@ layout: center
 layout: default
 ```
 
-# Current State
+# 🔍 Current State
 
 <GridLayout :columns="2">
   <SectionCard title="Prevalent sybil attacks everywhere" icon="🔓">

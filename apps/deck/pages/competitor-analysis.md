@@ -2,63 +2,57 @@
 layout: default
 ---
 
-# ⚔️ Let's see where we stand with existing protocols
+# ⚔️ Competitive Analysis
 
 <div class="competitor-table">
   <table>
     <thead>
       <tr>
-        <th></th>
-        <th>Chain Support</th>
-        <th>Programmable Attestations</th>
-        <th>Mobile Support</th>
-        <th>Sybil Protection</th>
+        <th>Protocol</th>
+        <th>Sybil Resistance</th>
+        <th>Composability</th>
+        <th>Reading the attestations</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="highlighted-row">
+      <tr class="highlight">
         <td>ASSAP</td>
-        <td>Solana</td>
-        <td>Advanced</td>
-        <td>Full Support</td>
-        <td>Comprehensive</td>
+        <td>Native anti-sybil protection</td>
+        <td>Human-only composable protocol</td>
+        <td>Readable Explorers</td>
       </tr>
       <tr>
         <td>Ethereum Attestation Service</td>
-        <td>EVM</td>
-        <td>Onchain and Offchain attestations with custom resolvers</td>
-        <td>Partial</td>
-        <td>None</td>
+        <td>No built-in protection</td>
+        <td>General-purpose protocol</td>
+        <td>EASScan</td>
       </tr>
       <tr>
-        <td>Sign Protocol</td>
-        <td>EVM, Solana, Starknet</td>
-        <td>Moderate</td>
-        <td>Web-only</td>
-        <td>None</td>
+        <td>Sign Protocol (EthSign)</td>
+        <td>No built-in protection</td>
+        <td>General-purpose protocol</td>
+        <td>Sign Explorer</td>
       </tr>
       <tr>
         <td>Attest Protocol</td>
-        <td>Solana, Starknet, Stellar</td>
-        <td>Basic</td>
-        <td>Limited</td>
-        <td>None</td>
+        <td>No built-in protection</td>
+        <td>General-purpose protocol</td>
+        <td>Attestation Explorer</td>
       </tr>
       <tr>
         <td>Gitcoin Passport</td>
-        <td>EVM</td>
-        <td>Identity-focused</td>
-        <td>Responsive</td>
-        <td>Traditional Credentials</td>
+        <td>Traditional credentials</td>
+        <td>Identity only</td>
+        <td>Block Explorer</td>
       </tr>
       <tr>
         <td>World ID</td>
-        <td>World Chain</td>
-        <td>Identity-focused</td>
-        <td>Progressive</td>
-        <td>Proof of Humanity</td>
+        <td>Proof of humanity</td>
+        <td>Identity only</td>
+        <td>Through mobile app</td>
       </tr>
     </tbody>
+
   </table>
 </div>
 
@@ -106,18 +100,12 @@ layout: default
   text-align: left;
 }
 
-.highlighted-row {
+.competitor-table tr.highlight {
   background-color: var(--slidev-theme-highlight);
-  border-left: 4px solid var(--slidev-theme-accent);
 }
 
-.highlighted-row td {
+.competitor-table tr.highlight td {
   font-weight: 500;
-}
-
-.highlighted-row td:first-child {
-  color: var(--slidev-theme-text);
-  font-weight: 700;
 }
 
 @media (max-width: 768px) {

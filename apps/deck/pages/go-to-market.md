@@ -1,5 +1,7 @@
 ---
 layout: center
+transition: slide-left
+hide: true
 ---
 
 # Go-To-Market Strategy
@@ -50,6 +52,59 @@ layout: center
   />
 </div>
 
+---
+
+```yaml
+layout: default
+```
+
+# 📅 The Vision
+
+<div class="timeline-container">
+  <div class="timeline-section">
+    <h2 class="timeline-header">Current</h2>
+    <div class="timeline-items">
+      <TimelineItem 
+        color="#ffffff"
+        text="🔗 Onchain Attestations"
+      />
+      <TimelineItem 
+        color="#ffffff"
+        text="👤 Basic Anti-sybil scoring mechanism"
+      />
+    </div>
+
+  </div>
+
+  <div class="timeline-section">
+    <h2 class="timeline-header">Near Future</h2>
+    <div class="timeline-items">
+      <TimelineItem 
+        color="#ffffff"
+        text="📡 Offchain Attestations"
+      />
+      <TimelineItem 
+        color="#ffffff"
+        text="🔐 National Identity safe Privacy sybil scoring"
+      />
+    </div>
+  </div>
+
+  <div class="timeline-section">
+    <h2 class="timeline-header">Distant Future</h2>
+    <div class="timeline-items">
+      <TimelineItem 
+        color="#ffffff"
+        text="🌐 Global Notarial Applications"
+      />
+      <TimelineItem 
+        color="#ffffff"
+        text="🏛️ National Notarial Applications"
+      />
+    </div>
+  </div>
+</div>
+
 <style>
 .roadmap-container {
   display: flex;
@@ -72,6 +127,40 @@ layout: center
   width: 100%;
   background: linear-gradient(to right, var(--slidev-theme-text), var(--slidev-theme-text-muted), #777777);
   border-radius: 4px;
+}
+
+.timeline-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.timeline-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline-header {
+  color: #000000;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.timeline-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline-section:not(:last-child) {
+  border-right: 2px dashed rgba(0, 0, 0, 0.3);
+  padding-right: 2rem;
 }
 
 @media (max-width: 768px) {
