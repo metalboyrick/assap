@@ -48,7 +48,7 @@ layout: default
   </SectionCard>
   
   <SectionCard title="Breakthrough in zkTLS technology" icon="🔒">
-    <p>Enabling secure Web2 data verification with zero knowledge</p>
+    <p>Enabling secure traditional data verification with zero knowledge</p>
   </SectionCard>
   
   <SectionCard title="Regulatory sandboxes" icon="⚖️">

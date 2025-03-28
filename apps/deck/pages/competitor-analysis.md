@@ -49,7 +49,7 @@ layout: default
         <td>EVM</td>
         <td>Identity-focused</td>
         <td>Responsive</td>
-        <td>Web2 Credentials</td>
+        <td>Traditional Credentials</td>
       </tr>
       <tr>
         <td>World ID</td>

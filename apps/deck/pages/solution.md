@@ -9,7 +9,7 @@ class: solution-slide
 ::left::
 
 <SectionCard title="Sybil-Resistant Verification" icon="🛡️">
-  <p>zkTLS-powered proof generation for verifiable Web2 data</p>
+  <p>zkTLS-powered proof generation for verifiable traditional data</p>
 </SectionCard>
 
 <SectionCard title="Programmable Attestations" icon="🔌">
@@ -17,7 +17,7 @@ class: solution-slide
 </SectionCard>
 
 <SectionCard title="Human-Friendly Interface" icon="📱">
-  <p>Mobile-first approach with familiar Web2-like UX</p>
+  <p>Mobile-first approach with familiar traditional UX</p>
 </SectionCard>
 
 ::right::
@@ -98,7 +98,7 @@ layout: default
 
 <div class="workflow-steps">
   <SectionCard title="Proof Generation" icon="1️⃣">
-    <p>User connects Web2 account and generates zkTLS proof without exposing credentials</p>
+    <p>User connects traditional account and generates zkTLS proof without exposing credentials</p>
   </SectionCard>
   
   <div class="workflow-arrow">→</div>
