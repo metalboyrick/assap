@@ -2,7 +2,10 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+mod journal;
+use journal::*;
+
+declare_id!("4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e");
 
 #[program]
 pub mod contracts {
@@ -29,6 +32,30 @@ pub mod contracts {
   pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
     ctx.accounts.contracts.count = value.clone();
     Ok(())
+  }
+
+  // Journal entry functions
+  pub fn create_journal_entry(
+    ctx: Context<CreateJournalEntry>,
+    title: String,
+    content: String,
+  ) -> Result<()> {
+    journal::create_journal_entry(ctx, title, content)
+  }
+
+  pub fn update_journal_entry(
+    ctx: Context<UpdateJournalEntry>,
+    title: String,
+    new_content: String,
+  ) -> Result<()> {
+    journal::update_journal_entry(ctx, title, new_content)
+  }
+
+  pub fn delete_journal_entry(
+    ctx: Context<DeleteJournalEntry>,
+    title: String,
+  ) -> Result<()> {
+    journal::delete_journal_entry(ctx, title)
   }
 }
 
