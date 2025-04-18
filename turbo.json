@@ -16,6 +16,18 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "anchor": {},
+    "anchor-build": {},
+    "anchor-localnet": {},
+    "anchor-test": {
+      "dependsOn": ["^anchor-build"]
+    },
+    "anchor-deploy": {
+      "dependsOn": ["^anchor-build", "^anchor-localnet"]
+    },
+    "anchor-deploy-localnet": {
+      "dependsOn": ["^anchor-build", "^anchor-localnet"]
     }
   }
 }
