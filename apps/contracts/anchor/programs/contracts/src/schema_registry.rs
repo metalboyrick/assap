@@ -1,4 +1,16 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::hash::hash;
+
+pub trait StringExt {
+    fn to_hashed_bytes(&self) -> [u8; 32];
+}
+
+impl StringExt for String {
+    fn to_hashed_bytes(&self) -> [u8; 32] {
+        let hash = hash(self.as_bytes());
+        hash.to_bytes()
+    }
+}
 
 // Schema Registry account structure
 #[account]
@@ -19,7 +31,13 @@ pub struct SchemaRegistry {
 
 // Instruction context for registering a schema
 #[derive(Accounts)]
-#[instruction(uid: u64)]
+#[instruction(
+    schema: String, 
+    schema_name: String,
+    issuer_min_score: u64, 
+    receiver_min_score: u64,
+    issuer_scoring_program: Pubkey,
+    receiver_scoring_program: Pubkey)]
 pub struct RegisterSchema<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -28,7 +46,9 @@ pub struct RegisterSchema<'info> {
         init, 
         payer = payer, 
         space = 8 + SchemaRegistry::INIT_SPACE,
-        seeds = [b"schema_registry", uid.to_le_bytes().as_ref()],
+        // TODO: incorporate schema name into seeds
+        // TODO: possibly need to hash the schema name
+        seeds = [b"schema", payer.key().as_ref(), schema.to_hashed_bytes().as_ref()],
         bump
     )]
     pub schema_registry: Account<'info, SchemaRegistry>,

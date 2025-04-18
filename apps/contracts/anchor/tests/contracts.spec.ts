@@ -1,76 +1,92 @@
-import * as anchor from '@coral-xyz/anchor'
-import { Program } from '@coral-xyz/anchor'
-import { Keypair } from '@solana/web3.js'
-import { Contracts } from '../target/types/contracts'
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { startAnchor } from "solana-bankrun";
+import { BankrunProvider } from "anchor-bankrun";
+import { Keypair, PublicKey } from "@solana/web3.js";
+import crypto from "crypto";
+import { Contracts } from "../target/types/contracts";
+// @ts-ignore
+const IDL = require("../target/idl/contracts.json");
 
-describe('contracts', () => {
-  // Configure the client to use the local cluster.
-  const provider = anchor.AnchorProvider.env()
-  anchor.setProvider(provider)
-  const payer = provider.wallet as anchor.Wallet
+const contractAddress = new PublicKey(
+  "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+);
 
-  const program = anchor.workspace.Contracts as Program<Contracts>
+// we have to hash the long strings to avoid max seed string length exceeded error
+function getSeedParams(signer: PublicKey, schema: string) {
+  let hexString = crypto
+    .createHash("sha256")
+    .update(schema, "utf-8")
+    .digest("hex");
+  let schemaDataHashed = Uint8Array.from(Buffer.from(hexString, "hex"));
+  return [Buffer.from("schema"), signer.toBuffer(), schemaDataHashed];
+}
 
-  const contractsKeypair = Keypair.generate()
+describe("schema registry", () => {
+  // Test data
+  const schemaData = "string name, number age, boolean is_married";
+  const schemaName = "Person";
+  const issuerMinScore = new anchor.BN(80); // 0.8 * 100
+  const receiverMinScore = new anchor.BN(60); // 0.6 * 100
+  const issuerScoringProgram = Keypair.generate().publicKey;
+  const receiverScoringProgram = Keypair.generate().publicKey;
 
-  it('Initialize Contracts', async () => {
+  it("Register a new schema", async () => {
+    const context = await startAnchor(
+      "",
+      [{ name: "contracts", programId: contractAddress }],
+      [],
+    );
+    const provider = new BankrunProvider(context);
+    anchor.setProvider(provider);
+
+    const program = new Program<Contracts>(IDL, provider);
+
+    // Find the schema registry PDA
+    const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
+      [...getSeedParams(provider.wallet.publicKey, schemaData)],
+      contractAddress,
+    );
+
     await program.methods
-      .initialize()
-      .accounts({
-        contracts: contractsKeypair.publicKey,
-        payer: payer.publicKey,
+      .registerSchema(
+        schemaData,
+        schemaName,
+        issuerMinScore,
+        receiverMinScore,
+        issuerScoringProgram,
+        receiverScoringProgram,
+      )
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        schemaRegistry: schemaRegistryPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
       })
-      .signers([contractsKeypair])
-      .rpc()
+      .rpc();
 
-    const currentCount = await program.account.contracts.fetch(contractsKeypair.publicKey)
+    // Fetch the schema registry account
+    const schemaRegistryAccount =
+      await program.account.schemaRegistry.fetch(schemaRegistryPda);
 
-    expect(currentCount.count).toEqual(0)
-  })
-
-  it('Increment Contracts', async () => {
-    await program.methods.increment().accounts({ contracts: contractsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.contracts.fetch(contractsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Increment Contracts Again', async () => {
-    await program.methods.increment().accounts({ contracts: contractsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.contracts.fetch(contractsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(2)
-  })
-
-  it('Decrement Contracts', async () => {
-    await program.methods.decrement().accounts({ contracts: contractsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.contracts.fetch(contractsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Set contracts value', async () => {
-    await program.methods.set(42).accounts({ contracts: contractsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.contracts.fetch(contractsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(42)
-  })
-
-  it('Set close the contracts account', async () => {
-    await program.methods
-      .close()
-      .accounts({
-        payer: payer.publicKey,
-        contracts: contractsKeypair.publicKey,
-      })
-      .rpc()
-
-    // The account should no longer exist, returning null.
-    const userAccount = await program.account.contracts.fetchNullable(contractsKeypair.publicKey)
-    expect(userAccount).toBeNull()
-  })
-})
+    // Verify the data was stored correctly
+    expect(schemaRegistryAccount.schema).toEqual(schemaData);
+    expect(schemaRegistryAccount.schemaName).toEqual(schemaName);
+    expect(schemaRegistryAccount.issuerMinScore.eq(issuerMinScore)).toBe(true);
+    expect(schemaRegistryAccount.receiverMinScore.eq(receiverMinScore)).toBe(
+      true,
+    );
+    expect(
+      schemaRegistryAccount.issuerScoringProgram.equals(issuerScoringProgram),
+    ).toBe(true);
+    expect(
+      schemaRegistryAccount.receiverScoringProgram.equals(
+        receiverScoringProgram,
+      ),
+    ).toBe(true);
+    expect(
+      schemaRegistryAccount.creator.equals(provider.wallet.publicKey),
+    ).toBe(true);
+    expect(schemaRegistryAccount.timestamp.gt(new anchor.BN(0))).toBe(true);
+    expect(schemaRegistryAccount.uid.gt(new anchor.BN(0))).toBe(true);
+  });
+});

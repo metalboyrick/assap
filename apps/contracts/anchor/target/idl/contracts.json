@@ -8,16 +8,16 @@
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "register_schema",
       "discriminator": [
-        98,
-        165,
-        201,
         177,
-        108,
-        65,
-        206,
-        96
+        252,
+        118,
+        252,
+        113,
+        195,
+        220,
+        14
       ],
       "accounts": [
         {
@@ -26,132 +26,121 @@
           "signer": true
         },
         {
-          "name": "contracts",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "contracts",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "contracts",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
-        {
-          "name": "payer",
+          "name": "schema_registry",
           "writable": true,
-          "signer": true
-        },
-        {
-          "name": "contracts",
-          "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  104,
+                  101,
+                  109,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              },
+              {
+                "kind": "arg",
+                "path": "schema"
+              }
+            ]
+          }
         },
         {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
-    },
-    {
-      "name": "set",
-      "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
-      ],
-      "accounts": [
-        {
-          "name": "contracts",
-          "writable": true
-        }
-      ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "schema",
+          "type": "string"
+        },
+        {
+          "name": "schema_name",
+          "type": "string"
+        },
+        {
+          "name": "issuer_min_score",
+          "type": "u64"
+        },
+        {
+          "name": "receiver_min_score",
+          "type": "u64"
+        },
+        {
+          "name": "issuer_scoring_program",
+          "type": "pubkey"
+        },
+        {
+          "name": "receiver_scoring_program",
+          "type": "pubkey"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "Contracts",
+      "name": "SchemaRegistry",
       "discriminator": [
-        220,
-        208,
-        225,
-        87,
-        48,
-        231,
-        164,
-        23
+        67,
+        184,
+        244,
+        100,
+        7,
+        70,
+        92,
+        51
       ]
     }
   ],
   "types": [
     {
-      "name": "Contracts",
+      "name": "SchemaRegistry",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
-            "type": "u8"
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "schema_name",
+            "type": "string"
+          },
+          {
+            "name": "issuer_min_score",
+            "type": "u64"
+          },
+          {
+            "name": "issuer_scoring_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver_min_score",
+            "type": "u64"
+          },
+          {
+            "name": "receiver_scoring_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
           }
         ]
       }
