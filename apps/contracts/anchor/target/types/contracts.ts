@@ -14,6 +14,52 @@ export type Contracts = {
   },
   "instructions": [
     {
+      "name": "createAttestation",
+      "discriminator": [
+        49,
+        24,
+        67,
+        80,
+        12,
+        249,
+        96,
+        239
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "schemaRegistry",
+          "writable": true
+        },
+        {
+          "name": "attestation",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "schemaAccount",
+          "type": "pubkey"
+        },
+        {
+          "name": "attestData",
+          "type": "string"
+        },
+        {
+          "name": "receiver",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "registerSchema",
       "discriminator": [
         177,
@@ -93,6 +139,19 @@ export type Contracts = {
   ],
   "accounts": [
     {
+      "name": "attestation",
+      "discriminator": [
+        152,
+        125,
+        183,
+        86,
+        36,
+        146,
+        121,
+        73
+      ]
+    },
+    {
       "name": "schemaRegistry",
       "discriminator": [
         67,
@@ -106,7 +165,50 @@ export type Contracts = {
       ]
     }
   ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "invalidSchemaAccount",
+      "msg": "The provided schema account does not match the expected account"
+    }
+  ],
   "types": [
+    {
+      "name": "attestation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schemaAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attestData",
+            "type": "string"
+          },
+          {
+            "name": "attestIndex",
+            "type": "u64"
+          }
+        ]
+      }
+    },
     {
       "name": "schemaRegistry",
       "type": {
@@ -147,6 +249,10 @@ export type Contracts = {
           {
             "name": "creator",
             "type": "pubkey"
+          },
+          {
+            "name": "attestCount",
+            "type": "u64"
           }
         ]
       }

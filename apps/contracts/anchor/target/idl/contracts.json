@@ -8,6 +8,52 @@
   },
   "instructions": [
     {
+      "name": "create_attestation",
+      "discriminator": [
+        49,
+        24,
+        67,
+        80,
+        12,
+        249,
+        96,
+        239
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "schema_registry",
+          "writable": true
+        },
+        {
+          "name": "attestation",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "schema_account",
+          "type": "pubkey"
+        },
+        {
+          "name": "attest_data",
+          "type": "string"
+        },
+        {
+          "name": "receiver",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "register_schema",
       "discriminator": [
         177,
@@ -87,6 +133,19 @@
   ],
   "accounts": [
     {
+      "name": "Attestation",
+      "discriminator": [
+        152,
+        125,
+        183,
+        86,
+        36,
+        146,
+        121,
+        73
+      ]
+    },
+    {
       "name": "SchemaRegistry",
       "discriminator": [
         67,
@@ -100,7 +159,50 @@
       ]
     }
   ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidSchemaAccount",
+      "msg": "The provided schema account does not match the expected account"
+    }
+  ],
   "types": [
+    {
+      "name": "Attestation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attest_data",
+            "type": "string"
+          },
+          {
+            "name": "attest_index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
     {
       "name": "SchemaRegistry",
       "type": {
@@ -141,6 +243,10 @@
           {
             "name": "creator",
             "type": "pubkey"
+          },
+          {
+            "name": "attest_count",
+            "type": "u64"
           }
         ]
       }

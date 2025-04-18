@@ -27,6 +27,7 @@ pub struct SchemaRegistry {
     pub receiver_scoring_program: Pubkey, // '6JqPXhYgG92x8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8Z'
     pub timestamp: u64, // 1713379200
     pub creator: Pubkey, // '6JqPXhYgG92x8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8Z'
+    pub attest_count: u64, // 0
 }
 
 // Instruction context for registering a schema
@@ -95,6 +96,9 @@ pub fn register_schema(
     
     // Set the UID from the hash
     schema_registry.uid = hasher.finish();
+
+    // Increment the attest count
+    schema_registry.attest_count = 0;
     
     Ok(())
 }
