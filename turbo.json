@@ -19,7 +19,10 @@
     },
     "anchor": {},
     "anchor-build": {},
-    "anchor-localnet": {},
+    "anchor-localnet": {
+      "cache": false,
+      "persistent": true
+    },
     "anchor-test": {
       "dependsOn": ["^anchor-build"]
     },
