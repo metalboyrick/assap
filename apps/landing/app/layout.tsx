@@ -1,6 +1,6 @@
 import type React from "react";
 import "@/app/globals.css";
-import { Archivo, Darker_Grotesque } from "next/font/google";
+import { Archivo } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-providers";
 
 const archivo = Archivo({

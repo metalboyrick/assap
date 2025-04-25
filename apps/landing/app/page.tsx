@@ -645,9 +645,7 @@ export default function LandingPage() {
                       (data, schema, signatures) &#123;
                       <br />
                       &nbsp;&nbsp;
-                      <span className="text-zinc-300">
-                        // Store on-chain with timestamps
-                      </span>
+                      <span className="text-zinc-300"></span>
                       <br />
                       &nbsp;&nbsp;<span className="text-[#C00000]">
                         return
@@ -669,9 +667,9 @@ export default function LandingPage() {
                     End-to-End Integrity
                   </h3>
                   <p className="text-lg text-zinc-300 text-center">
-                    Every step of the attestation process is secured by Solana's
-                    high-speed blockchain, ensuring data integrity and
-                    tamper-proof verification that scales with your needs.
+                    Every step of the attestation process is secured by
+                    Solana&apos;s high-speed blockchain, ensuring data integrity
+                    and tamper-proof verification that scales with your needs.
                   </p>
                   <div className="mt-8 flex justify-center">
                     <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-opacity text-white border-none px-8 py-6 text-lg">
