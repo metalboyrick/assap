@@ -18,11 +18,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: [
-          "var(--font-darker-grotesque)",
-          "Darker Grotesque",
-          "sans-serif",
-        ],
+        sans: ["var(--font-archivo)", "Archivo", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
