@@ -1,32 +1,41 @@
-import type React from "react"
-import "@/app/globals.css"
-import { Darker_Grotesque } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-providers"
+import type React from "react";
+import "@/app/globals.css";
+import { Darker_Grotesque } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-providers";
 
 const darkerGrotesque = Darker_Grotesque({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-darker-grotesque",
   display: "swap",
-})
+  preload: true,
+});
 
 export const metadata = {
   title: "ASSAP - Anti Sybil Solana Attestation Protocol",
-  description: "Real people. Real attestations. Anti-Sybil protection with human-readability.",
-}
+  description:
+    "Real people. Real attestations. Anti-Sybil protection with human-readability.",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${darkerGrotesque.variable} font-sans bg-black text-white antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+      <body
+        className={`${darkerGrotesque.variable} ${darkerGrotesque.className} font-sans bg-black text-white antialiased`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
           {children}
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
