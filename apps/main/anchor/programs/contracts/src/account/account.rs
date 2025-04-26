@@ -12,6 +12,8 @@ pub struct User {
     pub email_account: Pubkey,
     pub discord_account: Pubkey,
     pub human_verification: bool,
+
+    /// points to additional data in IPFS
     pub data_cid: String,
 }
 
