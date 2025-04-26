@@ -49,7 +49,19 @@ pub fn create_attestation(
     receiver: Pubkey,
 ) -> Result<()> {
     let attestation = &mut ctx.accounts.attestation;
-    
+
+    let schema_registry = &ctx.accounts.schema_registry;
+    let issuer_verifiers = get_issuer_verifiers(&schema_registry);
+    let attestee_verifiers = get_attestee_verifiers(&schema_registry);
+
+    if !issuer_verifiers.iter().all(|v| v.verify(&attest_data)) {
+        return Err(ErrorCode::InvalidAttestData.into());
+    }
+
+    if !attestee_verifiers.iter().all(|v| v.verify(&attest_data)) {
+        return Err(ErrorCode::InvalidAttestData.into());
+    }
+
     // Schema account is now validated through the account constraint
     attestation.schema_account = schema_account;
     attestation.issuer = ctx.accounts.payer.key();
