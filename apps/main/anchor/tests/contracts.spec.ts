@@ -159,4 +159,33 @@ describe("attestations", () => {
       true,
     );
   });
+
+  it("Create a user", async () => {
+    const context = await startAnchor("", [], []);
+    const provider = new BankrunProvider(context);
+    anchor.setProvider(provider);
+
+    const program = new Program<Contracts>(IDL, provider);
+
+    const [userPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), Buffer.from("did")],
+      contractAddress,
+    );
+
+    await program.methods
+      .createUser(userPda)
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        user: userPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    const userAccount = await program.account.user.fetch(userPda);
+
+    expect(userAccount.did).toEqual("did");
+    expect(userAccount.createdAt).toBeGreaterThan(0);
+    expect(userAccount.lastActive).toBeGreaterThan(0);
+    expect(userAccount.solAccount).toBeDefined();
+  });
 });

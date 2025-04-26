@@ -60,6 +60,57 @@ export type Contracts = {
       ]
     },
     {
+      "name": "createUser",
+      "discriminator": [
+        108,
+        227,
+        130,
+        130,
+        252,
+        109,
+        75,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "did"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "registerSchema",
       "discriminator": [
         177,
@@ -119,20 +170,16 @@ export type Contracts = {
           "type": "string"
         },
         {
-          "name": "issuerMinScore",
-          "type": "u64"
+          "name": "issuerVerifiers",
+          "type": {
+            "vec": "string"
+          }
         },
         {
-          "name": "receiverMinScore",
-          "type": "u64"
-        },
-        {
-          "name": "issuerScoringProgram",
-          "type": "pubkey"
-        },
-        {
-          "name": "receiverScoringProgram",
-          "type": "pubkey"
+          "name": "attesteeVerifiers",
+          "type": {
+            "vec": "string"
+          }
         }
       ]
     }
@@ -163,6 +210,19 @@ export type Contracts = {
         92,
         51
       ]
+    },
+    {
+      "name": "user",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
     }
   ],
   "errors": [
@@ -170,6 +230,21 @@ export type Contracts = {
       "code": 6000,
       "name": "invalidSchemaAccount",
       "msg": "The provided schema account does not match the expected account"
+    },
+    {
+      "code": 6001,
+      "name": "invalidUserAccount",
+      "msg": "The provided user account does not match the expected account"
+    },
+    {
+      "code": 6002,
+      "name": "invalidAttestationAccount",
+      "msg": "The provided attestation account does not match the expected account"
+    },
+    {
+      "code": 6003,
+      "name": "invalidAttestData",
+      "msg": "The provided attest data is invalid"
     }
   ],
   "types": [
@@ -227,20 +302,16 @@ export type Contracts = {
             "type": "string"
           },
           {
-            "name": "issuerMinScore",
-            "type": "u64"
+            "name": "issuerVerifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
-            "name": "issuerScoringProgram",
-            "type": "pubkey"
-          },
-          {
-            "name": "receiverMinScore",
-            "type": "u64"
-          },
-          {
-            "name": "receiverScoringProgram",
-            "type": "pubkey"
+            "name": "attesteeVerifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
             "name": "timestamp",
@@ -253,6 +324,61 @@ export type Contracts = {
           {
             "name": "attestCount",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "u64"
+          },
+          {
+            "name": "lastActive",
+            "type": "u64"
+          },
+          {
+            "name": "solAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitterAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "githubAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "websiteAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "emailAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "discordAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "humanVerification",
+            "type": "bool"
+          },
+          {
+            "name": "dataCid",
+            "docs": [
+              "points to additional data in IPFS"
+            ],
+            "type": "string"
           }
         ]
       }

@@ -1,11 +1,8 @@
 use std::collections::HashMap;
-use crate::verifiers::base_verifier::BaseVerifier;
-use crate::verifiers::solbalance::verifier::SolBalanceVerifier;
-use crate::verifiers::solmintx::verifier::SolMinTxVerifier;
-use crate::verifiers::solname::verifier::SolNameVerifier;
+use crate::verifiers::base_verifier::{BaseVerifier, Verifier};
 
 pub struct VerifierMapping {
-    verifiers: HashMap<String, Box<dyn BaseVerifier>>,
+    verifiers: HashMap<String, Verifier>,
 }
 
 impl VerifierMapping {
@@ -13,17 +10,19 @@ impl VerifierMapping {
         let mut verifiers = HashMap::new();
         
         // Register all verifiers
-        verifiers.insert("sol_balance".to_string(), Box::new(SolBalanceVerifier) as Box<dyn BaseVerifier>);
-        verifiers.insert("sol_min_tx".to_string(), Box::new(SolMinTxVerifier) as Box<dyn BaseVerifier>);
-        verifiers.insert("sol_name".to_string(), Box::new(SolNameVerifier) as Box<dyn BaseVerifier>);
+        verifiers.insert("sol_balance".to_string(), Verifier::SolBalance);
+        verifiers.insert("sol_min_tx".to_string(), Verifier::SolMinTx);
+        verifiers.insert("sol_name".to_string(), Verifier::SolName);
+        verifiers.insert("sol_age".to_string(), Verifier::SolAge);
         
         Self { verifiers }
     }
     
-    pub fn get_verifier(&self, name: &str) -> Option<&Box<dyn BaseVerifier>> {
+    pub fn get_verifier(&self, name: &str) -> Option<&Verifier> {
         self.verifiers.get(name)
     }
     
+    #[allow(dead_code)]
     pub fn verify(&self, name: &str, did: &str) -> bool {
         match self.get_verifier(name) {
             Some(verifier) => verifier.verify(did),

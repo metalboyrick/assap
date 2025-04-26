@@ -4,27 +4,21 @@ use anchor_lang::prelude::*;
 
 declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 
+mod error_code;
+mod verifiers;
 mod schema_registry;
-  use schema_registry::*;
-
 mod attestations;
-  use attestations::*;
+mod user;
 
-mod account;
-  use account::*;
-
-#[error_code]
-pub enum ErrorCode {
-    #[msg("The provided schema account does not match the expected account")]
-    InvalidSchemaAccount,
-}
-
+use schema_registry::*;
+use attestations::*;
+use user::*;
 #[program]
 pub mod contracts {
     use super::*;
 
-  pub fn register_schema(ctx: Context<RegisterSchema>, schema: String, schema_name: String, issuer_min_score: u64, receiver_min_score: u64, issuer_scoring_program: Pubkey, receiver_scoring_program: Pubkey) -> Result<()> {
-    schema_registry::register_schema(ctx, schema, schema_name, issuer_min_score, receiver_min_score, issuer_scoring_program, receiver_scoring_program)
+  pub fn register_schema(ctx: Context<RegisterSchema>, schema: String, schema_name: String, issuer_verifiers: Vec<String>, attestee_verifiers: Vec<String>) -> Result<()> {
+    schema_registry::register_schema(ctx, schema, schema_name, issuer_verifiers, attestee_verifiers)
   }
 
   pub fn create_attestation(ctx: Context<CreateAttestation>, schema_account: Pubkey, attest_data: String, receiver: Pubkey) -> Result<()> {
@@ -32,6 +26,6 @@ pub mod contracts {
   }
 
   pub fn create_user(ctx: Context<CreateUser>, did: String) -> Result<()> {
-    account::create_user(ctx, did)
+    user::create_user(ctx, did)
   }
 }

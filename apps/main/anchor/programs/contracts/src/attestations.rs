@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 use crate::schema_registry::SchemaRegistry;
-use crate::schema_registry::StringExt;
-use crate::ErrorCode;
-
+use crate::verifiers::mapping::VerifierMapping;
+use crate::error_code::ErrorCode;
+use crate::verifiers::base_verifier::BaseVerifier;
 
 #[account]
 #[derive(InitSpace)]
@@ -48,17 +48,35 @@ pub fn create_attestation(
     attest_data: String,
     receiver: Pubkey,
 ) -> Result<()> {
-    let attestation = &mut ctx.accounts.attestation;
-
-    let schema_registry = &ctx.accounts.schema_registry;
-    let issuer_verifiers = get_issuer_verifiers(&schema_registry);
-    let attestee_verifiers = get_attestee_verifiers(&schema_registry);
-
-    if !issuer_verifiers.iter().all(|v| v.verify(&attest_data)) {
+    let attestation: &mut Account<'_, Attestation> = &mut ctx.accounts.attestation;
+    let schema_registry: &Account<'_, SchemaRegistry> = &ctx.accounts.schema_registry;
+    
+    // Verify using the mapping directly
+    let verifier_mapping = VerifierMapping::new();
+    
+    // Check issuer verifiers
+    let all_issuer_valid = schema_registry.issuer_verifiers.iter()
+        .all(|verifier_name| {
+            match verifier_mapping.get_verifier(verifier_name) {
+                Some(verifier) => verifier.verify(&attest_data),
+                None => false,
+            }
+        });
+        
+    if !all_issuer_valid {
         return Err(ErrorCode::InvalidAttestData.into());
     }
-
-    if !attestee_verifiers.iter().all(|v| v.verify(&attest_data)) {
+    
+    // Check attestee verifiers
+    let all_attestee_valid = schema_registry.attestee_verifiers.iter()
+        .all(|verifier_name| {
+            match verifier_mapping.get_verifier(verifier_name) {
+                Some(verifier) => verifier.verify(&attest_data),
+                None => false,
+            }
+        });
+        
+    if !all_attestee_valid {
         return Err(ErrorCode::InvalidAttestData.into());
     }
 

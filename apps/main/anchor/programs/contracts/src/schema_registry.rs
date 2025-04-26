@@ -23,7 +23,9 @@ pub struct SchemaRegistry {
     pub schema: String,  // 'string name, number age, boolean is_married'
     #[max_len(1024)]
     pub schema_name: String, // 'Person'
+    #[max_len(10, 20)]
     pub issuer_verifiers: Vec<String>, // 'sol_balance, sol_min_tx, sol_name'
+    #[max_len(10, 20)]
     pub attestee_verifiers: Vec<String>, // 'sol_balance, sol_min_tx, sol_name'
     pub timestamp: u64, // 1713379200
     pub creator: Pubkey, // '6JqPXhYgG92x8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8Z'

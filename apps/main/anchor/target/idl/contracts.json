@@ -54,6 +54,57 @@
       ]
     },
     {
+      "name": "create_user",
+      "discriminator": [
+        108,
+        227,
+        130,
+        130,
+        252,
+        109,
+        75,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "did"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "register_schema",
       "discriminator": [
         177,
@@ -113,20 +164,16 @@
           "type": "string"
         },
         {
-          "name": "issuer_min_score",
-          "type": "u64"
+          "name": "issuer_verifiers",
+          "type": {
+            "vec": "string"
+          }
         },
         {
-          "name": "receiver_min_score",
-          "type": "u64"
-        },
-        {
-          "name": "issuer_scoring_program",
-          "type": "pubkey"
-        },
-        {
-          "name": "receiver_scoring_program",
-          "type": "pubkey"
+          "name": "attestee_verifiers",
+          "type": {
+            "vec": "string"
+          }
         }
       ]
     }
@@ -157,6 +204,19 @@
         92,
         51
       ]
+    },
+    {
+      "name": "User",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
     }
   ],
   "errors": [
@@ -164,6 +224,21 @@
       "code": 6000,
       "name": "InvalidSchemaAccount",
       "msg": "The provided schema account does not match the expected account"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidUserAccount",
+      "msg": "The provided user account does not match the expected account"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidAttestationAccount",
+      "msg": "The provided attestation account does not match the expected account"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidAttestData",
+      "msg": "The provided attest data is invalid"
     }
   ],
   "types": [
@@ -221,20 +296,16 @@
             "type": "string"
           },
           {
-            "name": "issuer_min_score",
-            "type": "u64"
+            "name": "issuer_verifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
-            "name": "issuer_scoring_program",
-            "type": "pubkey"
-          },
-          {
-            "name": "receiver_min_score",
-            "type": "u64"
-          },
-          {
-            "name": "receiver_scoring_program",
-            "type": "pubkey"
+            "name": "attestee_verifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
             "name": "timestamp",
@@ -247,6 +318,61 @@
           {
             "name": "attest_count",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "User",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "last_active",
+            "type": "u64"
+          },
+          {
+            "name": "sol_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitter_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "github_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "website_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "email_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "discord_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "human_verification",
+            "type": "bool"
+          },
+          {
+            "name": "data_cid",
+            "docs": [
+              "points to additional data in IPFS"
+            ],
+            "type": "string"
           }
         ]
       }
