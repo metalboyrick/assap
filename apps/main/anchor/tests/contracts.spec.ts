@@ -9,7 +9,7 @@ import { Contracts } from "../target/types/contracts";
 const IDL = require("../target/idl/contracts.json");
 
 const contractAddress = new PublicKey(
-  "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+  "4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e",
 );
 
 // we have to hash the long strings to avoid max seed string length exceeded error
@@ -50,14 +50,7 @@ describe("attestations", () => {
     );
 
     await program.methods
-      .registerSchema(
-        schemaData,
-        schemaName,
-        issuerMinScore,
-        receiverMinScore,
-        issuerScoringProgram,
-        receiverScoringProgram,
-      )
+      .registerSchema(schemaData, schemaName, [], [])
       .accountsPartial({
         payer: provider.wallet.publicKey,
         schemaRegistry: schemaRegistryPda,
@@ -72,18 +65,6 @@ describe("attestations", () => {
     // Verify the data was stored correctly
     expect(schemaRegistryAccount.schema).toEqual(schemaData);
     expect(schemaRegistryAccount.schemaName).toEqual(schemaName);
-    expect(schemaRegistryAccount.issuerMinScore.eq(issuerMinScore)).toBe(true);
-    expect(schemaRegistryAccount.receiverMinScore.eq(receiverMinScore)).toBe(
-      true,
-    );
-    expect(
-      schemaRegistryAccount.issuerScoringProgram.equals(issuerScoringProgram),
-    ).toBe(true);
-    expect(
-      schemaRegistryAccount.receiverScoringProgram.equals(
-        receiverScoringProgram,
-      ),
-    ).toBe(true);
     expect(
       schemaRegistryAccount.creator.equals(provider.wallet.publicKey),
     ).toBe(true);
@@ -105,14 +86,7 @@ describe("attestations", () => {
     );
 
     await program.methods
-      .registerSchema(
-        schemaData,
-        schemaName,
-        issuerMinScore,
-        receiverMinScore,
-        issuerScoringProgram,
-        receiverScoringProgram,
-      )
+      .registerSchema(schemaData, schemaName, [], [])
       .accountsPartial({
         payer: provider.wallet.publicKey,
         schemaRegistry: schemaRegistryPda,
@@ -168,12 +142,12 @@ describe("attestations", () => {
     const program = new Program<Contracts>(IDL, provider);
 
     const [userPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("user"), Buffer.from("did")],
+      [Buffer.from("user"), Buffer.from("testdid")],
       contractAddress,
     );
 
     await program.methods
-      .createUser(userPda)
+      .createUser("testdid")
       .accountsPartial({
         payer: provider.wallet.publicKey,
         user: userPda,
@@ -183,9 +157,29 @@ describe("attestations", () => {
 
     const userAccount = await program.account.user.fetch(userPda);
 
-    expect(userAccount.did).toEqual("did");
-    expect(userAccount.createdAt).toBeGreaterThan(0);
-    expect(userAccount.lastActive).toBeGreaterThan(0);
+    expect(userAccount.did).toEqual("testdid");
+    if (typeof userAccount.createdAt === "string") {
+      expect(parseInt(userAccount.createdAt, 16)).toBeGreaterThan(0);
+    } else if (
+      typeof userAccount.createdAt === "object" &&
+      userAccount.createdAt !== null
+    ) {
+      expect(userAccount.createdAt.toString()).not.toBe("0");
+    } else {
+      expect(userAccount.createdAt).toBeGreaterThan(0);
+    }
+
+    if (typeof userAccount.lastActive === "string") {
+      expect(parseInt(userAccount.lastActive, 16)).toBeGreaterThan(0);
+    } else if (
+      typeof userAccount.lastActive === "object" &&
+      userAccount.lastActive !== null
+    ) {
+      expect(userAccount.lastActive.toString()).not.toBe("0");
+    } else {
+      expect(userAccount.lastActive).toBeGreaterThan(0);
+    }
+
     expect(userAccount.solAccount).toBeDefined();
   });
 });

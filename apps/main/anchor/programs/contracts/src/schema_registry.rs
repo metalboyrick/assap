@@ -28,7 +28,7 @@ pub struct SchemaRegistry {
     #[max_len(10, 20)]
     pub attestee_verifiers: Vec<String>, // 'sol_balance, sol_min_tx, sol_name'
     pub timestamp: u64, // 1713379200
-    pub creator: Pubkey, // '6JqPXhYgG92x8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8Z'
+    pub creator: Pubkey, // '6JqPXhYgG92x8ZyZ8ZyZ8ZyZ8ZyZ8ZyZ8Z'
     pub attest_count: u64, // 0
 }
 
@@ -37,10 +37,8 @@ pub struct SchemaRegistry {
 #[instruction(
     schema: String, 
     schema_name: String,
-    issuer_min_score: u64, 
-    receiver_min_score: u64,
-    issuer_scoring_program: Pubkey,
-    receiver_scoring_program: Pubkey)]
+    issuer_verifiers: Vec<String>,
+    attestee_verifiers: Vec<String>)]
 pub struct RegisterSchema<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
