@@ -10,6 +10,9 @@ mod schema_registry;
 mod attestations;
   use attestations::*;
 
+mod account;
+  use account::*;
+
 #[error_code]
 pub enum ErrorCode {
     #[msg("The provided schema account does not match the expected account")]
@@ -26,5 +29,9 @@ pub mod contracts {
 
   pub fn create_attestation(ctx: Context<CreateAttestation>, schema_account: Pubkey, attest_data: String, receiver: Pubkey) -> Result<()> {
     attestations::create_attestation(ctx, schema_account, attest_data, receiver)
+  }
+
+  pub fn create_user(ctx: Context<CreateUser>, did: String) -> Result<()> {
+    account::create_user(ctx, did)
   }
 }
