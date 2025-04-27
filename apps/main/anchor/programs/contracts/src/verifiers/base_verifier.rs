@@ -20,6 +20,8 @@ pub trait BaseVerifier {
 }
 
 impl BaseVerifier for Verifier {
+
+    // TODO: instead of passing DID in, we should look to directly pass the User instance from the user.rs in directly.
     fn verify(&self, _did: &str) -> bool {
         match self {
             Verifier::SolBalance => true, // Placeholder implementation

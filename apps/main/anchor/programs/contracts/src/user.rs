@@ -3,6 +3,8 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct User {
+
+    // TODO: this should be a pubkey that will be searchable via seed derivation
     #[max_len(256)]
     pub did: String,
     pub created_at: u64,
@@ -16,6 +18,7 @@ pub struct User {
     pub human_verification: bool,
 
     /// points to additional data in IPFS
+    /// TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s
     #[max_len(256)]
     pub data_cid: String,
 }
@@ -26,6 +29,7 @@ pub struct CreateUser<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    // TODO: this should be a pubkey that will be searchable via seed derivation
     #[account(init, payer = payer, space = 8 + User::INIT_SPACE, seeds = [b"user", did.as_bytes()], bump)]
     pub user: Account<'info, User>,
 
