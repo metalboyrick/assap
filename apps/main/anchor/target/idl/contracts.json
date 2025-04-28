@@ -30,6 +30,46 @@
           "writable": true
         },
         {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "attestee",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "receiver"
+              }
+            ]
+          }
+        },
+        {
           "name": "attestation",
           "writable": true
         },
@@ -39,10 +79,6 @@
         }
       ],
       "args": [
-        {
-          "name": "schema_account",
-          "type": "pubkey"
-        },
         {
           "name": "attest_data",
           "type": "string"
@@ -86,8 +122,8 @@
                 ]
               },
               {
-                "kind": "arg",
-                "path": "did"
+                "kind": "account",
+                "path": "payer"
               }
             ]
           }
@@ -97,12 +133,7 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "did",
-          "type": "string"
-        }
-      ]
+      "args": []
     },
     {
       "name": "register_schema",
@@ -137,10 +168,6 @@
                   109,
                   97
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "payer"
               },
               {
                 "kind": "arg",
@@ -239,6 +266,16 @@
       "code": 6003,
       "name": "InvalidAttestData",
       "msg": "The provided attest data is invalid"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidAttestee",
+      "msg": "The provided attestee account does not match the expected account"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidIssuer",
+      "msg": "The provided issuer account does not match the expected account"
     }
   ],
   "types": [
@@ -328,10 +365,6 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "did",
-            "type": "string"
-          },
-          {
             "name": "created_at",
             "type": "u64"
           },
@@ -370,7 +403,8 @@
           {
             "name": "data_cid",
             "docs": [
-              "points to additional data in IPFS"
+              "points to additional data in IPFS",
+              "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
             ],
             "type": "string"
           }

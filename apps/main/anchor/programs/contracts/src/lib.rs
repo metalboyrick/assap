@@ -21,11 +21,11 @@ pub mod contracts {
     schema_registry::register_schema(ctx, schema, schema_name, issuer_verifiers, attestee_verifiers)
   }
 
-  pub fn create_attestation(ctx: Context<CreateAttestation>, schema_account: Pubkey, attest_data: String, receiver: Pubkey) -> Result<()> {
-    attestations::create_attestation(ctx, schema_account, attest_data, receiver)
+  pub fn create_attestation(ctx: Context<CreateAttestation>, attest_data: String, receiver: Pubkey) -> Result<()> {
+    attestations::create_attestation(ctx, attest_data, receiver)
   }
 
-  pub fn create_user(ctx: Context<CreateUser>, did: String) -> Result<()> {
-    user::create_user(ctx, did)
+  pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
+    user::create_user(ctx)
   }
 }

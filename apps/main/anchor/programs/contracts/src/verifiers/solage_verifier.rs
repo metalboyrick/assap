@@ -1,9 +1,9 @@
-use crate::verifiers::base_verifier::BaseVerifier;
+use crate::{user::User, verifiers::base_verifier::BaseVerifier};
 
 pub struct SolAgeVerifier;
 
 impl BaseVerifier for SolAgeVerifier {
-    fn verify(&self, _did: &str) -> bool {
+    fn verify(&self, user: &User) -> bool {
         // get the user instance (account.rs) from the did
 
         // get the sol account

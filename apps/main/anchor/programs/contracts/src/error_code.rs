@@ -13,4 +13,10 @@ pub enum ErrorCode {
 
     #[msg("The provided attest data is invalid")]
     InvalidAttestData,
+
+    #[msg("The provided attestee account does not match the expected account")]
+    InvalidAttestee,
+
+    #[msg("The provided issuer account does not match the expected account")]
+    InvalidIssuer,
 }

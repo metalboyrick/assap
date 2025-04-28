@@ -36,6 +36,46 @@ export type Contracts = {
           "writable": true
         },
         {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "attestee",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "receiver"
+              }
+            ]
+          }
+        },
+        {
           "name": "attestation",
           "writable": true
         },
@@ -45,10 +85,6 @@ export type Contracts = {
         }
       ],
       "args": [
-        {
-          "name": "schemaAccount",
-          "type": "pubkey"
-        },
         {
           "name": "attestData",
           "type": "string"
@@ -92,8 +128,8 @@ export type Contracts = {
                 ]
               },
               {
-                "kind": "arg",
-                "path": "did"
+                "kind": "account",
+                "path": "payer"
               }
             ]
           }
@@ -103,12 +139,7 @@ export type Contracts = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "did",
-          "type": "string"
-        }
-      ]
+      "args": []
     },
     {
       "name": "registerSchema",
@@ -143,10 +174,6 @@ export type Contracts = {
                   109,
                   97
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "payer"
               },
               {
                 "kind": "arg",
@@ -245,6 +272,16 @@ export type Contracts = {
       "code": 6003,
       "name": "invalidAttestData",
       "msg": "The provided attest data is invalid"
+    },
+    {
+      "code": 6004,
+      "name": "invalidAttestee",
+      "msg": "The provided attestee account does not match the expected account"
+    },
+    {
+      "code": 6005,
+      "name": "invalidIssuer",
+      "msg": "The provided issuer account does not match the expected account"
     }
   ],
   "types": [
@@ -334,10 +371,6 @@ export type Contracts = {
         "kind": "struct",
         "fields": [
           {
-            "name": "did",
-            "type": "string"
-          },
-          {
             "name": "createdAt",
             "type": "u64"
           },
@@ -376,7 +409,8 @@ export type Contracts = {
           {
             "name": "dataCid",
             "docs": [
-              "points to additional data in IPFS"
+              "points to additional data in IPFS",
+              "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
             ],
             "type": "string"
           }

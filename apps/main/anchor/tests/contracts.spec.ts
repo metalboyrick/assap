@@ -13,13 +13,13 @@ const contractAddress = new PublicKey(
 );
 
 // we have to hash the long strings to avoid max seed string length exceeded error
-function getCreateSchemaSeedParams(signer: PublicKey, schema: string) {
+function getCreateSchemaSeedParams(schema: string) {
   let hexString = crypto
     .createHash("sha256")
     .update(schema, "utf-8")
     .digest("hex");
   let schemaDataHashed = Uint8Array.from(Buffer.from(hexString, "hex"));
-  return [Buffer.from("schema"), signer.toBuffer(), schemaDataHashed];
+  return [Buffer.from("schema"), schemaDataHashed];
 }
 
 describe("attestations", () => {
@@ -45,7 +45,7 @@ describe("attestations", () => {
 
     // Find the schema registry PDA
     const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
-      [...getCreateSchemaSeedParams(provider.wallet.publicKey, schemaData)],
+      [...getCreateSchemaSeedParams(schemaData)],
       contractAddress,
     );
 
@@ -81,7 +81,7 @@ describe("attestations", () => {
 
     // Find the schema registry PDA
     const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
-      [...getCreateSchemaSeedParams(provider.wallet.publicKey, schemaData)],
+      [...getCreateSchemaSeedParams(schemaData)],
       contractAddress,
     );
 
@@ -104,17 +104,27 @@ describe("attestations", () => {
       contractAddress,
     );
 
+    // derive user PDA
+    const [userPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), provider.wallet.publicKey.toBuffer()],
+      contractAddress,
+    );
+
     await program.methods
-      .createAttestation(
-        schemaRegistryPda,
-        attestData,
-        provider.wallet.publicKey,
-      )
+      .createUser()
       .accountsPartial({
+        payer: provider.wallet.publicKey,
+        user: userPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    await program.methods
+      .createAttestation(attestData, provider.wallet.publicKey)
+      .accounts({
         payer: provider.wallet.publicKey,
         schemaRegistry: schemaRegistryPda,
         attestation: attestationPda,
-        systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
 
@@ -142,12 +152,12 @@ describe("attestations", () => {
     const program = new Program<Contracts>(IDL, provider);
 
     const [userPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("user"), Buffer.from("testdid")],
+      [Buffer.from("user"), provider.wallet.publicKey.toBuffer()],
       contractAddress,
     );
 
     await program.methods
-      .createUser("testdid")
+      .createUser()
       .accountsPartial({
         payer: provider.wallet.publicKey,
         user: userPda,
@@ -157,7 +167,7 @@ describe("attestations", () => {
 
     const userAccount = await program.account.user.fetch(userPda);
 
-    expect(userAccount.did).toEqual("testdid");
+    expect(userAccount.solAccount).toBeDefined();
     if (typeof userAccount.createdAt === "string") {
       expect(parseInt(userAccount.createdAt, 16)).toBeGreaterThan(0);
     } else if (

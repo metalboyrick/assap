@@ -49,7 +49,7 @@ pub struct RegisterSchema<'info> {
         space = 8 + SchemaRegistry::INIT_SPACE,
         // TODO: incorporate schema name into seeds
         // TODO: possibly need to hash the schema name
-        seeds = [b"schema", payer.key().as_ref(), schema.to_hashed_bytes().as_ref()],
+        seeds = [b"schema", schema.to_hashed_bytes().as_ref()],
         bump
     )]
     pub schema_registry: Account<'info, SchemaRegistry>,

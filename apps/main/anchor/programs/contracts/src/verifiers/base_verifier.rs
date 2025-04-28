@@ -1,3 +1,5 @@
+use crate::user::User;
+
 /// Enum of all possible verifiers
 #[derive(Clone)]
 pub enum Verifier {
@@ -12,17 +14,16 @@ pub trait BaseVerifier {
     /// Verifies if an attestee is eligible to receive an attestation
     /// 
     /// # Arguments
-    /// * `did` - The decentralized identifier of the attestee
+    /// * `user` - The user instance of the attestee / attester
     /// 
     /// # Returns
     /// * `bool` - True if the attestee is eligible, false otherwise
-    fn verify(&self, did: &str) -> bool;
+    fn verify(&self, user: &User) -> bool;
 }
 
 impl BaseVerifier for Verifier {
 
-    // TODO: instead of passing DID in, we should look to directly pass the User instance from the user.rs in directly.
-    fn verify(&self, _did: &str) -> bool {
+    fn verify(&self, _user: &User) -> bool {
         match self {
             Verifier::SolBalance => true, // Placeholder implementation
             Verifier::SolMinTx => true,   // Placeholder implementation

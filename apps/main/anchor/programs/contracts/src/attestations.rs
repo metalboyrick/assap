@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::schema_registry::SchemaRegistry;
+use crate::user::User;
 use crate::verifiers::mapping::VerifierMapping;
 use crate::error_code::ErrorCode;
 use crate::verifiers::base_verifier::BaseVerifier;
@@ -18,17 +19,26 @@ pub struct Attestation {
 }
 
 #[derive(Accounts)]
-#[instruction(schema_account: Pubkey, attest_data: String, receiver: Pubkey)]
+#[instruction(attest_data: String, receiver: Pubkey)]
 pub struct CreateAttestation<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
     // this will pull up the schema account passed in by the user
-    #[account(
-        mut,
-        constraint = schema_registry.key() == schema_account @ ErrorCode::InvalidSchemaAccount
-    )]
+    #[account(mut)]
     pub schema_registry: Account<'info, SchemaRegistry>,
+
+    #[account(
+        seeds = [b"user", payer.key().as_ref()],
+        bump
+    )]
+    pub issuer: Account<'info, User>,
+
+    #[account(        
+        seeds = [b"user", receiver.as_ref()],
+        bump
+    )]
+    pub attestee: Account<'info, User>,
 
     #[account(
         init,
@@ -44,12 +54,14 @@ pub struct CreateAttestation<'info> {
 
 pub fn create_attestation(
     ctx: Context<CreateAttestation>,
-    schema_account: Pubkey,
     attest_data: String,
     receiver: Pubkey,
 ) -> Result<()> {
     let attestation: &mut Account<'_, Attestation> = &mut ctx.accounts.attestation;
     let schema_registry: &Account<'_, SchemaRegistry> = &ctx.accounts.schema_registry;
+    let attestee: &Account<'_, User> = &ctx.accounts.attestee;
+    let issuer: &Account<'_, User> = &ctx.accounts.issuer;
+    let schema_account = ctx.accounts.schema_registry.key(); 
     
     // Verify using the mapping directly
     let verifier_mapping = VerifierMapping::new();
@@ -58,7 +70,7 @@ pub fn create_attestation(
     let all_issuer_valid = schema_registry.issuer_verifiers.iter()
         .all(|verifier_name| {
             match verifier_mapping.get_verifier(verifier_name) {
-                Some(verifier) => verifier.verify(&attest_data),
+                Some(verifier) => verifier.verify(&issuer),
                 None => false,
             }
         });
@@ -71,7 +83,7 @@ pub fn create_attestation(
     let all_attestee_valid = schema_registry.attestee_verifiers.iter()
         .all(|verifier_name| {
             match verifier_mapping.get_verifier(verifier_name) {
-                Some(verifier) => verifier.verify(&attest_data),
+                Some(verifier) => verifier.verify(&attestee),
                 None => false,
             }
         });

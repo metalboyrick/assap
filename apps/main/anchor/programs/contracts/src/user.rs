@@ -4,9 +4,6 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct User {
 
-    // TODO: this should be a pubkey that will be searchable via seed derivation
-    #[max_len(256)]
-    pub did: String,
     pub created_at: u64,
     pub last_active: u64,
     pub sol_account: Pubkey,
@@ -24,21 +21,19 @@ pub struct User {
 }
 
 #[derive(Accounts)]
-#[instruction(did: String)]
 pub struct CreateUser<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    // TODO: this should be a pubkey that will be searchable via seed derivation
-    #[account(init, payer = payer, space = 8 + User::INIT_SPACE, seeds = [b"user", did.as_bytes()], bump)]
+    // DID will be siugner for now, we can use abstracted wallets
+    #[account(init, payer = payer, space = 8 + User::INIT_SPACE, seeds = [b"user", payer.key().as_ref()], bump)]
     pub user: Account<'info, User>,
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_user(ctx: Context<CreateUser>, did: String) -> Result<()> {
+pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
     let user = &mut ctx.accounts.user;
-    user.did = did;
     user.created_at = Clock::get()?.unix_timestamp as u64;
     user.last_active = Clock::get()?.unix_timestamp as u64;
     Ok(())
