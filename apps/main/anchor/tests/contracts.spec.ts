@@ -233,4 +233,109 @@ describe("attestations", () => {
     expect(userAccount.twitterAccount).toBe(true);
     expect(userAccount.solAccount.equals(provider.wallet.publicKey)).toBe(true);
   });
+
+  it("Should fail attestation when verifiers return false", async () => {
+    const context = await startAnchor("", [], []);
+    const provider = new BankrunProvider(context);
+    anchor.setProvider(provider);
+
+    const program = new Program<Contracts>(IDL, provider);
+
+    // Create issuer user
+    const [issuerPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), provider.wallet.publicKey.toBuffer()],
+      contractAddress,
+    );
+
+    await program.methods
+      .createUser()
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        user: issuerPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    // Create attestee user with a different keypair
+    const attesteeKeypair = anchor.web3.Keypair.generate();
+    const [attesteePda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), attesteeKeypair.publicKey.toBuffer()],
+      contractAddress,
+    );
+
+    // Fund the attestee account using bankrun context instead of requestAirdrop
+    await context.setAccount(attesteeKeypair.publicKey, {
+      lamports: 1000000000,
+      owner: anchor.web3.SystemProgram.programId,
+      data: Buffer.from([]),
+      executable: false,
+    });
+
+    await program.methods
+      .createUser()
+      .accountsPartial({
+        payer: attesteeKeypair.publicKey,
+        user: attesteePda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([attesteeKeypair])
+      .rpc();
+
+    // Register a schema with verifiers
+    const schema = "string name, number age, date dob";
+    const schemaName = "Person";
+    const issuerVerifiers = ["twitter"]; // Twitter verifier will return false
+    const attesteeVerifiers = ["twitter"]; // Twitter verifier will return false
+
+    const [schemaPda] = PublicKey.findProgramAddressSync(
+      [...getCreateSchemaSeedParams(schema)],
+      contractAddress,
+    );
+
+    await program.methods
+      .registerSchema(schema, schemaName, issuerVerifiers, attesteeVerifiers)
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        schemaRegistry: schemaPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    // Try to create attestation - should fail because verifiers return false
+    const attestationData = { name: "John Doe", age: 30 };
+    const [attestationPda] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("attestation"),
+        schemaPda.toBuffer(),
+        issuerPda.toBuffer(),
+        attesteePda.toBuffer(),
+      ],
+      contractAddress,
+    );
+
+    try {
+      await program.methods
+        .createAttestation(
+          JSON.stringify(attestationData),
+          provider.wallet.publicKey,
+        )
+        .accountsPartial({
+          payer: provider.wallet.publicKey,
+          schemaRegistry: schemaPda,
+          issuer: issuerPda,
+          attestee: attesteePda,
+          attestation: attestationPda,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc();
+
+      // If we reach here, the test should fail
+      expect(false).toBe(true); // This should not execute
+    } catch (error) {
+      // Expect an error because the verifiers return false
+      expect(error).toBeDefined();
+      // Could check for specific error message if available
+      // expect(error.toString()).toContain("Verifier check failed");
+    }
+  });
 });

@@ -7,7 +7,9 @@ pub enum Verifier {
     SolBalance,
     SolMinTx,
     SolName,
-    SolAge,
+    Twitter,
+    Email,
+    Human,
 }
 
 /// Trait for verifying participants in the attestation process
@@ -29,7 +31,9 @@ impl BaseVerifier for Verifier {
             Verifier::SolBalance => true, // Placeholder implementation
             Verifier::SolMinTx => true,   // Placeholder implementation
             Verifier::SolName => true,    // Placeholder implementation
-            Verifier::SolAge => true,     // Placeholder implementation
+            Verifier::Twitter => true,    // Placeholder implementation
+            Verifier::Email => true,      // Placeholder implementation
+            Verifier::Human => true,      // Placeholder implementation
         }
     }
 }

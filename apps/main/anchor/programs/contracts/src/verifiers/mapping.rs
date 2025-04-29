@@ -14,7 +14,9 @@ impl VerifierMapping {
         verifiers.insert("sol_balance".to_string(), Verifier::SolBalance);
         verifiers.insert("sol_min_tx".to_string(), Verifier::SolMinTx);
         verifiers.insert("sol_name".to_string(), Verifier::SolName);
-        verifiers.insert("sol_age".to_string(), Verifier::SolAge);
+        verifiers.insert("twitter".to_string(), Verifier::Twitter);
+        verifiers.insert("email".to_string(), Verifier::Email);
+        verifiers.insert("human".to_string(), Verifier::Human);
         
         Self { verifiers }
     }

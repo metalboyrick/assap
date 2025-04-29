@@ -34,6 +34,15 @@ pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
     let user = &mut ctx.accounts.user;
     user.created_at = Clock::get()?.unix_timestamp as u64;
     user.last_active = Clock::get()?.unix_timestamp as u64;
+
+    // Initialize with default values
+    user.sol_account = Pubkey::default();
+    user.twitter_account = false;
+    user.email_account = false;
+    user.human_verification = false;
+    user.sol_name = false;
+    user.data_cid = String::new();
+    
     Ok(())
 }
 
@@ -51,7 +60,7 @@ pub struct UpdateUser<'info> {
 
 pub fn update_user(
     ctx: Context<UpdateUser>, 
-    did: Pubkey,
+    _did: Pubkey,
     sol_account: Option<Pubkey>,
     twitter_account: Option<bool>, 
     email_account: Option<bool>, 
