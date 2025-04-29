@@ -261,25 +261,7 @@
           }
         },
         {
-          "name": "github_account",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
-          "name": "website_account",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
           "name": "email_account",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
-          "name": "discord_account",
           "type": {
             "option": "bool"
           }
@@ -490,19 +472,7 @@
             "type": "bool"
           },
           {
-            "name": "github_account",
-            "type": "bool"
-          },
-          {
-            "name": "website_account",
-            "type": "bool"
-          },
-          {
             "name": "email_account",
-            "type": "bool"
-          },
-          {
-            "name": "discord_account",
             "type": "bool"
           },
           {

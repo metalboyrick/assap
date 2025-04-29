@@ -8,10 +8,7 @@ pub struct User {
     pub last_active: u64,
     pub sol_account: Pubkey,
     pub twitter_account: bool,
-    pub github_account: bool,
-    pub website_account: bool,
     pub email_account: bool,
-    pub discord_account: bool,
     pub human_verification: bool,
     pub sol_name: bool,
 
@@ -57,10 +54,7 @@ pub fn update_user(
     did: Pubkey,
     sol_account: Option<Pubkey>,
     twitter_account: Option<bool>, 
-    github_account: Option<bool>, 
-    website_account: Option<bool>, 
     email_account: Option<bool>, 
-    discord_account: Option<bool>, 
     human_verification: Option<bool>,
     sol_name: Option<bool>
 ) -> Result<()> {
@@ -74,21 +68,10 @@ pub fn update_user(
         user.twitter_account = twitter;
     }
     
-    if let Some(github) = github_account {
-        user.github_account = github;
-    }
-    
-    if let Some(website) = website_account {
-        user.website_account = website;
-    }
-    
     if let Some(email) = email_account {
         user.email_account = email;
     }
     
-    if let Some(discord) = discord_account {
-        user.discord_account = discord;
-    }
     
     if let Some(human) = human_verification {
         user.human_verification = human;

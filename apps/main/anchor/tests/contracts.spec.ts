@@ -220,17 +220,7 @@ describe("attestations", () => {
       .rpc();
 
     await program.methods
-      .updateUser(
-        userPda,
-        provider.wallet.publicKey,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-      )
+      .updateUser(userPda, provider.wallet.publicKey, true, true, true, true)
       .accountsPartial({
         payer: provider.wallet.publicKey,
         user: userPda,

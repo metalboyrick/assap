@@ -267,25 +267,7 @@ export type Contracts = {
           }
         },
         {
-          "name": "githubAccount",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
-          "name": "websiteAccount",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
           "name": "emailAccount",
-          "type": {
-            "option": "bool"
-          }
-        },
-        {
-          "name": "discordAccount",
           "type": {
             "option": "bool"
           }
@@ -496,19 +478,7 @@ export type Contracts = {
             "type": "bool"
           },
           {
-            "name": "githubAccount",
-            "type": "bool"
-          },
-          {
-            "name": "websiteAccount",
-            "type": "bool"
-          },
-          {
             "name": "emailAccount",
-            "type": "bool"
-          },
-          {
-            "name": "discordAccount",
             "type": "bool"
           },
           {
