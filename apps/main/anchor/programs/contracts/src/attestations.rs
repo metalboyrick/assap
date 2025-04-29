@@ -40,6 +40,18 @@ pub struct CreateAttestation<'info> {
     )]
     pub attestee: Account<'info, User>,
 
+    // this is the sol account that the issuer attached to the use instance, we cannot directly read from the pubkey within the user instance
+    #[account(
+        constraint = issuer_attached_sol_account.key() == issuer.sol_account @ ErrorCode::InvalidIssuerAttachedSolAccount
+    )]
+    pub issuer_attached_sol_account: AccountInfo<'info>,
+
+    // this is the sol account that the attestee attached to the use instance, we cannot directly read from the pubkey within the user instance
+    #[account(
+        constraint = attestee_attached_sol_account.key() == attestee.sol_account @ ErrorCode::InvalidAttesteeAttachedSolAccount
+    )]
+    pub attestee_attached_sol_account: AccountInfo<'info>,
+
     #[account(
         init,
         payer = payer,
@@ -70,7 +82,7 @@ pub fn create_attestation(
     let all_issuer_valid = schema_registry.issuer_verifiers.iter()
         .all(|verifier_name| {
             match verifier_mapping.get_verifier(verifier_name) {
-                Some(verifier) => verifier.verify(&issuer),
+                Some(verifier) => verifier.verify(&issuer, &ctx.accounts.issuer_attached_sol_account),
                 None => false,
             }
         });
@@ -83,7 +95,7 @@ pub fn create_attestation(
     let all_attestee_valid = schema_registry.attestee_verifiers.iter()
         .all(|verifier_name| {
             match verifier_mapping.get_verifier(verifier_name) {
-                Some(verifier) => verifier.verify(&attestee),
+                Some(verifier) => verifier.verify(&attestee, &ctx.accounts.attestee_attached_sol_account),
                 None => false,
             }
         });

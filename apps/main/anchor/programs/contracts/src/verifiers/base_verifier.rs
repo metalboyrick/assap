@@ -1,4 +1,5 @@
 use crate::user::User;
+use anchor_lang::prelude::*;
 
 /// Enum of all possible verifiers
 #[derive(Clone)]
@@ -18,12 +19,12 @@ pub trait BaseVerifier {
     /// 
     /// # Returns
     /// * `bool` - True if the attestee is eligible, false otherwise
-    fn verify(&self, user: &User) -> bool;
+    fn verify(&self, user: &User, user_attached_sol_account: &AccountInfo) -> bool;
 }
 
 impl BaseVerifier for Verifier {
 
-    fn verify(&self, _user: &User) -> bool {
+    fn verify(&self, _user: &User, _user_attached_sol_account: &AccountInfo) -> bool {
         match self {
             Verifier::SolBalance => true, // Placeholder implementation
             Verifier::SolMinTx => true,   // Placeholder implementation

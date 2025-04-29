@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use crate::{user::User, verifiers::base_verifier::{BaseVerifier, Verifier}};
+use anchor_lang::prelude::*;
 
 pub struct VerifierMapping {
     verifiers: HashMap<String, Verifier>,
@@ -23,9 +24,9 @@ impl VerifierMapping {
     }
     
     #[allow(dead_code)]
-    pub fn verify(&self, name: &str, user: &User) -> bool {
+    pub fn verify(&self, name: &str, user: &User, user_attached_sol_account: &AccountInfo) -> bool {
         match self.get_verifier(name) {
-            Some(verifier) => verifier.verify(user),
+            Some(verifier) => verifier.verify(user, user_attached_sol_account),
             None => false,
         }
     }

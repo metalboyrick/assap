@@ -1,18 +1,19 @@
+use anchor_lang::prelude::*;
+use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use crate::{user::User, verifiers::base_verifier::BaseVerifier};
 
 #[derive(Clone)]
 pub struct SolBalanceVerifier;
 
+
 impl BaseVerifier for SolBalanceVerifier {
-    fn verify(&self, user: &User) -> bool {
-        // get the user instance (account.rs) from the did
+    fn verify(&self, user: &User, user_attached_sol_account: &AccountInfo) -> bool {
 
-        // get the sol account
-
-        // get the time since first activity
+        // get sol balance via lamports
+        let balance = user_attached_sol_account.lamports();
+        
 
         // check if the SOL balace is greater than 0.5
-
-        true
+        balance > LAMPORTS_PER_SOL / 2
     }
 }

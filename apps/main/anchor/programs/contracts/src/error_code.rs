@@ -19,4 +19,10 @@ pub enum ErrorCode {
 
     #[msg("The provided issuer account does not match the expected account")]
     InvalidIssuer,
+
+    #[msg("The provided issuer attached sol account does not match the expected account")]
+    InvalidIssuerAttachedSolAccount,
+
+    #[msg("The provided attestee attached sol account does not match the expected account")]
+    InvalidAttesteeAttachedSolAccount,
 }
