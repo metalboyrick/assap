@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/contracts.json`.
  */
 export type Contracts = {
-  "address": "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+  "address": "4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e",
   "metadata": {
     "name": "contracts",
     "version": "0.1.0",
@@ -36,6 +36,58 @@ export type Contracts = {
           "writable": true
         },
         {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "attestee",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "receiver"
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuerAttachedSolAccount",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
+          "name": "attesteeAttachedSolAccount",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
           "name": "attestation",
           "writable": true
         },
@@ -46,10 +98,6 @@ export type Contracts = {
       ],
       "args": [
         {
-          "name": "schemaAccount",
-          "type": "pubkey"
-        },
-        {
           "name": "attestData",
           "type": "string"
         },
@@ -58,6 +106,52 @@ export type Contracts = {
           "type": "pubkey"
         }
       ]
+    },
+    {
+      "name": "createUser",
+      "discriminator": [
+        108,
+        227,
+        130,
+        130,
+        252,
+        109,
+        75,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "registerSchema",
@@ -94,10 +188,6 @@ export type Contracts = {
                 ]
               },
               {
-                "kind": "account",
-                "path": "payer"
-              },
-              {
                 "kind": "arg",
                 "path": "schema"
               }
@@ -119,20 +209,80 @@ export type Contracts = {
           "type": "string"
         },
         {
-          "name": "issuerMinScore",
-          "type": "u64"
+          "name": "issuerVerifiers",
+          "type": {
+            "vec": "string"
+          }
         },
         {
-          "name": "receiverMinScore",
-          "type": "u64"
+          "name": "attesteeVerifiers",
+          "type": {
+            "vec": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateUser",
+      "discriminator": [
+        9,
+        2,
+        160,
+        169,
+        118,
+        12,
+        207,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "issuerScoringProgram",
+          "name": "user",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
           "type": "pubkey"
         },
         {
-          "name": "receiverScoringProgram",
-          "type": "pubkey"
+          "name": "solAccount",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "twitterAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "emailAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "humanVerification",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "solName",
+          "type": {
+            "option": "bool"
+          }
         }
       ]
     }
@@ -163,6 +313,19 @@ export type Contracts = {
         92,
         51
       ]
+    },
+    {
+      "name": "user",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
     }
   ],
   "errors": [
@@ -170,6 +333,46 @@ export type Contracts = {
       "code": 6000,
       "name": "invalidSchemaAccount",
       "msg": "The provided schema account does not match the expected account"
+    },
+    {
+      "code": 6001,
+      "name": "invalidUserAccount",
+      "msg": "The provided user account does not match the expected account"
+    },
+    {
+      "code": 6002,
+      "name": "invalidAttestationAccount",
+      "msg": "The provided attestation account does not match the expected account"
+    },
+    {
+      "code": 6003,
+      "name": "invalidAttestData",
+      "msg": "The provided attest data is invalid"
+    },
+    {
+      "code": 6004,
+      "name": "invalidAttestee",
+      "msg": "The provided attestee account does not match the expected account"
+    },
+    {
+      "code": 6005,
+      "name": "invalidIssuer",
+      "msg": "The provided issuer account does not match the expected account"
+    },
+    {
+      "code": 6006,
+      "name": "invalidIssuerAttachedSolAccount",
+      "msg": "The provided issuer attached sol account does not match the expected account"
+    },
+    {
+      "code": 6007,
+      "name": "invalidAttesteeAttachedSolAccount",
+      "msg": "The provided attestee attached sol account does not match the expected account"
+    },
+    {
+      "code": 6008,
+      "name": "schemaAlreadyRegistered",
+      "msg": "The provided schema is already registered"
     }
   ],
   "types": [
@@ -227,20 +430,16 @@ export type Contracts = {
             "type": "string"
           },
           {
-            "name": "issuerMinScore",
-            "type": "u64"
+            "name": "issuerVerifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
-            "name": "issuerScoringProgram",
-            "type": "pubkey"
-          },
-          {
-            "name": "receiverMinScore",
-            "type": "u64"
-          },
-          {
-            "name": "receiverScoringProgram",
-            "type": "pubkey"
+            "name": "attesteeVerifiers",
+            "type": {
+              "vec": "string"
+            }
           },
           {
             "name": "timestamp",
@@ -253,6 +452,50 @@ export type Contracts = {
           {
             "name": "attestCount",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "createdAt",
+            "type": "u64"
+          },
+          {
+            "name": "lastActive",
+            "type": "u64"
+          },
+          {
+            "name": "solAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitterAccount",
+            "type": "bool"
+          },
+          {
+            "name": "emailAccount",
+            "type": "bool"
+          },
+          {
+            "name": "humanVerification",
+            "type": "bool"
+          },
+          {
+            "name": "solName",
+            "type": "bool"
+          },
+          {
+            "name": "dataCid",
+            "docs": [
+              "points to additional data in IPFS",
+              "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
+            ],
+            "type": "string"
           }
         ]
       }

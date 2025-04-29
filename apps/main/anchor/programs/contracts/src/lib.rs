@@ -2,29 +2,38 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+declare_id!("4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e");
 
+mod error_code;
+mod verifiers;
 mod schema_registry;
-  use schema_registry::*;
-
 mod attestations;
-  use attestations::*;
+mod user;
 
-#[error_code]
-pub enum ErrorCode {
-    #[msg("The provided schema account does not match the expected account")]
-    InvalidSchemaAccount,
-}
+#[allow(unused_imports)]
+use schema_registry::*;
+#[allow(unused_imports)]
+use attestations::*;
+#[allow(unused_imports)]
+use user::*;
 
 #[program]
 pub mod contracts {
     use super::*;
 
-  pub fn register_schema(ctx: Context<RegisterSchema>, schema: String, schema_name: String, issuer_min_score: u64, receiver_min_score: u64, issuer_scoring_program: Pubkey, receiver_scoring_program: Pubkey) -> Result<()> {
-    schema_registry::register_schema(ctx, schema, schema_name, issuer_min_score, receiver_min_score, issuer_scoring_program, receiver_scoring_program)
+  pub fn register_schema(ctx: Context<RegisterSchema>, schema: String, schema_name: String, issuer_verifiers: Vec<String>, attestee_verifiers: Vec<String>) -> Result<()> {
+    schema_registry::register_schema(ctx, schema, schema_name, issuer_verifiers, attestee_verifiers)
   }
 
-  pub fn create_attestation(ctx: Context<CreateAttestation>, schema_account: Pubkey, attest_data: String, receiver: Pubkey) -> Result<()> {
-    attestations::create_attestation(ctx, schema_account, attest_data, receiver)
+  pub fn create_attestation(ctx: Context<CreateAttestation>, attest_data: String, receiver: Pubkey) -> Result<()> {
+    attestations::create_attestation(ctx, attest_data, receiver)
+  }
+
+  pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
+    user::create_user(ctx)
+  }
+
+    pub fn update_user(ctx: Context<UpdateUser>, did: Pubkey, sol_account: Option<Pubkey>, twitter_account: Option<bool>, email_account: Option<bool>, human_verification: Option<bool>, sol_name: Option<bool>) -> Result<()> {
+    user::update_user(ctx, did, sol_account, twitter_account, email_account, human_verification, sol_name)
   }
 }
