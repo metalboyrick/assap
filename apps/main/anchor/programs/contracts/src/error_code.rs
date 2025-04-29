@@ -25,4 +25,7 @@ pub enum ErrorCode {
 
     #[msg("The provided attestee attached sol account does not match the expected account")]
     InvalidAttesteeAttachedSolAccount,
+
+    #[msg("The provided schema is already registered")]
+    SchemaAlreadyRegistered,
 }

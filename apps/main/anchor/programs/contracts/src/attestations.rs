@@ -40,15 +40,17 @@ pub struct CreateAttestation<'info> {
     )]
     pub attestee: Account<'info, User>,
 
-    // this is the sol account that the issuer attached to the use instance, we cannot directly read from the pubkey within the user instance
+    /// CHECK: This is the sol account that the issuer attached to the user instance. 
+    /// We're using AccountInfo because we're only checking its public key against the stored address.
     #[account(
-        constraint = issuer_attached_sol_account.key() == issuer.sol_account @ ErrorCode::InvalidIssuerAttachedSolAccount
+        constraint = issuer.sol_account == Pubkey::default() || issuer_attached_sol_account.key() == issuer.sol_account @ ErrorCode::InvalidIssuerAttachedSolAccount
     )]
     pub issuer_attached_sol_account: AccountInfo<'info>,
 
-    // this is the sol account that the attestee attached to the use instance, we cannot directly read from the pubkey within the user instance
+    /// CHECK: This is the sol account that the attestee attached to the user instance.
+    /// We're using AccountInfo because we're only checking its public key against the stored address.
     #[account(
-        constraint = attestee_attached_sol_account.key() == attestee.sol_account @ ErrorCode::InvalidAttesteeAttachedSolAccount
+        constraint = attestee.sol_account == Pubkey::default() || attestee_attached_sol_account.key() == attestee.sol_account @ ErrorCode::InvalidAttesteeAttachedSolAccount
     )]
     pub attestee_attached_sol_account: AccountInfo<'info>,
 

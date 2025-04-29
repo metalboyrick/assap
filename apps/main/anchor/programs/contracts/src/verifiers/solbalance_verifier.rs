@@ -7,7 +7,7 @@ pub struct SolBalanceVerifier;
 
 
 impl BaseVerifier for SolBalanceVerifier {
-    fn verify(&self, user: &User, user_attached_sol_account: &AccountInfo) -> bool {
+    fn verify(&self, _user: &User, user_attached_sol_account: &AccountInfo) -> bool {
 
         // get sol balance via lamports
         let balance = user_attached_sol_account.lamports();

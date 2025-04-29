@@ -121,10 +121,15 @@ describe("attestations", () => {
 
     await program.methods
       .createAttestation(attestData, provider.wallet.publicKey)
-      .accounts({
+      .accountsPartial({
         payer: provider.wallet.publicKey,
         schemaRegistry: schemaRegistryPda,
         attestation: attestationPda,
+        issuer: userPda,
+        attestee: userPda,
+        issuerAttachedSolAccount: provider.wallet.publicKey,
+        attesteeAttachedSolAccount: provider.wallet.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
 
@@ -191,5 +196,51 @@ describe("attestations", () => {
     }
 
     expect(userAccount.solAccount).toBeDefined();
+  });
+
+  it("Update a user", async () => {
+    const context = await startAnchor("", [], []);
+    const provider = new BankrunProvider(context);
+    anchor.setProvider(provider);
+
+    const program = new Program<Contracts>(IDL, provider);
+
+    const [userPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), provider.wallet.publicKey.toBuffer()],
+      contractAddress,
+    );
+
+    await program.methods
+      .createUser()
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        user: userPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    await program.methods
+      .updateUser(
+        userPda,
+        provider.wallet.publicKey,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+      )
+      .accountsPartial({
+        payer: provider.wallet.publicKey,
+        user: userPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    const userAccount = await program.account.user.fetch(userPda);
+
+    expect(userAccount.twitterAccount).toBe(true);
+    expect(userAccount.solAccount.equals(provider.wallet.publicKey)).toBe(true);
   });
 });

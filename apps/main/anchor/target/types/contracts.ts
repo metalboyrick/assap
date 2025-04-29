@@ -76,6 +76,18 @@ export type Contracts = {
           }
         },
         {
+          "name": "issuerAttachedSolAccount",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
+          "name": "attesteeAttachedSolAccount",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
           "name": "attestation",
           "writable": true
         },
@@ -209,6 +221,88 @@ export type Contracts = {
           }
         }
       ]
+    },
+    {
+      "name": "updateUser",
+      "discriminator": [
+        9,
+        2,
+        160,
+        169,
+        118,
+        12,
+        207,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "pubkey"
+        },
+        {
+          "name": "solAccount",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "twitterAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "githubAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "websiteAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "emailAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "discordAccount",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "humanVerification",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "solName",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -282,6 +376,21 @@ export type Contracts = {
       "code": 6005,
       "name": "invalidIssuer",
       "msg": "The provided issuer account does not match the expected account"
+    },
+    {
+      "code": 6006,
+      "name": "invalidIssuerAttachedSolAccount",
+      "msg": "The provided issuer attached sol account does not match the expected account"
+    },
+    {
+      "code": 6007,
+      "name": "invalidAttesteeAttachedSolAccount",
+      "msg": "The provided attestee attached sol account does not match the expected account"
+    },
+    {
+      "code": 6008,
+      "name": "schemaAlreadyRegistered",
+      "msg": "The provided schema is already registered"
     }
   ],
   "types": [
@@ -384,26 +493,30 @@ export type Contracts = {
           },
           {
             "name": "twitterAccount",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "githubAccount",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "websiteAccount",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "emailAccount",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "discordAccount",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "humanVerification",
+            "type": "bool"
+          },
+          {
+            "name": "solName",
             "type": "bool"
           },
           {

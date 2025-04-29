@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
-
+use crate::error_code::ErrorCode;
 pub trait StringExt {
     fn to_hashed_bytes(&self) -> [u8; 32];
 }
@@ -67,6 +67,11 @@ pub fn register_schema(
 ) -> Result<()> {
     let schema_registry = &mut ctx.accounts.schema_registry;
     let clock = Clock::get()?;
+
+    // check if the schema is already registered
+    if schema_registry.schema == schema {
+        return Err(ErrorCode::SchemaAlreadyRegistered.into());
+    }
 
     // Set the other fields
     schema_registry.schema = schema;

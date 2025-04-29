@@ -70,6 +70,18 @@
           }
         },
         {
+          "name": "issuer_attached_sol_account",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
+          "name": "attestee_attached_sol_account",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
           "name": "attestation",
           "writable": true
         },
@@ -203,6 +215,88 @@
           }
         }
       ]
+    },
+    {
+      "name": "update_user",
+      "discriminator": [
+        9,
+        2,
+        160,
+        169,
+        118,
+        12,
+        207,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "pubkey"
+        },
+        {
+          "name": "sol_account",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "twitter_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "github_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "website_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "email_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "discord_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "human_verification",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "sol_name",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -276,6 +370,21 @@
       "code": 6005,
       "name": "InvalidIssuer",
       "msg": "The provided issuer account does not match the expected account"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidIssuerAttachedSolAccount",
+      "msg": "The provided issuer attached sol account does not match the expected account"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAttesteeAttachedSolAccount",
+      "msg": "The provided attestee attached sol account does not match the expected account"
+    },
+    {
+      "code": 6008,
+      "name": "SchemaAlreadyRegistered",
+      "msg": "The provided schema is already registered"
     }
   ],
   "types": [
@@ -378,26 +487,30 @@
           },
           {
             "name": "twitter_account",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "github_account",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "website_account",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "email_account",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "discord_account",
-            "type": "pubkey"
+            "type": "bool"
           },
           {
             "name": "human_verification",
+            "type": "bool"
+          },
+          {
+            "name": "sol_name",
             "type": "bool"
           },
           {
