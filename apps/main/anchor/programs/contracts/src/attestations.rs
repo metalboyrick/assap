@@ -108,8 +108,8 @@ pub fn create_attestation(
 
     // Schema account is now validated through the account constraint
     attestation.schema_account = schema_account;
-    attestation.issuer = ctx.accounts.payer.key();
-    attestation.receiver = receiver;
+    attestation.issuer = ctx.accounts.issuer.did;
+    attestation.receiver = ctx.accounts.attestee.did;
     attestation.timestamp = Clock::get()?.unix_timestamp as u64;
 
     // next increment the attest count

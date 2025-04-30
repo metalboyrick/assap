@@ -245,10 +245,6 @@
       ],
       "args": [
         {
-          "name": "did",
-          "type": "pubkey"
-        },
-        {
           "name": "sol_account",
           "type": {
             "option": "pubkey"
@@ -455,6 +451,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
           {
             "name": "created_at",
             "type": "u64"

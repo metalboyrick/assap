@@ -33,7 +33,7 @@ pub mod contracts {
     user::create_user(ctx)
   }
 
-    pub fn update_user(ctx: Context<UpdateUser>, did: Pubkey, sol_account: Option<Pubkey>, twitter_account: Option<bool>, email_account: Option<bool>, human_verification: Option<bool>, sol_name: Option<bool>) -> Result<()> {
-    user::update_user(ctx, did, sol_account, twitter_account, email_account, human_verification, sol_name)
+  pub fn update_user(ctx: Context<UpdateUser>, sol_account: Option<Pubkey>, twitter_account: Option<bool>, email_account: Option<bool>, human_verification: Option<bool>, sol_name: Option<bool>) -> Result<()> {
+    user::update_user(ctx, sol_account, twitter_account, email_account, human_verification, sol_name)
   }
 }
