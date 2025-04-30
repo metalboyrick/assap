@@ -251,10 +251,6 @@ export type Contracts = {
       ],
       "args": [
         {
-          "name": "did",
-          "type": "pubkey"
-        },
-        {
           "name": "solAccount",
           "type": {
             "option": "pubkey"
@@ -461,6 +457,10 @@ export type Contracts = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
           {
             "name": "createdAt",
             "type": "u64"
