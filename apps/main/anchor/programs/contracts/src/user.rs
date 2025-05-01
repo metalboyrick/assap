@@ -1,5 +1,25 @@
 use anchor_lang::prelude::*;
 
+#[event]
+pub struct UserCreated {
+    pub did: Pubkey,
+    pub created_at: u64,
+}
+
+#[event]
+pub struct UserUpdated {
+    pub did: Pubkey,
+    pub created_at: u64,
+    pub last_active: u64,
+    pub sol_account: Pubkey,
+    pub twitter_account: bool,
+    pub email_account: bool,
+    pub human_verification: bool,
+    pub sol_name: bool,
+    pub data_cid: String,
+    pub updated_at: u64,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct User {
@@ -46,6 +66,12 @@ pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
     user.human_verification = false;
     user.sol_name = false;
     user.data_cid = String::new();
+
+    emit!(UserCreated {
+        did: user.did,
+        created_at: user.created_at,
+    });
+    
     
     Ok(())
 }
@@ -94,6 +120,18 @@ pub fn update_user(
     }
     
     user.last_active = Clock::get()?.unix_timestamp as u64;
-    
+
+    emit!(UserUpdated {
+        did: user.did,
+        created_at: user.created_at,
+        last_active: user.last_active,
+        sol_account: user.sol_account,
+        twitter_account: user.twitter_account,
+        email_account: user.email_account,
+        human_verification: user.human_verification,
+        sol_name: user.sol_name,
+        data_cid: user.data_cid.clone(),
+        updated_at: user.last_active,
+    });
     Ok(())
 }
