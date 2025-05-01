@@ -5,6 +5,17 @@ use crate::verifiers::mapping::VerifierMapping;
 use crate::error_code::ErrorCode;
 use crate::verifiers::base_verifier::BaseVerifier;
 
+#[event]
+pub struct AttestationCreated {
+    pub uid: u64,
+    pub schema_account: Pubkey,
+    pub issuer: Pubkey,
+    pub receiver: Pubkey,
+    pub timestamp: u64,
+    pub attest_data: String,
+    pub attest_index: u64,
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Attestation {
@@ -117,5 +128,16 @@ pub fn create_attestation(
     attestation.attest_data = attest_data;
 
     ctx.accounts.schema_registry.attest_count += 1;
+
+    emit!(AttestationCreated {
+        uid: attestation.uid,
+        schema_account: attestation.schema_account,
+        issuer: attestation.issuer,
+        receiver: attestation.receiver,
+        timestamp: attestation.timestamp,
+        attest_data: attestation.attest_data.clone(),
+        attest_index: attestation.attest_index,
+    });
+
     Ok(())
 }

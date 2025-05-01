@@ -12,7 +12,16 @@ impl StringExt for String {
     }
 }
 
-
+#[event]
+pub struct SchemaRegistered {
+    pub schema: String,
+    pub schema_name: String,
+    pub uid: u64,
+    pub creator: Pubkey,
+    pub timestamp: u64,
+    pub issuer_verifiers: Vec<String>,
+    pub attestee_verifiers: Vec<String>,
+}   
 
 // Schema Registry account structure
 #[account]
@@ -98,6 +107,17 @@ pub fn register_schema(
 
     // Increment the attest count
     schema_registry.attest_count = 0;
-    
+
+    // Emit an event for the schema registration
+    emit!(SchemaRegistered {
+        schema: schema_registry.schema.clone(),
+        schema_name: schema_registry.schema_name.clone(),
+        uid: schema_registry.uid,
+        creator: schema_registry.creator,
+        timestamp: schema_registry.timestamp,
+        issuer_verifiers: schema_registry.issuer_verifiers.clone(),
+        attestee_verifiers: schema_registry.attestee_verifiers.clone(),
+    });
+
     Ok(())
 }
