@@ -1,45 +1,61 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { FileText, Database, User, Menu, X, LogIn } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { default as NextLink } from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { FileText, Database, User, Menu, X, LogIn } from "lucide-react";
+import { Button as ButtonComponent } from "@/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Header() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(true) // For demo purposes
+// Use type assertions to fix compatibility issues
+const Link = NextLink as any;
+const IconFileText = FileText as any;
+const IconDatabase = Database as any;
+const IconUser = User as any;
+const IconMenu = Menu as any;
+const IconX = X as any;
+const IconLogIn = LogIn as any;
+const Button = ButtonComponent as any;
 
-  const navItems = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: any; // Change type to any to avoid compatibility issues
+}
+
+export default function Header(): JSX.Element {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true); // For demo purposes
+
+  const navItems: NavItem[] = [
     {
       name: "Attestations",
       href: "/",
-      icon: FileText,
+      icon: IconFileText,
     },
     {
       name: "Schemas",
       href: "/schemas",
-      icon: Database,
+      icon: IconDatabase,
     },
     {
       name: "Profile",
       href: "/profile",
-      icon: User,
+      icon: IconUser,
     },
-  ]
+  ];
 
   const handleLogin = () => {
-    router.push("/login")
-  }
+    router.push("/login");
+  };
 
   const handleLogout = () => {
-    setIsLoggedIn(false)
-    router.push("/login")
-  }
+    setIsLoggedIn(false);
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black">
@@ -47,7 +63,9 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center">
             <div className="bg-gradient-to-r from-red-600 to-blue-600 w-8 h-8 rounded-md mr-3"></div>
-            <h1 className="text-2xl font-bold font-heading tracking-tighter hidden md:block">ASSAP</h1>
+            <h1 className="text-2xl font-bold font-heading tracking-tighter hidden md:block">
+              ASSAP
+            </h1>
           </Link>
         </div>
 
@@ -92,13 +110,22 @@ export default function Header() {
               onClick={handleLogin}
               className="hidden md:flex bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
             >
-              <LogIn className="mr-2 h-4 w-4" /> Login
+              <IconLogIn className="mr-2 h-4 w-4" /> Login
             </Button>
           )}
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <IconX className="h-6 w-6" />
+            ) : (
+              <IconMenu className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>
@@ -124,7 +151,11 @@ export default function Header() {
               </Link>
             ))}
             {isLoggedIn ? (
-              <Button variant="outline" onClick={handleLogout} className="w-full border-zinc-700 hover:bg-zinc-800">
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="w-full border-zinc-700 hover:bg-zinc-800"
+              >
                 Disconnect
               </Button>
             ) : (
@@ -132,12 +163,12 @@ export default function Header() {
                 onClick={handleLogin}
                 className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
               >
-                <LogIn className="mr-2 h-4 w-4" /> Login
+                <IconLogIn className="mr-2 h-4 w-4" /> Login
               </Button>
             )}
           </nav>
         </div>
       )}
     </header>
-  )
+  );
 }

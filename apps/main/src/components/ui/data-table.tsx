@@ -1,25 +1,56 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
-import { SearchIcon } from "lucide-react"
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+
+// Create a custom Search icon component to resolve typing issues
+const SearchIcon = (props: React.ComponentProps<"svg">) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.3-4.3" />
+  </svg>
+);
 
 interface DataTableProps<TData> {
   columns: {
-    key: string
-    title: string
-    render?: (value: any, row: TData) => React.ReactNode
-  }[]
-  data: TData[]
-  onRowClick?: (row: TData) => void
-  searchKey?: string
+    key: string;
+    title: string;
+    render?: (value: any, row: TData) => React.ReactNode;
+  }[];
+  data: TData[];
+  onRowClick?: (row: TData) => void;
+  searchKey?: string;
 }
 
-export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataTableProps<TData>) {
-  const [searchQuery, setSearchQuery] = useState("")
+export function DataTable<TData>({
+  columns,
+  data,
+  onRowClick,
+  searchKey,
+}: DataTableProps<TData>) {
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredData =
     searchKey && searchQuery
@@ -28,7 +59,7 @@ export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataT
             .toLowerCase()
             .includes(searchQuery.toLowerCase()),
         )
-      : data
+      : data;
 
   return (
     <div className="space-y-4">
@@ -48,7 +79,10 @@ export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataT
           <TableHeader className="bg-zinc-900">
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={column.key} className="text-zinc-400 font-medium">
+                <TableHead
+                  key={column.key}
+                  className="text-zinc-400 font-medium"
+                >
                   {column.title}
                 </TableHead>
               ))}
@@ -57,7 +91,10 @@ export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataT
           <TableBody>
             {filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-zinc-500">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-zinc-500"
+                >
                   No results found.
                 </TableCell>
               </TableRow>
@@ -66,11 +103,15 @@ export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataT
                 <TableRow
                   key={rowIndex}
                   onClick={() => onRowClick && onRowClick(row)}
-                  className={onRowClick ? "cursor-pointer hover:bg-zinc-900" : ""}
+                  className={
+                    onRowClick ? "cursor-pointer hover:bg-zinc-900" : ""
+                  }
                 >
                   {columns.map((column) => (
                     <TableCell key={`${rowIndex}-${column.key}`}>
-                      {column.render ? column.render((row as any)[column.key], row) : (row as any)[column.key]}
+                      {column.render
+                        ? column.render((row as any)[column.key], row)
+                        : (row as any)[column.key]}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -80,5 +121,5 @@ export function DataTable<TData>({ columns, data, onRowClick, searchKey }: DataT
         </Table>
       </div>
     </div>
-  )
+  );
 }

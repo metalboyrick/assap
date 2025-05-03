@@ -30,7 +30,7 @@
     "noEmit": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "plugins": [
       {
         "name": "next"
