@@ -77,6 +77,7 @@ pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
 }
 
 // CHECK: DIDs will be the embedded wallet address issued by Civic Auth for now.
+#[event_cpi]
 #[derive(Accounts)]
 pub struct UpdateUser<'info> {
     #[account(mut)]
@@ -121,7 +122,7 @@ pub fn update_user(
     
     user.last_active = Clock::get()?.unix_timestamp as u64;
 
-    emit!(UserUpdated {
+    emit_cpi!(UserUpdated {
         did: user.did,
         created_at: user.created_at,
         last_active: user.last_active,
@@ -133,5 +134,6 @@ pub fn update_user(
         data_cid: user.data_cid.clone(),
         updated_at: user.last_active,
     });
+
     Ok(())
 }

@@ -29,6 +29,7 @@ pub struct Attestation {
     pub attest_index: u64,
 }
 
+#[event_cpi]
 #[derive(Accounts)]
 #[instruction(attest_data: String, receiver: Pubkey)]
 pub struct CreateAttestation<'info> {
@@ -129,7 +130,7 @@ pub fn create_attestation(
 
     ctx.accounts.schema_registry.attest_count += 1;
 
-    emit!(AttestationCreated {
+    emit_cpi!(AttestationCreated {
         uid: attestation.uid,
         schema_account: attestation.schema_account,
         issuer: attestation.issuer,
