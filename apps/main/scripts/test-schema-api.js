@@ -109,7 +109,7 @@ async function createSchema() {
 
 async function readSchema() {
   console.log("\nGetting schema by UID...");
-  return await apiRequest(`/schemas?uid=${schemaUid}`, "HEAD");
+  return await apiRequest(`/schemas/${schemaUid}`, "GET");
 }
 
 async function listSchemas() {

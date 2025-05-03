@@ -108,7 +108,7 @@ async function createAttestation() {
 
 async function readAttestation() {
   console.log("\nGetting attestation by UID...");
-  return await apiRequest(`/attestations?uid=${attestationUid}`, "HEAD");
+  return await apiRequest(`/attestations/${attestationUid}`, "GET");
 }
 
 async function listAttestations() {

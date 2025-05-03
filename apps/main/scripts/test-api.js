@@ -60,7 +60,7 @@ async function apiRequest(endpoint, method, body = null) {
   };
 
   // Add API key for write operations
-  if (method !== "GET" && method !== "HEAD") {
+  if (method !== "GET" && method !== "GET") {
     headers["x-api-key"] = API_KEY;
   }
 
@@ -125,7 +125,7 @@ async function runTests() {
 
     // 4. Get Schema by UID
     console.log("\nGetting schema by UID...");
-    await apiRequest(`/schemas?uid=${testSchema.schema_uid}`, "HEAD");
+    await apiRequest(`/schemas/${testSchema.schema_uid}`, "GET");
 
     // 5. Update Schema
     console.log("\nUpdating schema...");
@@ -149,10 +149,7 @@ async function runTests() {
 
     // 9. Get Attestation by UID
     console.log("\nGetting attestation by UID...");
-    await apiRequest(
-      `/attestations?uid=${testAttestation.attestation_uid}`,
-      "HEAD",
-    );
+    await apiRequest(`/attestations/${testAttestation.attestation_uid}`, "GET");
 
     // 10. Update Attestation
     console.log("\nUpdating attestation...");

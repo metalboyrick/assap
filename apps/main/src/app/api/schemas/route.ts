@@ -27,34 +27,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(data);
 }
 
-// GET schema by ID
-export async function HEAD(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const uid = searchParams.get("uid");
-
-  if (!uid) {
-    return NextResponse.json(
-      { error: "Schema UID is required" },
-      { status: 400 },
-    );
-  }
-
-  const { data, error } = await supabaseAdmin
-    .from("schemas")
-    .select("*")
-    .eq("schema_uid", uid)
-    .single();
-
-  if (error) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: error.code === "PGRST116" ? 404 : 500 },
-    );
-  }
-
-  return NextResponse.json(data);
-}
-
 // POST (create new schema)
 export async function POST(request: NextRequest) {
   // Verify API key
