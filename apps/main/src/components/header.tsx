@@ -1,0 +1,143 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import { FileText, Database, User, Menu, X, LogIn } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+
+export default function Header() {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true) // For demo purposes
+
+  const navItems = [
+    {
+      name: "Attestations",
+      href: "/",
+      icon: FileText,
+    },
+    {
+      name: "Schemas",
+      href: "/schemas",
+      icon: Database,
+    },
+    {
+      name: "Profile",
+      href: "/profile",
+      icon: User,
+    },
+  ]
+
+  const handleLogin = () => {
+    router.push("/login")
+  }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    router.push("/login")
+  }
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black">
+      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center">
+            <div className="bg-gradient-to-r from-red-600 to-blue-600 w-8 h-8 rounded-md mr-3"></div>
+            <h1 className="text-2xl font-bold font-heading tracking-tighter hidden md:block">ASSAP</h1>
+          </Link>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-2 text-sm font-medium transition-colors",
+                pathname === item.href
+                  ? "text-white border-b-2 border-gradient-to-r from-red-500 to-blue-500 pb-1"
+                  : "text-zinc-400 hover:text-white",
+              )}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-4">
+          {isLoggedIn ? (
+            <>
+              <div className="hidden md:flex items-center gap-2 text-sm text-zinc-400">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                Connected
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="hidden md:flex border-zinc-700 hover:bg-zinc-800"
+              >
+                Disconnect
+              </Button>
+            </>
+          ) : (
+            <Button
+              size="sm"
+              onClick={handleLogin}
+              className="hidden md:flex bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
+            >
+              <LogIn className="mr-2 h-4 w-4" /> Login
+            </Button>
+          )}
+
+          {/* Mobile Menu Button */}
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-zinc-800">
+          <nav className="flex flex-col p-4 space-y-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors",
+                  pathname === item.href
+                    ? "bg-gradient-to-r from-red-950/40 to-blue-950/40 text-white"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-900",
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <item.icon className="h-5 w-5" />
+                {item.name}
+              </Link>
+            ))}
+            {isLoggedIn ? (
+              <Button variant="outline" onClick={handleLogout} className="w-full border-zinc-700 hover:bg-zinc-800">
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
+              >
+                <LogIn className="mr-2 h-4 w-4" /> Login
+              </Button>
+            )}
+          </nav>
+        </div>
+      )}
+    </header>
+  )
+}
