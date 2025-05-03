@@ -8,6 +8,12 @@ All write operations (POST, PUT, DELETE) require an API key to be provided in th
 
 ## Available Endpoints
 
+### Hello
+
+#### GET /api/hello
+
+Returns a simple greeting message.
+
 ### Schemas
 
 #### GET /api/schemas
@@ -19,9 +25,9 @@ Query parameters:
 - `creator`: Filter by creator_uid
 - `name`: Filter by schema_name
 
-#### HEAD /api/schemas?uid=<schema_uid>
+#### GET /api/schemas/[uid]
 
-Get a specific schema by its UID.
+Get a specific schema by its UID. Replaces `HEAD /api/schemas?uid=<schema_uid>`.
 
 #### POST /api/schemas
 
@@ -62,9 +68,9 @@ Query parameters:
 - `attestee`: Filter by attestee_uid
 - `attestor`: Filter by attestor_uid
 
-#### HEAD /api/attestations?uid=<attestation_uid>
+#### GET /api/attestations/[uid]
 
-Get a specific attestation by its UID.
+Get a specific attestation by its UID. Replaces `HEAD /api/attestations?uid=<attestation_uid>`.
 
 #### POST /api/attestations
 
