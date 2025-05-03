@@ -20,6 +20,6 @@ export function verifyApiKey(request: NextRequest) {
 
   return {
     authorized: true,
-    response: null,
+    response: new Response(null),
   };
 }
