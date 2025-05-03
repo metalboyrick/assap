@@ -324,6 +324,60 @@ export type Contracts = {
       ]
     }
   ],
+  "events": [
+    {
+      "name": "attestationCreated",
+      "discriminator": [
+        217,
+        170,
+        19,
+        203,
+        128,
+        51,
+        29,
+        163
+      ]
+    },
+    {
+      "name": "schemaRegistered",
+      "discriminator": [
+        142,
+        85,
+        205,
+        242,
+        94,
+        187,
+        233,
+        76
+      ]
+    },
+    {
+      "name": "userCreated",
+      "discriminator": [
+        145,
+        177,
+        42,
+        214,
+        0,
+        65,
+        40,
+        69
+      ]
+    },
+    {
+      "name": "userUpdated",
+      "discriminator": [
+        61,
+        217,
+        252,
+        178,
+        176,
+        29,
+        219,
+        145
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -404,6 +458,82 @@ export type Contracts = {
           {
             "name": "attestIndex",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "attestationCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schemaAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attestData",
+            "type": "string"
+          },
+          {
+            "name": "attestIndex",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "schemaRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "schemaName",
+            "type": "string"
+          },
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "issuerVerifiers",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "attesteeVerifiers",
+            "type": {
+              "vec": "string"
+            }
           }
         ]
       }
@@ -496,6 +626,70 @@ export type Contracts = {
               "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
             ],
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "userCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "createdAt",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "userUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "createdAt",
+            "type": "u64"
+          },
+          {
+            "name": "lastActive",
+            "type": "u64"
+          },
+          {
+            "name": "solAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitterAccount",
+            "type": "bool"
+          },
+          {
+            "name": "emailAccount",
+            "type": "bool"
+          },
+          {
+            "name": "humanVerification",
+            "type": "bool"
+          },
+          {
+            "name": "solName",
+            "type": "bool"
+          },
+          {
+            "name": "dataCid",
+            "type": "string"
+          },
+          {
+            "name": "updatedAt",
+            "type": "u64"
           }
         ]
       }

@@ -318,6 +318,60 @@
       ]
     }
   ],
+  "events": [
+    {
+      "name": "AttestationCreated",
+      "discriminator": [
+        217,
+        170,
+        19,
+        203,
+        128,
+        51,
+        29,
+        163
+      ]
+    },
+    {
+      "name": "SchemaRegistered",
+      "discriminator": [
+        142,
+        85,
+        205,
+        242,
+        94,
+        187,
+        233,
+        76
+      ]
+    },
+    {
+      "name": "UserCreated",
+      "discriminator": [
+        145,
+        177,
+        42,
+        214,
+        0,
+        65,
+        40,
+        69
+      ]
+    },
+    {
+      "name": "UserUpdated",
+      "discriminator": [
+        61,
+        217,
+        252,
+        178,
+        176,
+        29,
+        219,
+        145
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -398,6 +452,82 @@
           {
             "name": "attest_index",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AttestationCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attest_data",
+            "type": "string"
+          },
+          {
+            "name": "attest_index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SchemaRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "schema_name",
+            "type": "string"
+          },
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "issuer_verifiers",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "attestee_verifiers",
+            "type": {
+              "vec": "string"
+            }
           }
         ]
       }
@@ -490,6 +620,70 @@
               "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
             ],
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "last_active",
+            "type": "u64"
+          },
+          {
+            "name": "sol_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitter_account",
+            "type": "bool"
+          },
+          {
+            "name": "email_account",
+            "type": "bool"
+          },
+          {
+            "name": "human_verification",
+            "type": "bool"
+          },
+          {
+            "name": "sol_name",
+            "type": "bool"
+          },
+          {
+            "name": "data_cid",
+            "type": "string"
+          },
+          {
+            "name": "updated_at",
+            "type": "u64"
           }
         ]
       }
