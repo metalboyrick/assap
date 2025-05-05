@@ -196,6 +196,7 @@ describe("attestations", () => {
     }
 
     expect(userAccount.solAccount).toBeDefined();
+    expect(userAccount.did.equals(provider.wallet.publicKey)).toBe(true);
   });
 
   it("Update a user", async () => {
@@ -220,7 +221,7 @@ describe("attestations", () => {
       .rpc();
 
     await program.methods
-      .updateUser(userPda, provider.wallet.publicKey, true, true, true, true)
+      .updateUser(provider.wallet.publicKey, true, true, true, true)
       .accountsPartial({
         payer: provider.wallet.publicKey,
         user: userPda,
