@@ -1,85 +1,81 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Database, Users, Plus } from "lucide-react"
 import { StatsCard } from "@/components/stats-card"
 import { DataTable } from "@/components/ui/data-table"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 
-// Mock data
-const schemas = [
-  {
-    id: 1,
-    uid: "sch_01234567890123456789",
-    name: "Identity Verification",
-    attestations: 156,
-    cost: "0.01 SOL",
-  },
-  {
-    id: 2,
-    uid: "sch_23456789012345678901",
-    name: "Credit Score",
-    attestations: 89,
-    cost: "0.02 SOL",
-  },
-  {
-    id: 3,
-    uid: "sch_34567890123456789012",
-    name: "DAO Membership",
-    attestations: 245,
-    cost: "0.03 SOL",
-  },
-  {
-    id: 4,
-    uid: "sch_45678901234567890123",
-    name: "NFT Ownership",
-    attestations: 112,
-    cost: "0.04 SOL",
-  },
-  {
-    id: 5,
-    uid: "sch_56789012345678901234",
-    name: "Developer Reputation",
-    attestations: 78,
-    cost: "0.05 SOL",
-  },
-  {
-    id: 6,
-    uid: "sch_67890123456789012345",
-    name: "Event Attendance",
-    attestations: 203,
-    cost: "0.06 SOL",
-  },
-  {
-    id: 7,
-    uid: "sch_78901234567890123456",
-    name: "Content Creation",
-    attestations: 67,
-    cost: "0.07 SOL",
-  },
-]
-
-const columns = [
-  { key: "id", title: "#" },
-  {
-    key: "uid",
-    title: "UID",
-    render: (value: string) => (
-      <Link href={`/schema/${value}`} className="text-blue-400 hover:underline font-mono text-sm">
-        {value}
-      </Link>
-    ),
-  },
-  { key: "name", title: "Schema Name" },
-  { key: "attestations", title: "# of Attestations" },
-  {
-    key: "cost",
-    title: "Cost",
-    render: (value: string) => <span>{value}</span>,
-  },
-]
-
 export default function SchemasPage() {
+  const [schemas, setSchemas] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+
+  // Fetch schemas from the API
+  useEffect(() => {
+    const fetchSchemas = async () => {
+      try {
+        const response = await axios.get("/api/schemas") // Replace with your actual API endpoint
+        setSchemas(response.data)
+      } catch (error) {
+        console.error("Error fetching schemas:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSchemas()
+  }, [])
+
+  // Define columns based on the data structure from your API
+  const columns = [
+    {
+      key: "schema_uid",
+      title: "UID",
+      render: (value: string) => (
+        <Link href={`/schema/${value}`} className="text-blue-400 hover:underline font-mono text-sm">
+          {value}
+        </Link>
+      ),
+    },
+    {
+      key: "schema_name", // Assuming schema_name exists in the data
+      title: "Schema Name",
+      render: (value: string) => <span>{value}</span>,
+    },
+    {
+      key: "creator_uid",
+      title: "Creator",
+      render: (value: string) => <span className="font-mono text-sm">{value}</span>,
+    },
+    {
+      key: "human_message_template",
+      title: "Attestation Message",
+      render: (value: number) => <span>{value}</span>,
+    },
+    {
+      key: "creation_cost",
+      title: "Cost",
+      render: (value: string) => <span>{value}</span>,
+    },
+    {
+      key: "creation_timestamp", // Assuming creation_date exists in the data
+      title: "Created",
+      render: (value: string) => {
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+          return <span>Invalid Date</span>;
+        }
+
+        // Custom date formatting: yyyy-mm-dd hh:mm:ss
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+
+        return <span>{formattedDate}</span>;
+      },
+    },
+  ]
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -91,12 +87,18 @@ export default function SchemasPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StatsCard title="Total Schemas" value="42" icon={<Database className="h-5 w-5" />} />
-        <StatsCard title="Unique Creators" value="28" icon={<Users className="h-5 w-5" />} />
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
+        {/* <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} /> */}
+        {/* For unique creators, you can calculate it as needed */}
+        {/* <StatsCard title="Unique Creators" value="28" icon={<Users className="h-5 w-5" />} /> */}
+      {/* </div> */}
+
+      
+      <div className="grid grid-cols-1 gap-4">
+      <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} />
       </div>
 
-      <DataTable columns={columns} data={schemas} onRowClick={(row) => console.log(row)} searchKey="name" />
+      <DataTable columns={columns} data={schemas} onRowClick={(row) => console.log(row)} searchKey="schema_name" />
     </div>
   )
 }

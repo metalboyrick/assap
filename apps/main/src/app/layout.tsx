@@ -3,6 +3,13 @@ import { ClusterProvider } from "@/components/cluster/cluster-data-access";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { UiLayout } from "@/components/ui/ui-layout";
 import { ReactQueryProvider } from "./react-query-provider";
+import { Inter } from "next/font/google";
+import { Darker_Grotesque } from "next/font/google"; // assuming you're using this as well
+import { ThemeProvider } from "next-themes";
+import Header from "@/components/header";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const darkerGrotesque = Darker_Grotesque({ subsets: ["latin"], variable: "--font-darker-grotesque" });
 
 export const metadata = {
   title: "Contracts",
