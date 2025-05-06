@@ -1,14 +1,11 @@
 import {
   AboutSection,
   BackgroundElements,
-  ComparisonSection,
-  CTASection,
   Footer,
   HeroSection,
   HowItWorksSection,
   Navbar,
   ProblemsSolutionsSection,
-  RevenueModelSection,
   UseCasesSection,
   VisionTimelineSection,
 } from "@/components/landing";
@@ -23,12 +20,12 @@ export default function LandingPage() {
         <HeroSection />
         <AboutSection />
         <ProblemsSolutionsSection />
-        <ComparisonSection />
+        {/* <ComparisonSection /> */}
         <HowItWorksSection />
         <UseCasesSection />
-        <RevenueModelSection />
+        {/* <RevenueModelSection /> */}
         <VisionTimelineSection />
-        <CTASection />
+        {/* <CTASection /> */}
       </main>
 
       <Footer />
