@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -39,7 +39,8 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-opacity text-white border-none">
             <span className="flex items-center">
-              Go to Explorer <ExternalLink className="ml-2 h-4 w-4" />
+              Coming Soon
+              {/* <ExternalLink className="ml-2 h-4 w-4" /> */}
             </span>
           </Button>
           <button className="md:hidden text-white">

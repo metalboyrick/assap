@@ -40,20 +40,20 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-all text-white border-none h-14 px-8 text-lg rounded-lg">
                 <span className="flex items-center">
-                  Get Started
+                  Coming Soon
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </span>
               </Button>
 
-              <Button
+              {/* <Button
                 variant="outline"
                 className="border-zinc-700 hover:border-[#4A90E2] bg-black/40 text-white hover:bg-black/60 transition-all h-14 px-8 text-lg rounded-lg"
               >
                 Learn More
-              </Button>
+              </Button> */}
             </div>
 
-            <div className="flex items-center gap-x-6 pt-4">
+            {/* <div className="flex items-center gap-x-6 pt-4">
               <div className="flex -space-x-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div
@@ -72,7 +72,7 @@ export function HeroSection() {
                 <span className="font-bold text-white">+1,200</span> verified
                 users
               </p>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Visual */}

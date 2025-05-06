@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
-
 export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="py-24 lg:py-32 relative">
@@ -16,7 +13,7 @@ export function HowItWorksSection() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
           {/* Step 1 */}
           <div className="relative rounded-2xl overflow-hidden group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C00000] to-[#4A90E2] rounded-2xl blur opacity-25 group-hover:opacity-100 transition duration-300"></div>
@@ -27,24 +24,9 @@ export function HowItWorksSection() {
               <h3 className="text-2xl font-bold mb-4">Schema Creation</h3>
               <p className="text-lg text-zinc-300">
                 Define custom attestation schemas with specific data
-                requirements and verification score thresholds tailored to your
-                use case.
+                requirements and verification requirements tailored to your use
+                case.
               </p>
-              <div className="mt-6 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
-                <div className="text-sm font-mono text-zinc-400">
-                  <span className="text-[#4A90E2]">schema</span>: &#123;
-                  <br />
-                  &nbsp;&nbsp;<span className="text-[#C00000]">name</span>:{" "}
-                  <span className="text-zinc-300">Identity Verification</span>
-                  ,<br />
-                  &nbsp;&nbsp;
-                  <span className="text-[#C00000]">minScore</span>:{" "}
-                  <span className="text-zinc-300">75</span>,<br />
-                  &nbsp;&nbsp;<span className="text-[#C00000]">fields</span>
-                  : [ ... ]<br />
-                  &#125;
-                </div>
-              </div>
             </div>
           </div>
 
@@ -58,24 +40,8 @@ export function HowItWorksSection() {
               <h3 className="text-2xl font-bold mb-4">Sybil Verification</h3>
               <p className="text-lg text-zinc-300">
                 When attestation is requested, ASSAP contracts automatically
-                verify the anti-sybil scores of both the attester and recipient.
+                verify the criteria of both the attester and recipient.
               </p>
-              <div className="mt-6 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
-                <div className="text-sm font-mono text-zinc-400">
-                  <span className="text-[#4A90E2]">verifyParticipants</span>
-                  (attester, recipient) &#123;
-                  <br />
-                  &nbsp;&nbsp;
-                  <span className="text-zinc-300"></span>
-                  <br />
-                  &nbsp;&nbsp;<span className="text-[#C00000]">
-                    return
-                  </span>{" "}
-                  <span className="text-zinc-300">eligible ? true : false</span>
-                  <br />
-                  &#125;
-                </div>
-              </div>
             </div>
           </div>
 
@@ -86,28 +52,27 @@ export function HowItWorksSection() {
               <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#C00000]/20 to-[#C00000]/5 flex items-center justify-center mb-6">
                 <div className="text-2xl font-bold text-[#C00000]">3</div>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Attestation Creation</h3>
+              <h3 className="text-2xl font-bold mb-4">Attest</h3>
               <p className="text-lg text-zinc-300">
                 Eligible participants can then create the attestation, which is
                 securely stored on the Solana blockchain with cryptographic
                 verification.
               </p>
-              <div className="mt-6 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
-                <div className="text-sm font-mono text-zinc-400">
-                  <span className="text-[#4A90E2]">createAttestation</span>
-                  (data, schema, signatures) &#123;
-                  <br />
-                  &nbsp;&nbsp;
-                  <span className="text-zinc-300"></span>
-                  <br />
-                  &nbsp;&nbsp;<span className="text-[#C00000]">
-                    return
-                  </span>{" "}
-                  <span className="text-zinc-300">attestationId</span>
-                  <br />
-                  &#125;
-                </div>
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div className="relative rounded-2xl overflow-hidden group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C00000] to-[#4A90E2] rounded-2xl blur opacity-25 group-hover:opacity-100 transition duration-300"></div>
+            <div className="relative bg-black/80 p-8 rounded-2xl h-full flex flex-col border border-white/10 group-hover:border-transparent transition duration-300">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#4A90E2]/20 to-[#4A90E2]/5 flex items-center justify-center mb-6">
+                <div className="text-2xl font-bold text-[#4A90E2]">4</div>
               </div>
+              <h3 className="text-2xl font-bold mb-4">View Receipt</h3>
+              <p className="text-lg text-zinc-300">
+                You can share the receipt with the recipient or use it as proof
+                via our dedicated Explorer Page.
+              </p>
             </div>
           </div>
         </div>
@@ -124,14 +89,14 @@ export function HowItWorksSection() {
                 Solana&apos;s high-speed blockchain, ensuring data integrity and
                 tamper-proof verification that scales with your needs.
               </p>
-              <div className="mt-8 flex justify-center">
+              {/* <div className="mt-8 flex justify-center">
                 <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-opacity text-white border-none px-8 py-6 text-lg">
                   <span className="flex items-center">
                     Learn More
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </span>
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
