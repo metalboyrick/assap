@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter } from "lucide-react";
+import TwitterXIcon from "./TwitterXIcon";
 
 export function Footer() {
   return (
@@ -19,32 +19,36 @@ export function Footer() {
             </span>
           </div>
 
-          <div className="flex gap-8 mb-8 md:mb-0">
-            <Link
-              href="#"
-              className="text-zinc-400 hover:text-white transition-colors group"
-            >
-              <div className="relative w-10 h-10 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C00000]/0 to-[#4A90E2]/0 group-hover:from-[#C00000]/20 group-hover:to-[#4A90E2]/20 rounded-full transition-all duration-300"></div>
-                <Github className="h-6 w-6 relative z-10" />
-              </div>
-              <span className="sr-only">GitHub</span>
-            </Link>
+          <div className="flex flex-col items-center gap-2 mb-8 md:mb-0">
+            <span className="text-zinc-400 text-sm">Find us on</span>
+            <div className="flex gap-4">
+              {/* <Link
+                href="#"
+                className="text-zinc-400 hover:text-white transition-colors group"
+              >
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C00000]/0 to-[#4A90E2]/0 group-hover:from-[#C00000]/20 group-hover:to-[#4A90E2]/20 rounded-full transition-all duration-300"></div>
+                  <Github className="h-6 w-6 relative z-10" />
+                </div>
+                <span className="sr-only">GitHub</span>
+              </Link> */}
 
-            <Link
-              href="#"
-              className="text-zinc-400 hover:text-white transition-colors group"
-            >
-              <div className="relative w-10 h-10 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C00000]/0 to-[#4A90E2]/0 group-hover:from-[#C00000]/20 group-hover:to-[#4A90E2]/20 rounded-full transition-all duration-300"></div>
-                <Twitter className="h-6 w-6 relative z-10" />
-              </div>
-              <span className="sr-only">Twitter</span>
-            </Link>
+              <Link
+                href="https://x.com/assap_xyz"
+                target="_blank"
+                className="text-zinc-400 hover:text-white transition-colors group"
+              >
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C00000]/0 to-[#4A90E2]/0 group-hover:from-[#C00000]/20 group-hover:to-[#4A90E2]/20 rounded-full transition-all duration-300"></div>
+                  <TwitterXIcon className="h-6 w-6 relative z-10" />
+                </div>
+                <span className="sr-only">X</span>
+              </Link>
+            </div>
           </div>
 
           <div className="text-base text-zinc-500">
-            Built for the Solana Hackathon 2025
+            Built for the Solana Breakout Hackathon 2025
           </div>
         </div>
       </div>
