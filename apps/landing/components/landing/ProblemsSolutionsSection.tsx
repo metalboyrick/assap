@@ -58,15 +58,15 @@ export function ProblemsSolutionsSection() {
                 {[
                   {
                     icon: <Shield className="h-6 w-6 text-[#4A90E2]" />,
-                    title: "Modular sybil protection",
+                    title: "Modular one-stop sybil protection",
                     description:
-                      "Flexible verification methods that can be combined for stronger identity assurance.",
+                      "You do not have to leave ASSAP or integrate many ID Providers, ASSAP does it all for you",
                   },
                   {
                     icon: <Zap className="h-6 w-6 text-[#4A90E2]" />,
-                    title: "zk integrations & flexible schemas",
+                    title: "Human mode schema representation",
                     description:
-                      "Privacy-preserving verification that protects user data while ensuring trust.",
+                      "You can view your attestations and schemas in a more human-friendly way",
                   },
                   {
                     icon: <Code className="h-6 w-6 text-[#4A90E2]" />,
