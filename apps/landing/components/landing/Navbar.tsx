@@ -1,19 +1,21 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import Image from "next/image";
 
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#C00000] to-[#4A90E2] rounded-md opacity-80"></div>
-            <div className="relative z-10 text-white font-bold text-xl">A</div>
-          </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#C00000] to-[#4A90E2]">
-            ASSAP
-          </span>
+          <Image
+            src="/assap_favicon.png"
+            alt="ASSAP"
+            width={32}
+            height={32}
+            className="rounded-lg"
+          />
+          <span className="text-xl font-bold text-white">ASSAP</span>
         </div>
 
         <nav className="hidden md:flex gap-8">

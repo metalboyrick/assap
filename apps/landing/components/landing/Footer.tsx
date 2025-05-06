@@ -1,6 +1,6 @@
 import Link from "next/link";
 import TwitterXIcon from "./TwitterXIcon";
-
+import Image from "next/image";
 export function Footer() {
   return (
     <footer className="py-16 bg-black border-t border-zinc-900 relative">
@@ -9,14 +9,15 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center gap-3 mb-8 md:mb-0">
             <div className="relative w-12 h-12 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C00000] to-[#4A90E2] rounded-md opacity-80"></div>
-              <div className="relative z-10 text-white font-bold text-2xl">
-                A
-              </div>
+              <Image
+                src="/assap_favicon.png"
+                alt="ASSAP"
+                width={32}
+                height={32}
+                className="rounded-lg"
+              />
             </div>
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#C00000] to-[#4A90E2]">
-              ASSAP
-            </span>
+            <span className="text-2xl font-bold text-white">ASSAP</span>
           </div>
 
           <div className="flex flex-col items-center gap-2 mb-8 md:mb-0">
