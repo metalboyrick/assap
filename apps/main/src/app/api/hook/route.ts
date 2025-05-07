@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
   try {
     const schema: Schema = await request.json();
 
+    console.log(schema);
+
     // Validate required fields
     const requiredFields = [
       "schema_uid",
