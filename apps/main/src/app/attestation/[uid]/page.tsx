@@ -13,17 +13,15 @@ import { cn } from "@/lib/utils"
 const columns = [
   {
     key: "attestation_uid",
-    title: "UID",
+    title: "Transaction ID",
     render: (value: string) => (
-      <Link href={`/attestation/${value}`} className="text-blue-400 hover:underline font-mono text-sm">
-        {value}
-      </Link>
+      <span className="font-mono text-sm">{value}</span>
     ),
   },
   { key: "schema_uid", title: "Schema" },
   {
-    key: "from",
-    title: "From",
+    key: "attestee_uid",
+    title: "Creator",
     render: (value: string) => <span className="font-mono text-sm">{value}</span>,
   },
   {
@@ -35,9 +33,12 @@ const columns = [
   {
     key: "creation_date",
     title: "Created",
-    render: (value: string) => <span>{new Date(value).toLocaleString()}</span>,
+    render: (value: string) => (
+      <span>{new Date(value).toISOString().slice(0, 16).replace("T", " ")}</span>
+    ),
   },
-]
+];
+
 
 export default function AttestationDetailPage({ params }: { params: { uid: string } }) {
   const [attestation, setAttestation] = useState<any | null>(null)
@@ -69,7 +70,7 @@ export default function AttestationDetailPage({ params }: { params: { uid: strin
   if (error) return <p className="text-red-500">Error: {error}</p>
   if (!attestation) return <p className="text-zinc-400">No attestation found.</p>
 
-  const schemaProperties = attestation.attestation_data?.properties || {}
+  const attestationFields = attestation.attestation_data || {};
 
   return (
     <div className="space-y-8">
@@ -85,36 +86,48 @@ export default function AttestationDetailPage({ params }: { params: { uid: strin
         <div className="space-y-4">
           <div className="gradient-border bg-zinc-900 p-4">
             <h2 className="text-xl font-bold mb-4">Attestation Information</h2>
+            
+            
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-zinc-400">Created</span>
-                <span>{new Date(attestation.created).toLocaleString()}</span>
+                <span>
+                  {new Date(attestation.creation_date).toISOString().slice(0, 16).replace("T", " ")}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Creator</span>
-                <span className="font-mono text-sm truncate max-w-[250px]" title={attestation.created_by}>
-                  {attestation.created_by}
+                <span
+                  className="font-mono text-sm truncate max-w-[250px]"
+                  title={attestation.attestee_uid}
+                >
+                  {attestation.attestee_uid}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Transaction ID</span>
                 <Link
-                  href={`https://explorer.solana.com/tx/${attestation.transaction_id}`}
+                  href={`https://explorer.solana.com/tx/${attestation.attestation_uid}`}
                   target="_blank"
                   className="font-mono text-sm text-blue-400 hover:underline flex items-center"
                 >
-                  {attestation.transaction_id ? `${attestation.transaction_id.substring(0, 10)}...` : "N/A"}
+                  {attestation.attestation_uid
+                    ? `${attestation.attestation_uid.substring(0, 10)}...`
+                    : "N/A"}
                   <ExternalLink className="ml-1 h-3 w-3" />
                 </Link>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Schema</span>
-                <Link href={`/schema/${attestation.schema_uid}`} className="text-blue-400 hover:underline">
-                  {attestation.schema}
+                <Link
+                  href={`/schema/${attestation.schema_uid}`}
+                  className="text-blue-400 hover:underline"
+                >
+                  {attestation.schema_uid}
                 </Link>
               </div>
             </div>
-          </div>
+          </div>              
 
           <Card className="bg-zinc-900 border-zinc-800">
             <CardHeader className="pb-3">
@@ -127,34 +140,20 @@ export default function AttestationDetailPage({ params }: { params: { uid: strin
                   <TableHeader>
                     <TableRow className="border-zinc-800 hover:bg-transparent">
                       <TableHead className="text-zinc-400 w-1/4">Field</TableHead>
-                      <TableHead className="text-zinc-400 w-1/4">Type</TableHead>
                       <TableHead className="text-zinc-400 w-1/2">Description</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Object.entries(schemaProperties).map(([fieldName, fieldData]: [string, any]) => (
+                    {Object.entries(attestationFields).map(([fieldName, value]: [string, any]) => (
                       <TableRow key={fieldName} className="border-zinc-800 hover:bg-zinc-800/50">
                         <TableCell className="font-mono font-medium">{fieldName}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "bg-zinc-800 border-zinc-700",
-                              fieldData.type === "string" && "bg-blue-900/20 border-blue-800 text-blue-400",
-                              fieldData.type === "integer" && "bg-purple-900/20 border-purple-800 text-purple-400",
-                              fieldData.type === "boolean" && "bg-green-900/20 border-green-800 text-green-400",
-                              fieldData.type === "array" && "bg-amber-900/20 border-amber-800 text-amber-400",
-                            )}
-                          >
-                            {fieldData.type}
-                            {fieldData.format ? ` (${fieldData.format})` : ""}
-                            {fieldData.enum ? " (enum)" : ""}
-                          </Badge>
+                        <TableCell colSpan={2} className="text-zinc-300">
+                          {typeof value === "object" ? JSON.stringify(value) : String(value)}
                         </TableCell>
-                        <TableCell className="text-zinc-300">{fieldData.description || "—"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
+
                 </Table>
               </div>
             </CardContent>
@@ -163,7 +162,14 @@ export default function AttestationDetailPage({ params }: { params: { uid: strin
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Recent Attestations Using Same Schema</h2>
-          <DataTable columns={columns} data={[]} onRowClick={(row) => console.log(row)} />
+          <DataTable
+            columns={columns}
+            data={attestation.related_attestations || []}
+            onRowClick={(row) => {
+              const typedRow = row as { attestation_uid: string };
+              router.push(`/attestation/${typedRow.attestation_uid}`);
+            }}
+          />
         </div>
       </div>
     </div>
