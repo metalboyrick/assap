@@ -1,22 +1,19 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, AlertCircle, Check } from "lucide-react"
+import { ArrowLeft, ExternalLink, FileText, Calendar, Shield, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Mock schema data
+// Mock data
 const schemaDetail = {
   uid: "sch_01234567890123456789",
   name: "Identity Verification",
+  created: "2023-03-10T11:45:00Z",
+  createdBy: "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t",
+  transactionId: "0x9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t",
   cost: "0.01 SOL",
   humanMessage: "{fullName} declares that they have completed KYC verification approved by {approver}",
   fields: [
@@ -31,223 +28,172 @@ const schemaDetail = {
   verifications: ["Email", "Human", "Solana Balance"],
 }
 
-export default function CreateAttestationFromSchemaPage({ params }: { params: { uid: string } }) {
+export default function SchemaDetailPage({ params }: { params: { uid: string } }) {
   // In a real app, you would fetch the schema data using the UID
   const schema = schemaDetail
 
-  const [formValues, setFormValues] = useState<Record<string, string>>({})
-  const [showHumanMessage, setShowHumanMessage] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setShowHumanMessage(true)
-  }
-
-  const handleCreateAttestation = () => {
-    setIsSubmitting(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSuccess(true)
-    }, 1500)
-  }
-
-  const allRequiredFieldsFilled = schema.fields
-    .filter((field) => field.required)
-    .every((field) => formValues[field.name] && formValues[field.name].trim() !== "")
-
-  const renderHumanMessage = () => {
-    let message = schema.humanMessage
-    Object.entries(formValues).forEach(([key, value]) => {
-      message = message.replace(`{${key}}`, value)
-    })
-    return message
-  }
-
-  if (isSuccess) {
-    return (
-      <div className="max-w-3xl mx-auto mt-8">
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle className="text-2xl">Attestation Created Successfully</CardTitle>
-            <CardDescription>Your attestation has been recorded on the blockchain</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Alert className="bg-green-900/20 border-green-800 text-green-100">
-              <Check className="h-4 w-4" />
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>
-                Your attestation has been created and is now being processed on the Solana blockchain.
-              </AlertDescription>
-            </Alert>
-            <div className="p-4 bg-zinc-800 rounded-md">
-              <h3 className="font-medium mb-2">Human Message</h3>
-              <p className="text-lg">{renderHumanMessage()}</p>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Link href={`/schema/${params.uid}`}>
-              <Button variant="outline" className="border-zinc-700">
-                Back to Schema
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700">
-                View All Attestations
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
+    <div className="space-y-8">
       <div>
-        <Link href={`/schema/${params.uid}`} className="inline-flex items-center text-zinc-400 hover:text-white mb-4">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Schema
+        <Link href="/schemas" className="inline-flex items-center text-zinc-400 hover:text-white mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Schemas
         </Link>
-        <h1 className="text-3xl font-bold tracking-tighter">Create Attestation</h1>
-        <div className="flex flex-col md:flex-row md:items-center gap-2 mt-1">
-          <p className="text-zinc-400">Using schema: {schema.name}</p>
-          <Badge className="bg-green-900/20 text-green-400 border-green-800 md:ml-2">Cost: {schema.cost}</Badge>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tighter">{schema.name}</h1>
+            <p className="text-zinc-400 mt-1 font-mono">{params.uid}</p>
+          </div>
+          {/* <Link href={`/schema/${params.uid}/create-attestation`}>
+            <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700">
+              Create Attestation
+            </Button>
+          </Link> */}
         </div>
       </div>
 
-      {!showHumanMessage ? (
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle>Fill Attestation Details</CardTitle>
-            <CardDescription>Complete all required fields to create an attestation using this schema</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {schema.fields.map((field, index) => (
-                  <div key={index} className="space-y-2">
-                    <Label htmlFor={field.name} className="flex items-center gap-1">
-                      {field.name}
-                      {field.required && <span className="text-red-500">*</span>}
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "ml-2 text-xs",
-                          field.type.includes("string") && "bg-blue-900/20 border-blue-800 text-blue-400",
-                          field.type.includes("integer") && "bg-purple-900/20 border-purple-800 text-purple-400",
-                          field.type.includes("boolean") && "bg-green-900/20 border-green-800 text-green-400",
-                        )}
-                      >
-                        {field.type}
-                      </Badge>
-                    </Label>
-                    {field.type === "string" && (
-                      <Input
-                        id={field.name}
-                        value={formValues[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        placeholder={`Enter ${field.name}`}
-                        className="bg-zinc-900 border-zinc-800"
-                        required={field.required}
-                      />
-                    )}
-                    {field.type === "integer" && (
-                      <Input
-                        id={field.name}
-                        type="number"
-                        value={formValues[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        placeholder={`Enter ${field.name}`}
-                        className="bg-zinc-900 border-zinc-800"
-                        required={field.required}
-                      />
-                    )}
-                    {field.type === "boolean" && (
-                      <Select
-                        value={formValues[field.name] || ""}
-                        onValueChange={(value) => handleInputChange(field.name, value)}
-                      >
-                        <SelectTrigger id={field.name} className="bg-zinc-900 border-zinc-800">
-                          <SelectValue placeholder={`Select ${field.name}`} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-zinc-800">
-                          <SelectItem value="true" className="text-white">
-                            True
-                          </SelectItem>
-                          <SelectItem value="false" className="text-white">
-                            False
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left column - Schema Information */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="bg-zinc-900 border-zinc-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl flex items-center">
+                <FileText className="mr-2 h-5 w-5 text-zinc-400" /> Schema Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
+                <div>
+                  <h3 className="text-sm font-medium text-zinc-400">Created</h3>
+                  <div className="flex items-center mt-1">
+                    <Calendar className="h-4 w-4 text-zinc-500 mr-2" />
+                    <span>{new Date(schema.created).toLocaleString()}</span>
                   </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-zinc-400">Cost</h3>
+                  <div className="flex items-center mt-1">
+                    <Tag className="h-4 w-4 text-zinc-500 mr-2" />
+                    <span className="font-medium text-green-400">{schema.cost}</span>
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <h3 className="text-sm font-medium text-zinc-400">Creator</h3>
+                  <div className="flex items-center mt-1">
+                    <span className="font-mono text-sm truncate" title={schema.createdBy}>
+                      {schema.createdBy}
+                    </span>
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <h3 className="text-sm font-medium text-zinc-400">Transaction ID</h3>
+                  <div className="flex items-center mt-1">
+                    <Link
+                      href={`https://explorer.solana.com/tx/${schema.transactionId}`}
+                      target="_blank"
+                      className="font-mono text-sm text-blue-400 hover:underline flex items-center"
+                    >
+                      {schema.transactionId}
+                      <ExternalLink className="ml-1 h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-zinc-900 border-zinc-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Schema Fields</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-zinc-800 hover:bg-transparent">
+                      <TableHead className="text-zinc-400 w-1/3">Field Name</TableHead>
+                      <TableHead className="text-zinc-400 w-1/3">Data Type</TableHead>
+                      <TableHead className="text-zinc-400 w-1/3">Required</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {schema.fields.map((field, index) => (
+                      <TableRow key={index} className="border-zinc-800 hover:bg-zinc-800/50">
+                        <TableCell className="font-mono">{field.name}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "bg-zinc-800 border-zinc-700",
+                              field.type.includes("string") && "bg-blue-900/20 border-blue-800 text-blue-400",
+                              field.type.includes("integer") && "bg-purple-900/20 border-purple-800 text-purple-400",
+                              field.type.includes("boolean") && "bg-green-900/20 border-green-800 text-green-400",
+                            )}
+                          >
+                            {field.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {field.required ? (
+                            <Badge className="bg-red-900/20 text-red-400 border-red-800">Required</Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700">
+                              Optional
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right column - Additional Information */}
+        <div className="space-y-6">
+          <Card className="bg-zinc-900 border-zinc-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Human Message Template</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 bg-zinc-800 rounded-md font-mono text-sm border border-zinc-700">
+                {schema.humanMessage}
+              </div>
+              <p className="text-xs text-zinc-400 mt-2">
+                Variables in curly braces will be replaced with field values during attestation.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-zinc-900 border-zinc-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-zinc-400" /> Verification Requirements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {schema.verifications.map((verification, index) => (
+                  <Badge key={index} variant="outline" className="bg-zinc-800 text-white border-zinc-700 px-3 py-1">
+                    {verification}
+                  </Badge>
                 ))}
               </div>
+            </CardContent>
+          </Card>
 
-              <Alert className="bg-zinc-800 border-zinc-700">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Important</AlertTitle>
-                <AlertDescription>
-                  By creating this attestation, you are confirming that all provided information is accurate and can be
-                  verified on the Solana blockchain.
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-                  disabled={!allRequiredFieldsFilled}
-                >
-                  Preview Attestation
+          <Card className="bg-zinc-900 border-zinc-800">
+            <CardContent className="p-6">
+              <Link href={`/schema/${params.uid}/create-attestation`} className="w-full">
+                <Button className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700">
+                  Create Attestation Using This Schema
                 </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle>Confirm Attestation</CardTitle>
-            <CardDescription>Review the human-readable message before creating the attestation</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="p-6 bg-zinc-800 rounded-md border border-zinc-700">
-              <h2 className="text-xl font-medium mb-4">Human Message</h2>
-              <p className="text-xl">{renderHumanMessage()}</p>
-            </div>
-
-            <Alert className="bg-zinc-800 border-zinc-700">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Verification Required</AlertTitle>
-              <AlertDescription>
-                This attestation requires the following verifications: {schema.verifications.join(", ")}
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button onClick={() => setShowHumanMessage(false)} variant="outline" className="border-zinc-700">
-              Edit Fields
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-              onClick={handleCreateAttestation}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Creating..." : "Create Attestation"}
-            </Button>
-          </CardFooter>
-        </Card>
-      )}
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 
