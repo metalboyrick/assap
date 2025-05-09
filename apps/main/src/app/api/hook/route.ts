@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, Schema } from "@/lib/supabase";
 import { verifyApiKey } from "@/lib/auth";
+import { type HeliusWebhookResponse } from "@/lib/helius-webhook";
 
 // POST (create new schema)
 // TODO: implement webhook logic here
@@ -12,40 +13,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const schema: Schema = await request.json();
+    const webhookResponse: HeliusWebhookResponse = await request.json();
 
-    console.log(schema);
+    console.dir(webhookResponse, { depth: null });
 
-    // Validate required fields
-    const requiredFields = [
-      "schema_uid",
-      "creation_transaction_id",
-      "creator_uid",
-      "schema_name",
-      "schema_data",
-    ];
-    const missingFields = requiredFields.filter(
-      (field) => !schema[field as keyof Schema],
-    );
-
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { error: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 },
-      );
-    }
-
-    const { data, error } = await supabaseAdmin
-      .from("schemas")
-      .insert(schema)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json(data, { status: 201 });
+    return NextResponse.json(webhookResponse, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "Invalid request data" },
