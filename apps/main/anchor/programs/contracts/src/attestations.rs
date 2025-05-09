@@ -12,7 +12,7 @@ pub struct AttestationCreated {
     pub issuer: Pubkey,
     pub receiver: Pubkey,
     pub timestamp: u64,
-    pub attest_data: String,
+    pub attest_data: String,    // this would be walrus blobId
     pub attest_index: u64,
 }
 
@@ -25,7 +25,7 @@ pub struct Attestation {
     pub receiver: Pubkey,
     pub timestamp: u64,
     #[max_len(2048)]
-    pub attest_data: String,
+    pub attest_data: String,    // this would be walrus blobId
     pub attest_index: u64,
 }
 
