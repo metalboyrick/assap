@@ -29,7 +29,7 @@ pub struct SchemaRegistered {
 pub struct SchemaRegistry {
     pub uid: u64, //1
     #[max_len(1024)]
-    pub schema: String,  // 'string name, number age, boolean is_married'
+    pub schema: String,  // this would be walrus blobId, store human mode details here as well
     #[max_len(1024)]
     pub schema_name: String, // 'Person'
     #[max_len(10, 20)]
