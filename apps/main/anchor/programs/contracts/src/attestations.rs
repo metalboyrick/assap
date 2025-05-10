@@ -70,7 +70,7 @@ pub struct CreateAttestation<'info> {
         init,
         payer = payer,
         space = 8 + Attestation::INIT_SPACE,
-        seeds = [b"attestation", payer.key().as_ref(), (schema_registry.attest_count + 1).to_le_bytes().as_ref()],
+        seeds = [b"attestation", payer.key().as_ref(), schema_registry.key().as_ref(), (schema_registry.attest_count + 1).to_le_bytes().as_ref()],
         bump
     )]
     pub attestation: Account<'info, Attestation>,

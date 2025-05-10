@@ -99,6 +99,7 @@ describe("attestations", () => {
       [
         Buffer.from("attestation"),
         provider.wallet.publicKey.toBuffer(),
+        schemaRegistryPda.toBuffer(),
         new anchor.BN(1).toBuffer("le", 8),
       ],
       contractAddress,
@@ -124,12 +125,12 @@ describe("attestations", () => {
       .accountsPartial({
         payer: provider.wallet.publicKey,
         schemaRegistry: schemaRegistryPda,
-        attestation: attestationPda,
         issuer: userPda,
         attestee: userPda,
         issuerAttachedSolAccount: provider.wallet.publicKey,
         attesteeAttachedSolAccount: provider.wallet.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
+        attestation: attestationPda,
       })
       .rpc();
 
@@ -307,9 +308,9 @@ describe("attestations", () => {
     const [attestationPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from("attestation"),
+        provider.wallet.publicKey.toBuffer(),
         schemaPda.toBuffer(),
-        issuerPda.toBuffer(),
-        attesteePda.toBuffer(),
+        new anchor.BN(1).toBuffer("le", 8),
       ],
       contractAddress,
     );
