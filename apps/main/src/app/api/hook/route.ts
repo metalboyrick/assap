@@ -144,7 +144,7 @@ async function streamSchemaCreation(
           schema_uid: schemaRegistryPda.toString(), // Solana address-like identifier for the schema
           creation_transaction_id: txn.transaction.signatures[0],
           creator_uid: event.data.creator.toString(),
-          creation_timestamp: new Date(event.data.timestamp.toNumber()),
+          creation_timestamp: new Date(event.data.timestamp.toNumber() * 1000),
           schema_name: event.data.schemaName,
           schema_data: event.data.schema,
           creation_cost: txn.meta.fee + txn.meta.postBalances[1],
@@ -212,8 +212,10 @@ async function streamAttestCreation(
             schema_uid: schemaAccount.toString(),
             attestee_uid: receiver.toString(),
             attestor_uid: issuer.toString(),
-            creation_date: new Date(event.data.timestamp.toNumber()),
+            creation_date: new Date(event.data.timestamp.toNumber() * 1000),
             attestation_data: event.data.attestData,
+            transaction_id: txn.transaction.signatures[0],
+            attestation_index: attestIndex.toNumber(),
           };
 
           const { error } = await supabaseAdmin

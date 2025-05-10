@@ -26,5 +26,7 @@ export interface Attestation {
   attestee_uid: string;
   attestor_uid: string;
   creation_date: Date;
+  transaction_id: string;
+  attestation_index: number;
   attestation_data?: any;
 }
