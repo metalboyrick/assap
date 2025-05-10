@@ -5,7 +5,7 @@ import {
   type HeliusWebhookResponse,
 } from "@/lib/helius-webhook";
 import * as anchor from "@coral-xyz/anchor";
-import { ContractsIDL } from "@project/anchor";
+import { CONTRACTS_PROGRAM_ID, ContractsIDL } from "@project/anchor";
 import { Idl, Program, Provider } from "@coral-xyz/anchor";
 import {
   getCreateSchemaSeedParams,
@@ -134,7 +134,7 @@ async function streamSchemaCreation(
         // Find the schema registry PDA
         const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
           getCreateSchemaSeedParams(event.data.schema),
-          new PublicKey(event.data.creator.toString()),
+          CONTRACTS_PROGRAM_ID,
         );
 
         // put in data of the event into the database
