@@ -14,11 +14,7 @@ import { useCluster } from "../components/cluster/cluster-data-access";
 import { useAnchorProvider } from "../components/solana/solana-provider";
 import { useTransactionToast } from "../components/ui/ui-layout";
 import * as anchor from "@coral-xyz/anchor";
-
-// Helper function to create the seed parameters for attestation PDA
-const getCreateAttestationSeedParams = (attestationId: string): Buffer[] => {
-  return [Buffer.from("attestation"), Buffer.from(attestationId)];
-};
+import { getCreateAttestationSeedParams } from "@/lib/contracts";
 
 export function useAttestationProgram() {
   const { connection } = useConnection();
@@ -90,11 +86,7 @@ export function useAttestationProgram() {
 
       // Derive the attestation PDA
       const [attestationPda] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("attestation"),
-          payer.toBuffer(),
-          new anchor.BN(attestCount).toBuffer("le", 8),
-        ],
+        getCreateAttestationSeedParams(payer, schemaRegistry, attestCount),
         CONTRACTS_PROGRAM_ID,
       );
 

@@ -25,6 +25,6 @@ export interface Attestation {
   schema_uid: string;
   attestee_uid: string;
   attestor_uid: string;
-  creation_date: string;
+  creation_date: Date;
   attestation_data?: any;
 }

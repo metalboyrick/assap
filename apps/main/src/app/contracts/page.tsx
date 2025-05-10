@@ -9,6 +9,8 @@ import {
 } from "@/data-access/schema-data-access";
 import toast from "react-hot-toast";
 import { useAttestationProgram } from "@/data-access/attestations-data-access";
+import { useUserProgram } from "@/data-access/user-data-access";
+import { CONTRACTS_PROGRAM_ID } from "@project/anchor";
 
 // Removed PROGRAM_ID, clientSideSha256, getCreateSchemaSeedParams
 
@@ -42,14 +44,19 @@ export default function ContractsPage() {
 
   const { registerSchema } = useSchemaProgram();
   const { createAttestation } = useAttestationProgram();
+  const { createUser, updateUser } = useUserProgram();
 
   // Placeholder handlers for UI interaction
   const handleCreateUser = () => {
+    if (!publicKey) {
+      toast.error("Please connect your wallet to create a user account");
+      return;
+    }
     console.log(
       "Create User button clicked. publicKey:",
       publicKey?.toBase58(),
     );
-    // Logic removed
+    createUser.mutateAsync({ payer: publicKey });
   };
 
   const handleRegisterSchema = () => {
@@ -98,13 +105,30 @@ export default function ContractsPage() {
   };
 
   const handleUpdateUser = () => {
+    if (!publicKey) {
+      toast.error("Please connect your wallet to update your user profile");
+      return;
+    }
+
+    const [userPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user"), publicKey.toBuffer()],
+      CONTRACTS_PROGRAM_ID,
+    );
+
     console.log("Update User button clicked with data:", {
+      userPda: userPda.toBase58(),
       hasTwitter,
-      hasDiscord,
-      hasGithub,
-      hasTelegram,
+      // hasDiscord, // Not directly mapped
+      // hasGithub,  // Not directly mapped
+      // hasTelegram // Not directly mapped
     });
-    // Logic removed
+
+    updateUser.mutateAsync({
+      payer: publicKey,
+      userAccount: userPda,
+      twitterAccount: hasTwitter,
+      // emailAccount, humanVerification, solName, solAccount are not set from current UI
+    });
   };
 
   if (!publicKey) {

@@ -8,10 +8,12 @@ import * as anchor from "@coral-xyz/anchor";
 import { CONTRACTS_PROGRAM_ID, ContractsIDL } from "@project/anchor";
 import { Idl, Program, Provider } from "@coral-xyz/anchor";
 import {
+  AttestationCreatedEvent,
+  getCreateAttestationSeedParams,
   getCreateSchemaSeedParams,
   SchemaRegisteredEvent,
 } from "@/lib/contracts";
-import { Schema, supabaseAdmin } from "@/lib/supabase";
+import { Attestation, Schema, supabaseAdmin } from "@/lib/supabase";
 import { PublicKey } from "@solana/web3.js";
 
 const SAMPLE_SCHEMA_CREATION_TXN = [
@@ -188,30 +190,37 @@ async function streamAttestCreation(
           const base64Data = anchor.utils.bytes.base64.encode(
             rawData.subarray(8),
           );
-          const event = program.coder.events.decode(base64Data);
+          const event = program.coder.events.decode(
+            base64Data,
+          ) as AttestationCreatedEvent;
 
-          console.dir({ event }, { depth: null });
+          const { issuer, schemaAccount, attestIndex, receiver } = event.data;
 
-          // // put in data of the event into the database
-          // const newSchema: Schema = {
-          //   schema_uid: event.data.uid.toString(),
-          //   creation_transaction_id: txn.transaction.signatures[0],
-          //   creator_uid: event.data.creator.toString(),
-          //   creation_timestamp: new Date(event.data.timestamp.toNumber()),
-          //   schema_name: event.data.schemaName,
-          //   schema_data: event.data.schema,
-          //   creation_cost: txn.meta.fee + txn.meta.postBalances[1],
-          //   verification_requirements: {
-          //     issuer_verifiers: event.data.issuerVerifiers,
-          //     attestee_verifiers: event.data.attesteeVerifiers,
-          //   },
-          // };
+          // Find the attestation PDA
+          const [attestationPda] = PublicKey.findProgramAddressSync(
+            getCreateAttestationSeedParams(
+              issuer,
+              schemaAccount,
+              attestIndex.toNumber(),
+            ),
+            CONTRACTS_PROGRAM_ID,
+          );
 
-          // const { error } = await supabaseAdmin
-          //   .from("schemas")
-          //   .insert(newSchema);
+          // put in data of the event into the database
+          const newAttestation: Attestation = {
+            attestation_uid: attestationPda.toString(),
+            schema_uid: schemaAccount.toString(),
+            attestee_uid: receiver.toString(),
+            attestor_uid: issuer.toString(),
+            creation_date: new Date(event.data.timestamp.toNumber()),
+            attestation_data: event.data.attestData,
+          };
 
-          // if (!!error) throw new Error(error.message);
+          const { error } = await supabaseAdmin
+            .from("attestations")
+            .insert(newAttestation);
+
+          if (!!error) throw new Error(error.message);
         } catch (error) {
           console.error("Error decoding event data:", error);
         }

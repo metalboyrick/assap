@@ -24,3 +24,29 @@ export type SchemaRegisteredEvent = {
   };
   name: "schemaRegistered";
 };
+
+export function getCreateAttestationSeedParams(
+  payer: PublicKey,
+  schemaRegistry: PublicKey,
+  attestCount: number,
+) {
+  return [
+    Buffer.from("attestation"),
+    payer.toBuffer(),
+    schemaRegistry.toBuffer(),
+    new BN(attestCount).toArrayLike(Buffer, "le", 8),
+  ];
+}
+
+export type AttestationCreatedEvent = {
+  data: {
+    uid: BN;
+    schemaAccount: PublicKey;
+    issuer: PublicKey;
+    receiver: PublicKey;
+    timestamp: BN;
+    attestData: string;
+    attestIndex: BN;
+  };
+  name: "attestationCreated";
+};
