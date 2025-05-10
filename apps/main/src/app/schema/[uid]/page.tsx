@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, ExternalLink, FileText, Calendar, Shield, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -7,30 +8,41 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Mock data
-const schemaDetail = {
-  uid: "sch_01234567890123456789",
-  name: "Identity Verification",
-  created: "2023-03-10T11:45:00Z",
-  createdBy: "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t",
-  transactionId: "0x9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t",
-  cost: "0.01 SOL",
-  humanMessage: "{fullName} declares that they have completed KYC verification approved by {approver}",
-  fields: [
-    { name: "fullName", type: "string", required: true },
-    { name: "dateOfBirth", type: "string", required: true },
-    { name: "nationality", type: "string", required: true },
-    { name: "idType", type: "string", required: true },
-    { name: "idNumber", type: "string", required: true },
-    { name: "approver", type: "string", required: true },
-    { name: "verificationLevel", type: "integer", required: false },
-  ],
-  verifications: ["Email", "Human", "Solana Balance"],
+// Define types for schema and field
+interface Field {
+  name: string
+  type: string
+  required: boolean
+}
+
+interface Schema {
+  name: string
+  creation_timestamp: string
+  creation_cost: string
+  creator_uid: string
+  transactionId: string
+  schema_data: {
+    fields: Field[]
+  }
+  human_message_template: string
+  verification_requirements: {
+    required: string[]
+  }
 }
 
 export default function SchemaDetailPage({ params }: { params: { uid: string } }) {
-  // In a real app, you would fetch the schema data using the UID
-  const schema = schemaDetail
+  const [schema, setSchema] = useState<Schema | null>(null)
+
+  useEffect(() => {
+    async function fetchSchema() {
+      const res = await fetch(`/api/schemas/${params.uid}`)
+      const data = await res.json()
+      setSchema(data)
+    }
+    fetchSchema()
+  }, [params.uid])
+
+  if (!schema) return <div className="text-white">Loading schema...</div>
 
   return (
     <div className="space-y-8">
@@ -43,11 +55,6 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
             <h1 className="text-3xl font-bold tracking-tighter">{schema.name}</h1>
             <p className="text-zinc-400 mt-1 font-mono">{params.uid}</p>
           </div>
-          {/* <Link href={`/schema/${params.uid}/create-attestation`}>
-            <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700">
-              Create Attestation
-            </Button>
-          </Link> */}
         </div>
       </div>
 
@@ -66,21 +73,21 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
                   <h3 className="text-sm font-medium text-zinc-400">Created</h3>
                   <div className="flex items-center mt-1">
                     <Calendar className="h-4 w-4 text-zinc-500 mr-2" />
-                    <span>{new Date(schema.created).toLocaleString()}</span>
+                    <span>{new Date(schema.creation_timestamp).toISOString().slice(0, 16).replace("T", " ")}</span>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-zinc-400">Cost</h3>
                   <div className="flex items-center mt-1">
                     <Tag className="h-4 w-4 text-zinc-500 mr-2" />
-                    <span className="font-medium text-green-400">{schema.cost}</span>
+                    <span className="font-medium text-green-400">{schema.creation_cost}</span>
                   </div>
                 </div>
                 <div className="md:col-span-2">
                   <h3 className="text-sm font-medium text-zinc-400">Creator</h3>
                   <div className="flex items-center mt-1">
-                    <span className="font-mono text-sm truncate" title={schema.createdBy}>
-                      {schema.createdBy}
+                    <span className="font-mono text-sm truncate" title={schema.creator_uid}>
+                      {schema.creator_uid}
                     </span>
                   </div>
                 </div>
@@ -95,6 +102,7 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
                       {schema.transactionId}
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </Link>
+
                   </div>
                 </div>
               </div>
@@ -116,17 +124,17 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {schema.fields.map((field, index) => (
+                    {schema.schema_data.fields.map((field: Field, index: number) => (
                       <TableRow key={index} className="border-zinc-800 hover:bg-zinc-800/50">
                         <TableCell className="font-mono">{field.name}</TableCell>
                         <TableCell>
-                          <Badge
+                        <Badge
                             variant="outline"
                             className={cn(
                               "bg-zinc-800 border-zinc-700",
-                              field.type.includes("string") && "bg-blue-900/20 border-blue-800 text-blue-400",
-                              field.type.includes("integer") && "bg-purple-900/20 border-purple-800 text-purple-400",
-                              field.type.includes("boolean") && "bg-green-900/20 border-green-800 text-green-400",
+                              field.type.includes("string") ? "bg-blue-900/20 border-blue-800 text-blue-400" : "",
+                              field.type.includes("integer") ? "bg-purple-900/20 border-purple-800 text-purple-400" : "",
+                              field.type.includes("boolean") ? "bg-green-900/20 border-green-800 text-green-400" : ""
                             )}
                           >
                             {field.type}
@@ -144,6 +152,7 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
                       </TableRow>
                     ))}
                   </TableBody>
+
                 </Table>
               </div>
             </CardContent>
@@ -158,7 +167,7 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
             </CardHeader>
             <CardContent>
               <div className="p-4 bg-zinc-800 rounded-md font-mono text-sm border border-zinc-700">
-                {schema.humanMessage}
+                {schema.human_message_template}
               </div>
               <p className="text-xs text-zinc-400 mt-2">
                 Variables in curly braces will be replaced with field values during attestation.
@@ -174,7 +183,7 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {schema.verifications.map((verification, index) => (
+                {schema.verification_requirements?.required?.map((verification: string, index: number) => (
                   <Badge key={index} variant="outline" className="bg-zinc-800 text-white border-zinc-700 px-3 py-1">
                     {verification}
                   </Badge>
