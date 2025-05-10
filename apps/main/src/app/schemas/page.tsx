@@ -7,6 +7,7 @@ import { StatsCard } from "@/components/stats-card"
 import { DataTable } from "@/components/ui/data-table"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton" // You can use a Skeleton component from your UI library or create a custom one
 
 export default function SchemasPage() {
   const [schemas, setSchemas] = useState<any[]>([])
@@ -87,18 +88,25 @@ export default function SchemasPage() {
         </Link>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
-        {/* <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} /> */}
-        {/* For unique creators, you can calculate it as needed */}
-        {/* <StatsCard title="Unique Creators" value="28" icon={<Users className="h-5 w-5" />} /> */}
-      {/* </div> */}
-
-      
+      {/* Skeleton Loader for Stats Card */}
       <div className="grid grid-cols-1 gap-4">
-      <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} />
+        {loading ? (
+          <Skeleton className="h-12 w-1/2" />
+        ) : (
+          <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} />
+        )}
       </div>
 
-      <DataTable columns={columns} data={schemas} onRowClick={(row) => console.log(row)} searchKey="schema_name" />
+      {/* Skeleton Loader for Data Table */}
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      ) : (
+        <DataTable columns={columns} data={schemas} onRowClick={(row) => console.log(row)} searchKey="schema_name" />
+      )}
     </div>
   )
 }

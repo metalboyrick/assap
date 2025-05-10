@@ -72,6 +72,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2",
+    "react-loading-skeleton": "^3.5.0",
     "react-resizable-panels": "^3.0.0",
     "recharts": "^2.15.3",
     "solana-bankrun": "^0.4.0",

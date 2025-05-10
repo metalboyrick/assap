@@ -6,6 +6,7 @@ import { FileText, Users } from "lucide-react"
 import { StatsCard } from "@/components/stats-card"
 import { DataTable } from "@/components/ui/data-table"
 import axios from "axios"
+import { Skeleton } from "@/components/ui/skeleton" // Assuming you have a Skeleton component
 
 export default function AttestationsPage() {
   const [attestations, setAttestations] = useState<any[]>([])
@@ -80,15 +81,25 @@ export default function AttestationsPage() {
         <h1 className="text-4xl font-bold tracking-tighter">Attestations</h1>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
-        {/* <StatsCard title="Total Attestations" value={attestations.length.toString()} icon={<FileText className="h-5 w-5" />} /> */}
-        {/* <StatsCard title="Unique Attestors" value="567" icon={<Users className="h-5 w-5" />} /> */}
-      {/* </div> */}
+      {/* Skeleton Loader for Stats Card */}
       <div className="grid grid-cols-1 gap-4">
-        <StatsCard title="Total Attestations" value={attestations.length.toString()} icon={<FileText className="h-5 w-5" />} />
+        {loading ? (
+          <Skeleton className="h-12 w-1/2" />
+        ) : (
+          <StatsCard title="Total Attestations" value={attestations.length.toString()} icon={<FileText className="h-5 w-5" />} />
+        )}
       </div>
 
-      <DataTable columns={columns} data={attestations} onRowClick={(row) => console.log(row)} searchKey="attestation_uid" />
+      {/* Skeleton Loader for Data Table */}
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      ) : (
+        <DataTable columns={columns} data={attestations} onRowClick={(row) => console.log(row)} searchKey="attestation_uid" />
+      )}
     </div>
   )
 }

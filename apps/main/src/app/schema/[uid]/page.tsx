@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Skeleton from "react-loading-skeleton"
+
 
 // Define types for schema and field
 interface Field {
@@ -124,35 +126,48 @@ export default function SchemaDetailPage({ params }: { params: { uid: string } }
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {schema.schema_data.fields.map((field: Field, index: number) => (
-                      <TableRow key={index} className="border-zinc-800 hover:bg-zinc-800/50">
-                        <TableCell className="font-mono">{field.name}</TableCell>
-                        <TableCell>
-                        <Badge
-                            variant="outline"
-                            className={cn(
-                              "bg-zinc-800 border-zinc-700",
-                              field.type.includes("string") ? "bg-blue-900/20 border-blue-800 text-blue-400" : "",
-                              field.type.includes("integer") ? "bg-purple-900/20 border-purple-800 text-purple-400" : "",
-                              field.type.includes("boolean") ? "bg-green-900/20 border-green-800 text-green-400" : ""
+                    {schema ? (
+                      schema.schema_data.fields.map((field: Field, index: number) => (
+                        <TableRow key={index} className="border-zinc-800 hover:bg-zinc-800/50">
+                          <TableCell className="font-mono">{field.name}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "bg-zinc-800 border-zinc-700",
+                                field.type.includes("string") ? "bg-blue-900/20 border-blue-800 text-blue-400" : "",
+                                field.type.includes("integer") ? "bg-purple-900/20 border-purple-800 text-purple-400" : "",
+                                field.type.includes("boolean") ? "bg-green-900/20 border-green-800 text-green-400" : ""
+                              )}
+                            >
+                              {field.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {field.required ? (
+                              <Badge className="bg-red-900/20 text-red-400 border-red-800">Required</Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700">
+                                Optional
+                              </Badge>
                             )}
-                          >
-                            {field.type}
-                          </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell>
+                          <Skeleton count={1} width={150} />
                         </TableCell>
                         <TableCell>
-                          {field.required ? (
-                            <Badge className="bg-red-900/20 text-red-400 border-red-800">Required</Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700">
-                              Optional
-                            </Badge>
-                          )}
+                          <Skeleton count={1} width={150} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton count={1} width={150} />
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
-
                 </Table>
               </div>
             </CardContent>
