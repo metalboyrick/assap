@@ -12,7 +12,7 @@ export interface Schema {
   schema_uid: string;
   creation_transaction_id: string;
   creator_uid: string;
-  creation_timestamp: string;
+  creation_timestamp: Date;
   schema_name: string;
   schema_data: string;
   creation_cost: number;

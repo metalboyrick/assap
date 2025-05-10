@@ -1,31 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin, Schema } from "@/lib/supabase";
 import { verifyApiKey } from "@/lib/auth";
 import { type HeliusWebhookResponse } from "@/lib/helius-webhook";
 import * as anchor from "@coral-xyz/anchor";
-
-// Define program ID for attestation program
-const PROGRAM_ID = new anchor.web3.PublicKey(
-  "4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e",
-);
-
-// Create a dummy program object with the necessary coder property
-// In production, this would be properly initialized with connection and IDL
-const program = {
-  coder: {
-    events: {
-      decode: (data: string) => {
-        // Decode base64 event data
-        try {
-          return JSON.parse(Buffer.from(data, "base64").toString());
-        } catch (error) {
-          console.error("Failed to decode event data:", error);
-          return null;
-        }
-      },
-    },
-  },
-};
+import { ContractsIDL } from "@project/anchor";
+import { Idl, Program, Provider } from "@coral-xyz/anchor";
+import { SchemaRegisteredEvent } from "@/lib/contracts";
+import { Schema, supabaseAdmin } from "@/lib/supabase";
 
 const SAMPLE_SCHEMA_CREATION_TXN = [
   {
@@ -134,11 +114,14 @@ export async function POST(request: NextRequest) {
   try {
     const webhookResponse: HeliusWebhookResponse = await request.json();
 
-    console.dir(webhookResponse, { depth: null });
+    // console.dir(webhookResponse, { depth: null });
 
     // classify the txns
     const schemaCreationTxns = getSchemaCreationTxn(webhookResponse);
     const attestationCreationTxns = getAttestationCreationTxn(webhookResponse);
+
+    // define CONTRACTS program, needed to help decode the events
+    const program = new Program(ContractsIDL as Idl, {} as Provider);
 
     // stream schema creation txns to database
     for (const txn of schemaCreationTxns) {
@@ -150,10 +133,32 @@ export async function POST(request: NextRequest) {
           // 3. Decode the event data
           const rawData = anchor.utils.bytes.bs58.decode(eventIx.data);
           const base64Data = anchor.utils.bytes.base64.encode(
-            rawData.subarray(16),
+            rawData.subarray(8),
           );
-          const event = program.coder.events.decode(base64Data);
-          console.dir(event, { depth: null });
+          const event = program.coder.events.decode(
+            base64Data,
+          ) as SchemaRegisteredEvent;
+
+          // put in data of the event into the database
+          const newSchema: Schema = {
+            schema_uid: event.data.uid.toString(),
+            creation_transaction_id: txn.transaction.signatures[0],
+            creator_uid: event.data.creator.toString(),
+            creation_timestamp: new Date(event.data.timestamp.toNumber()),
+            schema_name: event.data.schemaName,
+            schema_data: event.data.schema,
+            creation_cost: txn.meta.fee + txn.meta.postBalances[1],
+            verification_requirements: {
+              issuer_verifiers: event.data.issuerVerifiers,
+              attestee_verifiers: event.data.attesteeVerifiers,
+            },
+          };
+
+          const { error } = await supabaseAdmin
+            .from("schemas")
+            .insert(newSchema);
+
+          if (!!error) throw new Error(error.message);
         } catch (error) {
           console.error("Error decoding event data:", error);
         }
