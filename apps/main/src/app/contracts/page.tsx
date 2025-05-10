@@ -8,6 +8,7 @@ import {
   useSchemaProgram,
 } from "@/data-access/schema-data-access";
 import toast from "react-hot-toast";
+import { useAttestationProgram } from "@/data-access/attestations-data-access";
 
 // Removed PROGRAM_ID, clientSideSha256, getCreateSchemaSeedParams
 
@@ -40,6 +41,7 @@ export default function ContractsPage() {
   const [hasTelegram, setHasTelegram] = useState<boolean>(false);
 
   const { registerSchema } = useSchemaProgram();
+  const { createAttestation } = useAttestationProgram();
 
   // Placeholder handlers for UI interaction
   const handleCreateUser = () => {
@@ -73,12 +75,26 @@ export default function ContractsPage() {
   };
 
   const handleCreateAttestation = () => {
+    if (!publicKey) {
+      toast.error("Please connect your wallet to create an attestation");
+      return;
+    }
+
     console.log("Create Attestation button clicked with data:", {
       attestSchemaDataForAttestation,
       attestData,
       attesteePublicKeyStr,
     });
+
     // Logic removed
+    createAttestation.mutateAsync({
+      payer: publicKey,
+      schemaRegistry: new PublicKey(attestSchemaDataForAttestation),
+      attestData: attestData,
+      receiver: new PublicKey(attesteePublicKeyStr),
+      issuerAttachedSolAccount: publicKey,
+      attesteeAttachedSolAccount: new PublicKey(attesteePublicKeyStr),
+    });
   };
 
   const handleUpdateUser = () => {
@@ -113,7 +129,15 @@ export default function ContractsPage() {
         <h3>User Management</h3>
         <button
           onClick={handleCreateUser}
-          style={{ marginRight: "10px", padding: "10px" }}
+          style={{
+            marginRight: "10px",
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
         >
           Create/Ensure My User Account
         </button>
@@ -155,7 +179,15 @@ export default function ContractsPage() {
         </div>
         <button
           onClick={handleUpdateUser}
-          style={{ marginTop: "10px", padding: "10px" }}
+          style={{
+            marginTop: "10px",
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
         >
           Update My User Profile
         </button>
@@ -255,7 +287,17 @@ export default function ContractsPage() {
             ))}
           </div>
         </div>
-        <button onClick={handleRegisterSchema} style={{ padding: "10px" }}>
+        <button
+          onClick={handleRegisterSchema}
+          style={{
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
           Register Schema
         </button>
       </section>
@@ -283,16 +325,45 @@ export default function ContractsPage() {
             style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
           />
         </div>
-        <div>
+        <div className="flex flex-row">
           <input
             type="text"
             placeholder="Attestee (Receiver) Public Key"
             value={attesteePublicKeyStr}
             onChange={(e) => setAttesteePublicKeyStr(e.target.value)}
-            style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
+            style={{
+              width: "calc(100% - 120px)",
+              marginBottom: "10px",
+              padding: "8px",
+              marginRight: "10px",
+            }}
           />
+          <button
+            onClick={() => setAttesteePublicKeyStr(publicKey?.toBase58() ?? "")}
+            style={{
+              padding: "8px",
+              backgroundColor: "#6c757d",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            title="Fill with my public key"
+          >
+            Use My Wallet
+          </button>
         </div>
-        <button onClick={handleCreateAttestation} style={{ padding: "10px" }}>
+        <button
+          onClick={handleCreateAttestation}
+          style={{
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
           Create Attestation
         </button>
       </section>

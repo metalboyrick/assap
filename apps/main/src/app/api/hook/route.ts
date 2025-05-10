@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyApiKey } from "@/lib/auth";
-import { type HeliusWebhookResponse } from "@/lib/helius-webhook";
+import {
+  HeliusWebhookResponseItem,
+  type HeliusWebhookResponse,
+} from "@/lib/helius-webhook";
 import * as anchor from "@coral-xyz/anchor";
 import { ContractsIDL } from "@project/anchor";
 import { Idl, Program, Provider } from "@coral-xyz/anchor";
-import { SchemaRegisteredEvent } from "@/lib/contracts";
+import {
+  getCreateSchemaSeedParams,
+  SchemaRegisteredEvent,
+} from "@/lib/contracts";
 import { Schema, supabaseAdmin } from "@/lib/supabase";
+import { PublicKey } from "@solana/web3.js";
 
 const SAMPLE_SCHEMA_CREATION_TXN = [
   {
@@ -102,6 +109,119 @@ function getAttestationCreationTxn(txns: HeliusWebhookResponse) {
   });
 }
 
+async function streamSchemaCreation(
+  schemaCreationTxns: HeliusWebhookResponseItem[],
+) {
+  // define CONTRACTS program, needed to help decode the events
+  const program = new Program(ContractsIDL as Idl, {} as Provider);
+
+  // stream schema creation txns to database
+  for (const txn of schemaCreationTxns) {
+    // 2. Extract the CPI (inner instruction) that contains the event data
+    const eventIx = txn.meta?.innerInstructions?.[0]?.instructions?.[1];
+
+    if (eventIx && eventIx.data) {
+      try {
+        // 3. Decode the event data
+        const rawData = anchor.utils.bytes.bs58.decode(eventIx.data);
+        const base64Data = anchor.utils.bytes.base64.encode(
+          rawData.subarray(8),
+        );
+        const event = program.coder.events.decode(
+          base64Data,
+        ) as SchemaRegisteredEvent;
+
+        // Find the schema registry PDA
+        const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
+          getCreateSchemaSeedParams(event.data.schema),
+          new PublicKey(event.data.creator.toString()),
+        );
+
+        // put in data of the event into the database
+        const newSchema: Schema = {
+          schema_uid: schemaRegistryPda.toString(), // Solana address-like identifier for the schema
+          creation_transaction_id: txn.transaction.signatures[0],
+          creator_uid: event.data.creator.toString(),
+          creation_timestamp: new Date(event.data.timestamp.toNumber()),
+          schema_name: event.data.schemaName,
+          schema_data: event.data.schema,
+          creation_cost: txn.meta.fee + txn.meta.postBalances[1],
+          verification_requirements: {
+            issuer_verifiers: event.data.issuerVerifiers,
+            attestee_verifiers: event.data.attesteeVerifiers,
+          },
+        };
+
+        const { error } = await supabaseAdmin.from("schemas").insert(newSchema);
+
+        if (!!error) throw new Error(error.message);
+      } catch (error) {
+        console.error("Error decoding event data:", error);
+      }
+    } else {
+      console.warn("No event instruction data found in transaction");
+    }
+  }
+}
+
+async function streamAttestCreation(
+  attestationTxns: HeliusWebhookResponseItem[],
+) {
+  // define CONTRACTS program, needed to help decode the events
+  const program = new Program(ContractsIDL as Idl, {} as Provider);
+
+  // stream attestation creation txns to database
+  for (const txn of attestationTxns) {
+    const attestationCreationTxn = txn.meta?.logMessages.find((logMessage) =>
+      logMessage.includes("CreateAttestation"),
+    );
+
+    // stream schema creation txns to database
+    for (const txn of attestationTxns) {
+      // 2. Extract the CPI (inner instruction) that contains the event data
+      const eventIx = txn.meta?.innerInstructions?.[0]?.instructions?.[1];
+
+      if (eventIx && eventIx.data) {
+        try {
+          // 3. Decode the event data
+          const rawData = anchor.utils.bytes.bs58.decode(eventIx.data);
+          const base64Data = anchor.utils.bytes.base64.encode(
+            rawData.subarray(8),
+          );
+          const event = program.coder.events.decode(base64Data);
+
+          console.dir({ event }, { depth: null });
+
+          // // put in data of the event into the database
+          // const newSchema: Schema = {
+          //   schema_uid: event.data.uid.toString(),
+          //   creation_transaction_id: txn.transaction.signatures[0],
+          //   creator_uid: event.data.creator.toString(),
+          //   creation_timestamp: new Date(event.data.timestamp.toNumber()),
+          //   schema_name: event.data.schemaName,
+          //   schema_data: event.data.schema,
+          //   creation_cost: txn.meta.fee + txn.meta.postBalances[1],
+          //   verification_requirements: {
+          //     issuer_verifiers: event.data.issuerVerifiers,
+          //     attestee_verifiers: event.data.attesteeVerifiers,
+          //   },
+          // };
+
+          // const { error } = await supabaseAdmin
+          //   .from("schemas")
+          //   .insert(newSchema);
+
+          // if (!!error) throw new Error(error.message);
+        } catch (error) {
+          console.error("Error decoding event data:", error);
+        }
+      } else {
+        console.warn("No event instruction data found in transaction");
+      }
+    }
+  }
+}
+
 // POST (create new schema)
 // TODO: implement webhook logic here
 export async function POST(request: NextRequest) {
@@ -118,62 +238,15 @@ export async function POST(request: NextRequest) {
 
     // classify the txns
     const schemaCreationTxns = getSchemaCreationTxn(webhookResponse);
-    const attestationCreationTxns = getAttestationCreationTxn(webhookResponse);
+    const attestationTxns = getAttestationCreationTxn(webhookResponse);
 
-    // define CONTRACTS program, needed to help decode the events
-    const program = new Program(ContractsIDL as Idl, {} as Provider);
+    // stream schema creation txns
+    const promises = [
+      streamSchemaCreation(schemaCreationTxns),
+      streamAttestCreation(attestationTxns),
+    ];
 
-    // stream schema creation txns to database
-    for (const txn of schemaCreationTxns) {
-      // 2. Extract the CPI (inner instruction) that contains the event data
-      const eventIx = txn.meta?.innerInstructions?.[0]?.instructions?.[1];
-
-      if (eventIx && eventIx.data) {
-        try {
-          // 3. Decode the event data
-          const rawData = anchor.utils.bytes.bs58.decode(eventIx.data);
-          const base64Data = anchor.utils.bytes.base64.encode(
-            rawData.subarray(8),
-          );
-          const event = program.coder.events.decode(
-            base64Data,
-          ) as SchemaRegisteredEvent;
-
-          // put in data of the event into the database
-          const newSchema: Schema = {
-            schema_uid: event.data.uid.toString(),
-            creation_transaction_id: txn.transaction.signatures[0],
-            creator_uid: event.data.creator.toString(),
-            creation_timestamp: new Date(event.data.timestamp.toNumber()),
-            schema_name: event.data.schemaName,
-            schema_data: event.data.schema,
-            creation_cost: txn.meta.fee + txn.meta.postBalances[1],
-            verification_requirements: {
-              issuer_verifiers: event.data.issuerVerifiers,
-              attestee_verifiers: event.data.attesteeVerifiers,
-            },
-          };
-
-          const { error } = await supabaseAdmin
-            .from("schemas")
-            .insert(newSchema);
-
-          if (!!error) throw new Error(error.message);
-        } catch (error) {
-          console.error("Error decoding event data:", error);
-        }
-      } else {
-        console.warn("No event instruction data found in transaction");
-      }
-    }
-
-    // stream attestation creation txns to database
-    for (const txn of attestationCreationTxns) {
-      const attestationCreationTxn = txn.meta?.logMessages.find((logMessage) =>
-        logMessage.includes("CreateAttestation"),
-      );
-      // Add proper handling for attestation creation transactions
-    }
+    await Promise.all(promises);
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
