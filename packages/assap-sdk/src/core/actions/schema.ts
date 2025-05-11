@@ -3,6 +3,7 @@ import { BN, Idl, Program, Provider } from "@coral-xyz/anchor";
 import crypto from "crypto";
 import { getContractsProgramId } from "@/lib/contracts";
 import ContractsIDL from "./idl/contracts.json";
+import * as walrus from "@/lib/walrus";
 
 export enum IdentityVerifier {
   SolBalance = "sol_balance",
@@ -11,6 +12,15 @@ export enum IdentityVerifier {
   Twitter = "twitter",
   Email = "email",
   Human = "human",
+}
+
+export enum SchemaType {
+  Boolean = "boolean",
+  String = "string",
+  Number = "number",
+  BooleanArray = "boolean[]",
+  StringArray = "string[]",
+  NumberArray = "number[]",
 }
 
 // Schema registry account data structure
@@ -35,6 +45,11 @@ export function getCreateSchemaSeedParams(schema: string) {
   return [Buffer.from("schema"), schemaDataHashed];
 }
 
+function validateHumanMessage(humanMessage: string, schemaName: string[]) {
+  const schemaNameRegex = new RegExp(`\\{${schemaName.join("|")}\\}`);
+  return schemaNameRegex.test(humanMessage);
+}
+
 /**
  * Register a new schema on the Solana blockchain
  * @param cluster The Solana cluster to use
@@ -48,10 +63,15 @@ export function getCreateSchemaSeedParams(schema: string) {
 export async function registerSchema(
   cluster: Cluster,
   payer: PublicKey,
-  schemaBlobId: string,
+  schemaData: {
+    type: SchemaType;
+    name: string;
+    data: boolean | string | number | boolean[] | string[] | number[];
+  },
   schemaName: string,
   issuerVerifiers: IdentityVerifier[] = [],
   attesteeVerifiers: IdentityVerifier[] = [],
+  humanMessage?: string,
 ): Promise<string> {
   // Get the program ID from the program
   const programId = getContractsProgramId(cluster);
@@ -60,6 +80,19 @@ export async function registerSchema(
     new PublicKey(programId),
     {} as Provider,
   );
+
+  // if human message is provided, validate that it contains some or all schema name wrapped in curly brackets.
+  if (humanMessage && !validateHumanMessage(humanMessage, [schemaName])) {
+    throw new Error(
+      "Human message must contain some or all schema name wrapped in curly brackets.",
+    );
+  }
+
+  // store schema data and human message into walrus
+  const schemaBlobId = await walrus.storeData({
+    schemaData,
+    humanMessage,
+  });
 
   // Find the schema registry PDA
   const [schemaRegistryPda] = PublicKey.findProgramAddressSync(

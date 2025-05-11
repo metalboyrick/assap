@@ -404,6 +404,9 @@ importers:
       '@solana/web3.js':
         specifier: 1.98.0
         version: 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@tanstack/react-query':
+        specifier: ^5.75.7
+        version: 5.75.7(react@19.1.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -12752,7 +12755,6 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.75.7
       react: 19.1.0
-    optional: true
 
   '@tanstack/react-table@8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:

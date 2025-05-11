@@ -4,6 +4,7 @@ import { CivicAuthProvider } from "@civic/auth-web3";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { clusterApiUrl } from "@solana/web3.js";
 import React, { createContext, useContext } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const gatekeeperNetwork = new PublicKey(
   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
@@ -11,6 +12,9 @@ const gatekeeperNetwork = new PublicKey(
 
 // Create a context for the AssapProvider
 const AssapContext = createContext<boolean>(false);
+
+// Create a client
+const queryClient = new QueryClient();
 
 // Hook to check if component is within AssapProvider
 export function useCheckForAssapProvider() {
@@ -23,18 +27,20 @@ export function useCheckForAssapProvider() {
 export function AssapProvider({ children }: { children: React.ReactNode }) {
   return (
     <AssapContext.Provider value={true}>
-      <GatewayProvider
-        connection={new Connection(clusterApiUrl("devnet"), "confirmed")}
-        cluster="devnet"
-        // wallet={wallet}
-        gatekeeperNetwork={gatekeeperNetwork}
-      >
-        {/* client id hard coded for now, this will be moved to some sort of injection mechanism later */}
-        <CivicAuthProvider clientId={"6b1a9573-300c-4777-ad91-27cbea305f1b"}>
-          {children}
-        </CivicAuthProvider>
-        <Toaster />
-      </GatewayProvider>
+      <QueryClientProvider client={queryClient}>
+        <GatewayProvider
+          connection={new Connection(clusterApiUrl("devnet"), "confirmed")}
+          cluster="devnet"
+          // wallet={wallet}
+          gatekeeperNetwork={gatekeeperNetwork}
+        >
+          {/* client id hard coded for now, this will be moved to some sort of injection mechanism later */}
+          <CivicAuthProvider clientId={"6b1a9573-300c-4777-ad91-27cbea305f1b"}>
+            {children}
+          </CivicAuthProvider>
+          <Toaster />
+        </GatewayProvider>
+      </QueryClientProvider>
     </AssapContext.Provider>
   );
 }
