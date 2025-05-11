@@ -2,18 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  height: 100%;
+:root {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 100% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 20%;
+  --input: 0 0% 15%;
+  --ring: 0 100% 50%;
 }
 
-.wallet-adapter-button-trigger {
-  background: rgb(100, 26, 230) !important;
-  border-radius: 8px !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
+.dark {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 100% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 20%;
+  --input: 0 0% 15%;
+  --ring: 0 100% 50%;
 }
-.wallet-adapter-dropdown-list,
-.wallet-adapter-button {
-  font-family: inherit !important;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  padding: 1px;
+  background: linear-gradient(to right, #ff0000, #0000ff);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.border-gradient-to-r {
+  border-image: linear-gradient(to right, var(--tw-gradient-stops)) 1;
+}
+
+.font-heading {
+  font-family: var(--font-darker-grotesque);
+}
+
+.json-viewer {
+  background-color: hsl(0, 0%, 5%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: monospace;
+  overflow-x: auto;
+}
+
+.json-viewer pre {
+  margin: 0;
+}
+
+.json-key {
+  color: #ff5555;
+}
+
+.json-string {
+  color: #50fa7b;
+}
+
+.json-number {
+  color: #bd93f9;
+}
+
+.json-boolean {
+  color: #ffb86c;
+}
+
+.json-null {
+  color: #ff79c6;
 }

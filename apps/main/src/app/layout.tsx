@@ -3,6 +3,13 @@ import { ClusterProvider } from "@/components/cluster/cluster-data-access";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { UiLayout } from "@/components/ui/ui-layout";
 import { ReactQueryProvider } from "./react-query-provider";
+import { Inter } from "next/font/google";
+import { Darker_Grotesque } from "next/font/google"; // assuming you're using this as well
+import { ThemeProvider } from "next-themes";
+import Header from "@/components/header";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const darkerGrotesque = Darker_Grotesque({ subsets: ["latin"], variable: "--font-darker-grotesque" });
 
 export const metadata = {
   title: "Contracts",
@@ -20,12 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${darkerGrotesque.variable} font-sans`}>
         <ReactQueryProvider>
           <ClusterProvider>
             <SolanaProvider>
-              <UiLayout links={links}>{children}</UiLayout>
+              <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+                <div className="flex flex-col min-h-screen bg-black text-white">
+                  <Header />
+                  <main className="flex-1 p-6 md:p-8 overflow-auto max-w-7xl mx-auto w-full">{children}</main>
+                </div>
+              </ThemeProvider>
             </SolanaProvider>
           </ClusterProvider>
         </ReactQueryProvider>
@@ -33,3 +45,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+

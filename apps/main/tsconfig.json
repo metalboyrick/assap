@@ -7,7 +7,8 @@
     ],
     "types": [
       "jest",
-      "node"
+      "node",
+      "react"
     ],
     "skipLibCheck": true,
     "strict": true,

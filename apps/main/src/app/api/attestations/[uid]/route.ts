@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const { data, error } = await supabaseAdmin
+  // Fetch the main attestation
+  const { data: attestation, error } = await supabaseAdmin
     .from("attestations")
     .select("*")
     .eq("attestation_uid", uid)
@@ -25,5 +26,23 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(data);
+  // Fetch recent attestations using the same schema, excluding the current one
+  const { data: relatedAttestations, error: relatedError } = await supabaseAdmin
+    .from("attestations")
+    .select("attestation_uid, schema_uid, attestee_uid, attestor_uid, creation_date")
+    .eq("attestation_uid", attestation.attestation_uid)
+    .order("creation_date", { ascending: false })
+    .limit(25);
+
+  if (relatedError) {
+    return NextResponse.json(
+      { error: relatedError.message },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({
+    ...attestation,
+    related_attestations: relatedAttestations,
+  });
 }
