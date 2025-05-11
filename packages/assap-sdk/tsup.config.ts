@@ -15,4 +15,12 @@ export default defineConfig({
   // external: ['react', 'react-dom'], // Already peer dependencies, tsup often handles this well
   // outDir: 'dist', // Default is dist
   // esbuildPlugins: [], // For custom esbuild plugins if needed
+  outExtension({ format }) {
+    return {
+      js: `.${format === "esm" ? "mjs" : "js"}`,
+    };
+  },
+  loader: {
+    ".css": "css",
+  },
 });
