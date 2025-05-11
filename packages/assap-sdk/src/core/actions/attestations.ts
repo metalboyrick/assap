@@ -3,6 +3,8 @@ import { BN, Idl, Program, Provider } from "@coral-xyz/anchor";
 import { SchemaRegistry } from "./schema"; // Assuming SchemaRegistry is exported from schema.ts
 import { getContractsProgramId } from "@/lib/contracts";
 import ContractsIDL from "./idl/contracts.json";
+import * as walrus from "@/lib/walrus";
+
 /**
  * Utility function to get seed parameters for creating an attestation PDA.
  * Replicates logic from apps/main/src/lib/contracts.ts
@@ -74,8 +76,11 @@ export async function createAttestation(
     new PublicKey(programId),
   );
 
+  // store attestData in walrus
+  const attestDataBlobId = await walrus.storeData({ attestData });
+
   return program.methods
-    .createAttestation(attestData, receiver)
+    .createAttestation(attestDataBlobId, receiver)
     .accounts({
       payer,
       schemaRegistry,
