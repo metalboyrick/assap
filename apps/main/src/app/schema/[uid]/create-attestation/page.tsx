@@ -428,6 +428,7 @@ export default function CreateAttestationFromSchemaPage({
                         <span className="text-red-500">*</span>
                       )}
                       <Badge
+<<<<<<< HEAD
                         variant="outline"
                         className={cn(
                           "ml-2 text-xs",
@@ -442,6 +443,16 @@ export default function CreateAttestationFromSchemaPage({
                             : "",
                         )}
                       >
+=======
+                          variant="outline"
+                          className={cn(
+                            "ml-2 text-xs",
+                            field.type.includes("string") ? "bg-blue-900/20 border-blue-800 text-blue-400" : "",
+                            field.type.includes("integer") ? "bg-purple-900/20 border-purple-800 text-purple-400" : "",
+                            field.type.includes("boolean") ? "bg-green-900/20 border-green-800 text-green-400" : ""
+                          )}
+                        >
+>>>>>>> f3a7701 (fix: fixed two issues that causes build error in page.tsx, and resizable.tsx. Issue for page.tsx was an error in badge and for resizable was given ts ignore)
                         {field.type}
                       </Badge>
                     </Label>
