@@ -29,6 +29,7 @@ pub struct Attestation {
     pub attest_index: u64,
 }
 
+#[event_cpi]
 #[derive(Accounts)]
 #[instruction(attest_data: String, receiver: Pubkey)]
 pub struct CreateAttestation<'info> {
@@ -69,7 +70,7 @@ pub struct CreateAttestation<'info> {
         init,
         payer = payer,
         space = 8 + Attestation::INIT_SPACE,
-        seeds = [b"attestation", payer.key().as_ref(), (schema_registry.attest_count + 1).to_le_bytes().as_ref()],
+        seeds = [b"attestation", payer.key().as_ref(), schema_registry.key().as_ref(), (schema_registry.attest_count + 1).to_le_bytes().as_ref()],
         bump
     )]
     pub attestation: Account<'info, Attestation>,
@@ -129,7 +130,7 @@ pub fn create_attestation(
 
     ctx.accounts.schema_registry.attest_count += 1;
 
-    emit!(AttestationCreated {
+    emit_cpi!(AttestationCreated {
         uid: attestation.uid,
         schema_account: attestation.schema_account,
         issuer: attestation.issuer,

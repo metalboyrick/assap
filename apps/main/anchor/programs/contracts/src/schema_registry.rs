@@ -42,6 +42,7 @@ pub struct SchemaRegistry {
 }
 
 // Instruction context for registering a schema
+#[event_cpi]
 #[derive(Accounts)]
 #[instruction(
     schema: String, 
@@ -109,7 +110,7 @@ pub fn register_schema(
     schema_registry.attest_count = 0;
 
     // Emit an event for the schema registration
-    emit!(SchemaRegistered {
+    emit_cpi!(SchemaRegistered {
         schema: schema_registry.schema.clone(),
         schema_name: schema_registry.schema_name.clone(),
         uid: schema_registry.uid,
