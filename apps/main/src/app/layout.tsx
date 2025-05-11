@@ -29,13 +29,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${darkerGrotesque.variable} font-sans`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          <div className="flex flex-col min-h-screen bg-black text-white">
-            <Header />
-            <main className="flex-1 p-6 md:p-8 overflow-auto max-w-7xl mx-auto w-full">{children}</main>
-          </div>
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ClusterProvider>
+            <SolanaProvider>
+              <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+                <div className="flex flex-col min-h-screen bg-black text-white">
+                  <Header />
+                  <main className="flex-1 p-6 md:p-8 overflow-auto max-w-7xl mx-auto w-full">{children}</main>
+                </div>
+              </ThemeProvider>
+            </SolanaProvider>
+          </ClusterProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
 }
+
+
