@@ -1,1 +1,1 @@
-export * from "./AssapProvider";
+export { AssapProvider } from "./AssapProvider";
