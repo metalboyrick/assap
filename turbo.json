@@ -5,20 +5,42 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".turbo/build.log"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "outputs": [".turbo/lint.log"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
+      "outputs": [".turbo/check-types.log"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
+    "assap-sdk#build": {
+      "outputs": ["dist/**", ".turbo/build.log"]
+    },
+    "assap-sdk#lint": {
+      "outputs": [".turbo/lint.log"]
+    },
+    "assap-sdk#test": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "vitest.config.ts",
+        "vitest.setup.ts",
+        "tsconfig.json",
+        ".env*"
+      ],
+      "outputs": ["coverage/**", ".turbo/test.log"]
+    },
     "anchor": {},
-    "anchor-build": {},
+    "anchor-build": {
+      "outputs": ["target/**", ".turbo/anchor-build.log"]
+    },
     "anchor-localnet": {
       "cache": false,
       "persistent": true
