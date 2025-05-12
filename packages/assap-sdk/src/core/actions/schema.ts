@@ -1,8 +1,7 @@
 import { PublicKey, SystemProgram, Cluster } from "@solana/web3.js";
-import { BN, Idl, Program, Provider } from "@coral-xyz/anchor";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import crypto from "crypto";
-import { getContractsProgramId } from "@/lib/contracts";
-import ContractsIDL from "./idl/contracts.json";
+import { getContractsProgram, getContractsProgramId } from "@/lib/contracts";
 import * as walrus from "@/lib/walrus";
 
 export enum IdentityVerifier {
@@ -21,6 +20,12 @@ export enum SchemaType {
   BooleanArray = "boolean[]",
   StringArray = "string[]",
   NumberArray = "number[]",
+}
+
+export interface SchemaData {
+  type: SchemaType;
+  name: string;
+  data: boolean | string | number | boolean[] | string[] | number[];
 }
 
 // Schema registry account data structure
@@ -63,23 +68,16 @@ function validateHumanMessage(humanMessage: string, schemaName: string[]) {
 export async function registerSchema(
   cluster: Cluster,
   payer: PublicKey,
-  schemaData: {
-    type: SchemaType;
-    name: string;
-    data: boolean | string | number | boolean[] | string[] | number[];
-  },
+  schemaData: SchemaData[],
   schemaName: string,
   issuerVerifiers: IdentityVerifier[] = [],
   attesteeVerifiers: IdentityVerifier[] = [],
+  provider: AnchorProvider,
   humanMessage?: string,
 ): Promise<string> {
   // Get the program ID from the program
   const programId = getContractsProgramId(cluster);
-  const program = new Program(
-    ContractsIDL as unknown as Idl,
-    new PublicKey(programId),
-    {} as Provider,
-  );
+  const program = getContractsProgram(provider, programId);
 
   // if human message is provided, validate that it contains some or all schema name wrapped in curly brackets.
   if (humanMessage && !validateHumanMessage(humanMessage, [schemaName])) {
@@ -108,7 +106,7 @@ export async function registerSchema(
       issuerVerifiers,
       attesteeVerifiers,
     )
-    .accounts({
+    .accountsPartial({
       payer,
       schemaRegistry: schemaRegistryPda,
       systemProgram: SystemProgram.programId,

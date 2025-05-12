@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useAttestationProgram } from "@/data-access/attestations-data-access";
 import { useUserProgram } from "@/data-access/user-data-access";
 import { CONTRACTS_PROGRAM_ID } from "@project/anchor";
+import { SchemaType, type SchemaData } from "@assap/assap-sdk";
 
 // Removed PROGRAM_ID, clientSideSha256, getCreateSchemaSeedParams
 
@@ -18,10 +19,12 @@ export default function ContractsPage() {
   const { publicKey } = useWallet();
   // Removed program and feedback states
 
-  // Schema registration states - RETAINED
-  const [schemaData, setSchemaData] = useState<string>(
-    "string name, number age, boolean is_married",
-  );
+  // Schema registration states - UPDATED
+  const [schemaData, setSchemaData] = useState<SchemaData[]>([
+    { type: SchemaType.String, name: "name", data: "" },
+    { type: SchemaType.Number, name: "age", data: 0 },
+    { type: SchemaType.Boolean, name: "is_married", data: false },
+  ]);
   const [schemaName, setSchemaName] = useState<string>("Person");
   const [issuerVerifiers, setIssuerVerifiers] = useState<IdentityVerifier[]>(
     [],
@@ -59,22 +62,41 @@ export default function ContractsPage() {
     createUser.mutateAsync({ payer: publicKey });
   };
 
+  const handleSchemaFieldChange = (
+    idx: number,
+    field: keyof SchemaData,
+    value: any,
+  ) => {
+    setSchemaData((prev) =>
+      prev.map((item, i) => (i === idx ? { ...item, [field]: value } : item)),
+    );
+  };
+
+  const handleAddSchemaField = () => {
+    setSchemaData((prev) => [
+      ...prev,
+      { type: SchemaType.String, name: "", data: "" },
+    ]);
+  };
+
+  const handleRemoveSchemaField = (idx: number) => {
+    setSchemaData((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleRegisterSchema = () => {
     if (!publicKey) {
       toast.error("Please connect your wallet to register a schema");
       return;
     }
-
     console.log("Register Schema button clicked with data:", {
       schemaData,
       schemaName,
       issuerVerifiers,
       attesteeVerifiers,
     });
-
     registerSchema.mutateAsync({
       payer: publicKey,
-      schemaBlobId: schemaData,
+      schemaData: schemaData,
       schemaName: schemaName,
       issuerVerifiers: issuerVerifiers,
       attesteeVerifiers: attesteeVerifiers,
@@ -221,14 +243,109 @@ export default function ContractsPage() {
 
       <section>
         <h3>Schema Registry</h3>
-        <div>
-          <textarea
-            placeholder="Schema Data (e.g., string name, number age)"
-            value={schemaData}
-            onChange={(e) => setSchemaData(e.target.value)}
-            rows={3}
-            style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
-          />
+        <div style={{ marginBottom: "10px" }}>
+          <h4>Schema Fields</h4>
+          {schemaData.map((field, idx) => (
+            <div
+              key={idx}
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                marginBottom: 6,
+              }}
+            >
+              <select
+                value={field.type}
+                onChange={(e) =>
+                  handleSchemaFieldChange(
+                    idx,
+                    "type",
+                    e.target.value as SchemaType,
+                  )
+                }
+                style={{ padding: 4 }}
+              >
+                {Object.values(SchemaType).map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Field Name"
+                value={field.name}
+                onChange={(e) =>
+                  handleSchemaFieldChange(idx, "name", e.target.value)
+                }
+                style={{ padding: 4, width: 120 }}
+              />
+              {/* Data input adapts to type */}
+              {field.type === SchemaType.Boolean ? (
+                <select
+                  value={String(field.data)}
+                  onChange={(e) =>
+                    handleSchemaFieldChange(
+                      idx,
+                      "data",
+                      e.target.value === "true",
+                    )
+                  }
+                  style={{ padding: 4 }}
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              ) : field.type === SchemaType.Number ? (
+                <input
+                  type="number"
+                  value={field.data as number}
+                  onChange={(e) =>
+                    handleSchemaFieldChange(idx, "data", Number(e.target.value))
+                  }
+                  style={{ padding: 4, width: 80 }}
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={field.data as string}
+                  onChange={(e) =>
+                    handleSchemaFieldChange(idx, "data", e.target.value)
+                  }
+                  style={{ padding: 4, width: 120 }}
+                />
+              )}
+              <button
+                onClick={() => handleRemoveSchemaField(idx)}
+                style={{
+                  background: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                }}
+                title="Remove field"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={handleAddSchemaField}
+            style={{
+              background: "#28a745",
+              color: "white",
+              border: "none",
+              borderRadius: 4,
+              padding: "4px 12px",
+              cursor: "pointer",
+              marginTop: 4,
+            }}
+          >
+            + Add Field
+          </button>
         </div>
         <div>
           <input

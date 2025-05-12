@@ -1,8 +1,7 @@
 import { Cluster, PublicKey, SystemProgram } from "@solana/web3.js";
-import { BN, Idl, Program, Provider } from "@coral-xyz/anchor";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { SchemaRegistry } from "./schema"; // Assuming SchemaRegistry is exported from schema.ts
-import { getContractsProgramId } from "@/lib/contracts";
-import ContractsIDL from "./idl/contracts.json";
+import { getContractsProgram, getContractsProgramId } from "@/lib/contracts";
 import * as walrus from "@/lib/walrus";
 
 /**
@@ -45,13 +44,10 @@ export async function createAttestation(
   receiver: PublicKey,
   issuerAttachedSolAccount: PublicKey,
   attesteeAttachedSolAccount: PublicKey,
+  provider: AnchorProvider,
 ): Promise<string> {
   const programId = getContractsProgramId(cluster);
-  const program = new Program(
-    ContractsIDL as unknown as Idl,
-    new PublicKey(programId),
-    {} as Provider,
-  );
+  const program = getContractsProgram(provider, programId);
 
   // Derive issuer and attestee PDAs
   const [issuerPda] = PublicKey.findProgramAddressSync(
@@ -81,7 +77,7 @@ export async function createAttestation(
 
   return program.methods
     .createAttestation(attestDataBlobId, receiver)
-    .accounts({
+    .accountsPartial({
       payer,
       schemaRegistry,
       issuer: issuerPda,

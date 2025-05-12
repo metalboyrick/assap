@@ -20,6 +20,10 @@ import { useCluster } from "../components/cluster/cluster-data-access";
 import { useAnchorProvider } from "../components/solana/solana-provider";
 import { useTransactionToast } from "../components/ui/ui-layout";
 import { getCreateSchemaSeedParams } from "@/lib/contracts";
+import {
+  registerSchema as sdkRegisterSchema,
+  type SchemaData,
+} from "@assap/assap-sdk";
 
 export enum IdentityVerifier {
   SolBalance = "sol_balance",
@@ -54,39 +58,30 @@ export function useSchemaProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   });
 
-  const registerSchema = useMutation({
+  const registerSchemaMutation = useMutation({
     mutationKey: ["schema", "registerSchema", { cluster }],
     mutationFn: ({
       payer,
-      schemaBlobId,
+      schemaData,
       schemaName,
       issuerVerifiers,
       attesteeVerifiers,
     }: {
       payer: PublicKey;
-      schemaBlobId: string;
+      schemaData: SchemaData[];
       schemaName: string;
       issuerVerifiers: IdentityVerifier[];
       attesteeVerifiers: IdentityVerifier[];
     }) => {
-      const [schemaRegistryPda] = PublicKey.findProgramAddressSync(
-        [...getCreateSchemaSeedParams(schemaBlobId)],
-        CONTRACTS_PROGRAM_ID,
+      return sdkRegisterSchema(
+        cluster.network as Cluster,
+        payer,
+        schemaData,
+        schemaName,
+        issuerVerifiers,
+        attesteeVerifiers,
+        provider,
       );
-
-      return program.methods
-        .registerSchema(
-          schemaBlobId,
-          schemaName,
-          issuerVerifiers,
-          attesteeVerifiers,
-        )
-        .accountsPartial({
-          payer,
-          systemProgram: SystemProgram.programId,
-          schemaRegistry: schemaRegistryPda,
-        })
-        .rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature);
@@ -100,6 +95,6 @@ export function useSchemaProgram() {
     programId,
     accounts,
     getProgramAccount,
-    registerSchema,
+    registerSchema: registerSchemaMutation,
   };
 }
