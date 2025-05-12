@@ -37,6 +37,8 @@
   "author": "ASSAP",
   "license": "MIT",
   "devDependencies": {
+    "@radix-ui/react-dialog": "^1.1.11",
+    "@radix-ui/react-tooltip": "^1.2.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "18.3.20",
@@ -44,6 +46,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "eslint": "^9.26.0",
     "jsdom": "^26.1.0",
+    "lucide-react": "^0.503.0",
     "postcss": "^8",
     "prettier": "^3.5.3",
     "react": "^19.1.0",
