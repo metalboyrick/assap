@@ -46,6 +46,7 @@ export interface VerificationDialogsProps {
   onLoginConfirm: () => void;
   onVerifyConfirm: () => void;
   onStatusConfirm: () => void;
+  onClose: () => void;
 }
 
 export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
@@ -67,17 +68,17 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              Login to Create Attestation
+              Sign in to your ASSAP Credentials
             </DialogTitle>
             <DialogDescription>
-              You need to login before creating an attestation for this schema
+              You need to sign in before creating an attestation for this schema
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
             <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700">
               <p className="text-sm text-zinc-300">
-                Logging in allows us to verify your identity and ensure that
+                Signing in allows us to verify your identity and ensure that
                 your attestation is valid. This helps maintain the integrity of
                 the ASSAP protocol and prevents Sybil attacks.
               </p>
@@ -85,9 +86,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
 
             <div className="flex items-center justify-center p-6 border border-zinc-800 rounded-lg">
               <div className="text-center">
-                <div className="h-12 w-12 rounded-full bg-blue-900/30 flex items-center justify-center mx-auto mb-4">
-                  <LogIn className="h-6 w-6 text-blue-400" />
-                </div>
                 <h3 className="font-medium text-lg mb-2">
                   Secure Authentication
                 </h3>
@@ -99,8 +97,16 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 w-full"
                   onClick={onLoginConfirm}
                 >
-                  Login to Continue
+                  Sign in to Continue <LogIn className="h-6 w-6 text-white" />
                 </Button>
+                <div className="mt-4 flex gap-2 items-center justify-center w-full">
+                  <div className="text-xs text-zinc-500">Powered by</div>
+                  <img
+                    src="https://cdn.prod.website-files.com/6721152f5cf7d1402980ed13/6724ff46d44044c6b1599154_civic-logo-white.svg"
+                    alt="Civic Logo"
+                    className="h-4"
+                  />
+                </div>
               </div>
             </div>
           </div>

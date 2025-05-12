@@ -16,6 +16,7 @@ import {
   type SchemaData,
   getSchemaDataFromBlobId,
   getSchemaById,
+  useAssapAttest,
 } from "@assap/assap-sdk";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
@@ -152,6 +153,15 @@ export default function ContractsPage() {
 
     fetchSchema();
   }, [attestSchemaIdForAttestation]);
+
+  const { attest } = useAssapAttest({
+    schemaId: attestSchemaIdForAttestation,
+    cluster: "devnet",
+    onAttestComplete: () => {
+      console.log("Attestation complete");
+    },
+    attestData: attestationValues,
+  });
 
   // Placeholder handlers for UI interaction
   const handleCreateUser = () => {
@@ -696,6 +706,22 @@ export default function ContractsPage() {
           }}
         >
           Create Attestation
+        </button>
+      </section>
+
+      <section>
+        <button
+          style={{
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+          onClick={() => attest()}
+        >
+          Test One Click Attestation
         </button>
       </section>
     </div>

@@ -1,9 +1,10 @@
-import { useCheckForAssapProvider } from "../components/AssapProvider";
+import { type AttestationData } from "@/core";
+import { useAssapContext } from "../components/AssapProvider";
 import { Cluster } from "@solana/web3.js";
 
 export interface UseAssapAttestProps {
   schemaId: string;
-  attestData: Record<string, string>;
+  attestData: AttestationData;
   onAttestComplete: () => void;
   cluster: Cluster;
 }
@@ -16,12 +17,11 @@ export function useAssapAttest({
 }: UseAssapAttestProps) {
   console.log(schemaId, attestData, onAttestComplete, cluster);
 
-  // checks if this was used inside the assap provider
-  useCheckForAssapProvider();
+  const { setCurrentVerificationStep } = useAssapContext();
 
   return {
     attest: () => {
-      console.log("attest");
+      setCurrentVerificationStep(1);
     },
   };
 }
