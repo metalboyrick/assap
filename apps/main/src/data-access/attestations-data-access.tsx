@@ -1,20 +1,18 @@
 "use client";
 
-import {
-  CONTRACTS_PROGRAM_ID,
-  getContractsProgram,
-  getContractsProgramId,
-} from "@project/anchor";
+import { getContractsProgram, getContractsProgramId } from "@project/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { Cluster, PublicKey, SystemProgram } from "@solana/web3.js";
+import { Cluster, PublicKey } from "@solana/web3.js";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useCluster } from "../components/cluster/cluster-data-access";
 import { useAnchorProvider } from "../components/solana/solana-provider";
 import { useTransactionToast } from "../components/ui/ui-layout";
-import * as anchor from "@coral-xyz/anchor";
-import { getCreateAttestationSeedParams } from "@/lib/contracts";
+import {
+  createAttestation as sdkCreateAttestation,
+  AttestationData,
+} from "@assap/assap-sdk";
 
 export function useAttestationProgram() {
   const { connection } = useConnection();
@@ -63,46 +61,21 @@ export function useAttestationProgram() {
     }: {
       payer: PublicKey;
       schemaRegistry: PublicKey;
-      attestData: string;
+      attestData: AttestationData;
       receiver: PublicKey;
       issuerAttachedSolAccount: PublicKey;
       attesteeAttachedSolAccount: PublicKey;
     }) => {
-      // Derive issuer and attestee PDAs
-      const [issuerPda] = PublicKey.findProgramAddressSync(
-        [Buffer.from("user"), payer.toBuffer()],
-        CONTRACTS_PROGRAM_ID,
+      return sdkCreateAttestation(
+        cluster.network as Cluster,
+        payer,
+        schemaRegistry,
+        attestData,
+        receiver,
+        issuerAttachedSolAccount,
+        attesteeAttachedSolAccount,
+        provider,
       );
-
-      const [attesteePda] = PublicKey.findProgramAddressSync(
-        [Buffer.from("user"), receiver.toBuffer()],
-        CONTRACTS_PROGRAM_ID,
-      );
-
-      // Get the current attestation count
-      const schemaAccount =
-        await program.account.schemaRegistry.fetch(schemaRegistry);
-      const attestCount = schemaAccount.attestCount.toNumber() + 1;
-
-      // Derive the attestation PDA
-      const [attestationPda] = PublicKey.findProgramAddressSync(
-        getCreateAttestationSeedParams(payer, schemaRegistry, attestCount),
-        CONTRACTS_PROGRAM_ID,
-      );
-
-      return program.methods
-        .createAttestation(attestData, receiver)
-        .accountsPartial({
-          payer,
-          schemaRegistry,
-          issuer: issuerPda,
-          attestee: attesteePda,
-          issuerAttachedSolAccount,
-          attesteeAttachedSolAccount,
-          attestation: attestationPda,
-          systemProgram: SystemProgram.programId,
-        })
-        .rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature);

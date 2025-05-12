@@ -4,6 +4,11 @@ import { SchemaRegistry } from "./schema"; // Assuming SchemaRegistry is exporte
 import { getContractsProgram, getContractsProgramId } from "@/lib/contracts";
 import * as walrus from "@/lib/walrus";
 
+export type AttestationData = Record<
+  string,
+  string | number | boolean | string[] | number[] | boolean[]
+>;
+
 /**
  * Utility function to get seed parameters for creating an attestation PDA.
  * Replicates logic from apps/main/src/lib/contracts.ts
@@ -40,7 +45,7 @@ export async function createAttestation(
   cluster: Cluster,
   payer: PublicKey,
   schemaRegistry: PublicKey,
-  attestData: string,
+  attestData: AttestationData,
   receiver: PublicKey,
   issuerAttachedSolAccount: PublicKey,
   attesteeAttachedSolAccount: PublicKey,
@@ -72,6 +77,8 @@ export async function createAttestation(
     new PublicKey(programId),
   );
 
+  // TODO: verify data with schema (can be later)
+
   // store attestData in walrus
   const attestDataBlobId = await walrus.storeData({ attestData });
 
@@ -88,4 +95,11 @@ export async function createAttestation(
       systemProgram: SystemProgram.programId,
     })
     .rpc();
+}
+
+export async function getAttestationDataFromBlobId(
+  blobId: string,
+): Promise<AttestationData> {
+  const data = await walrus.getData(blobId);
+  return data.attestData;
 }

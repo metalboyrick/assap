@@ -113,3 +113,14 @@ export async function registerSchema(
     })
     .rpc();
 }
+
+export async function getSchemaDataFromBlobId(
+  blobId: string,
+): Promise<{ humanMessage: string; schemaData: SchemaData[] }> {
+  const data = await walrus.getData(blobId);
+
+  return {
+    humanMessage: data.humanMessage,
+    schemaData: data.schemaData,
+  };
+}
