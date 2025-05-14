@@ -22,6 +22,11 @@ export enum SchemaType {
   NumberArray = "number[]",
 }
 
+export interface SchemaStorageData {
+  schemaData: SchemaData[];
+  humanMessage: string;
+}
+
 export interface SchemaData {
   type: SchemaType;
   name: string;
@@ -50,8 +55,8 @@ export function getCreateSchemaSeedParams(schema: string) {
   return [Buffer.from("schema"), schemaDataHashed];
 }
 
-function validateHumanMessage(humanMessage: string, schemaName: string[]) {
-  const schemaNameRegex = new RegExp(`\\{${schemaName.join("|")}\\}`);
+function validateHumanMessage(humanMessage: string, schemaFields: string[]) {
+  const schemaNameRegex = new RegExp(`\\{${schemaFields.join("|")}\\}`);
   return schemaNameRegex.test(humanMessage);
 }
 
@@ -80,7 +85,13 @@ export async function registerSchema(
   const program = getContractsProgram(provider, programId);
 
   // if human message is provided, validate that it contains some or all schema name wrapped in curly brackets.
-  if (humanMessage && !validateHumanMessage(humanMessage, [schemaName])) {
+  if (
+    humanMessage &&
+    !validateHumanMessage(
+      humanMessage,
+      schemaData.map((field) => field.name),
+    )
+  ) {
     throw new Error(
       "Human message must contain some or all schema name wrapped in curly brackets.",
     );

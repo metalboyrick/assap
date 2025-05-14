@@ -4,18 +4,7 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  AlertCircle,
-  Check,
-  Twitter,
-  Mail,
-  Wallet,
-  Info,
-  Shield,
-  Fingerprint,
-  CheckCircle2,
-} from "lucide-react";
+import { ArrowLeft, AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,26 +26,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   getSchemaDataFromBlobId,
   SchemaData,
   IdentityVerifier,
+  AttestationData,
 } from "@assap/assap-sdk";
 import { useCluster } from "@/components/cluster/cluster-data-access";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { useAttestationProgram } from "@/data-access/attestations-data-access";
+import toast from "react-hot-toast";
 
 // Define types for schema and field
 interface Field {
@@ -72,6 +51,7 @@ interface ExtendedSchemaField {
 }
 
 interface SchemaMetadata {
+  schema_uid: string;
   schema_name: string;
   creation_timestamp: string;
   creation_cost: string;
@@ -91,48 +71,14 @@ interface SchemaDataset {
   schemaData: SchemaData[];
 }
 
-// Mock verification status data
-const verificationStatus = [
-  {
-    id: "solana",
-    name: "Solana Wallet",
-    isVerified: true,
-    icon: Wallet,
-    iconBgClass: "bg-purple-900/30",
-    iconColorClass: "text-purple-400",
-  },
-  {
-    id: "faceId",
-    name: "Face ID",
-    isVerified: false,
-    icon: Fingerprint,
-    iconBgClass: "bg-green-900/30",
-    iconColorClass: "text-green-400",
-  },
-  {
-    id: "twitter",
-    name: "Twitter",
-    isVerified: true,
-    icon: Twitter,
-    iconBgClass: "bg-blue-900/30",
-    iconColorClass: "text-blue-400",
-  },
-  {
-    id: "email",
-    name: "Email",
-    isVerified: false,
-    icon: Mail,
-    iconBgClass: "bg-red-900/30",
-    iconColorClass: "text-red-400",
-  },
-];
-
 export default function CreateAttestationFromSchemaPage({
   params,
 }: {
   params: { uid: string };
 }) {
   const { cluster } = useCluster();
+  const wallet = useWallet();
+  const { createAttestation } = useAttestationProgram();
 
   const [schema, setSchema] = useState<SchemaMetadata | null>(null);
   const [schemaDataset, setSchemaDataset] = useState<SchemaDataset | null>(
@@ -143,8 +89,9 @@ export default function CreateAttestationFromSchemaPage({
   const [showHumanMessage, setShowHumanMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [transactionSignature, setTransactionSignature] = useState<
+    string | null
+  >(null);
 
   // Fetch schema data from the backend
   useEffect(() => {
@@ -160,11 +107,13 @@ export default function CreateAttestationFromSchemaPage({
       const _schemaDataset = await getSchemaDataFromBlobId(data.schema_data);
 
       // Create extended schema fields
-      const _schemaFields = _schemaDataset.schemaData.map((field) => ({
-        name: field.name,
-        type: field.type,
-        data: field.data,
-      }));
+      const _schemaFields = _schemaDataset.schemaData.map(
+        (field: SchemaData) => ({
+          name: field.name,
+          type: field.type,
+          data: field.data,
+        }),
+      );
 
       setSchema(data);
       setSchemaDataset(_schemaDataset);
@@ -182,26 +131,52 @@ export default function CreateAttestationFromSchemaPage({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsVerifyModalOpen(true);
-  };
-
-  const handleVerifyConfirm = () => {
-    setIsVerifyModalOpen(false);
-    setIsStatusModalOpen(true);
-  };
-
-  const handleStatusConfirm = () => {
-    setIsStatusModalOpen(false);
     setShowHumanMessage(true);
   };
 
-  const handleCreateAttestation = () => {
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const handleCreateAttestation = async () => {
+    if (!wallet.publicKey || !schema) {
+      toast.error("Wallet not connected or schema not loaded");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // Prepare attestation data
+      const attestData: AttestationData = {};
+
+      // Add each field from the form to the attestation data
+      schemaFields.forEach((field) => {
+        attestData[field.name] = formValues[field.name] || "";
+      });
+
+      // Create attestation on-chain
+      const schemaRegistryPublicKey = new PublicKey(schema.schema_uid);
+
+      // Using wallet.publicKey which we've already confirmed is not null above
+      const payer = wallet.publicKey;
+      const issuerAttachedSolAccount = wallet.publicKey;
+      const attesteeAttachedSolAccount = wallet.publicKey;
+      const receiver = wallet.publicKey;
+
+      const signature = await createAttestation.mutateAsync({
+        payer,
+        schemaRegistry: schemaRegistryPublicKey,
+        attestData,
+        receiver,
+        issuerAttachedSolAccount,
+        attesteeAttachedSolAccount,
+      });
+
+      setTransactionSignature(signature);
       setIsSuccess(true);
-    }, 1500);
+    } catch (error) {
+      console.error("Error creating attestation:", error);
+      toast.error("Failed to create attestation");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Check if all fields are filled
@@ -214,7 +189,9 @@ export default function CreateAttestationFromSchemaPage({
     if (!schemaDataset) return "";
     let message = schemaDataset.humanMessage;
     Object.entries(formValues).forEach(([key, value]) => {
-      message = message.replace(`{${key}}`, value);
+      if (message.includes(`{${key}}`)) {
+        message = message.replace(`{${key}}`, value);
+      }
     });
     return message;
   };
@@ -244,6 +221,22 @@ export default function CreateAttestationFromSchemaPage({
                 the Solana blockchain.
               </AlertDescription>
             </Alert>
+            {transactionSignature && (
+              <div className="p-4 bg-zinc-800 rounded-md">
+                <h3 className="font-medium mb-2">Transaction Signature</h3>
+                <p className="text-xs overflow-x-auto whitespace-nowrap">
+                  {transactionSignature}
+                </p>
+                <a
+                  href={`https://explorer.solana.com/tx/${transactionSignature}?cluster=${cluster.network}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 text-sm hover:underline mt-2 inline-block"
+                >
+                  View on Solana Explorer
+                </a>
+              </div>
+            )}
             <div className="p-4 bg-zinc-800 rounded-md">
               <h3 className="font-medium mb-2">Human Message</h3>
               <p className="text-lg">{renderHumanMessage()}</p>
@@ -289,180 +282,16 @@ export default function CreateAttestationFromSchemaPage({
         </div>
       </div>
 
-      {/* First Verification Modal */}
-      <Dialog open={isVerifyModalOpen} onOpenChange={setIsVerifyModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              Please Verify Your Identity
-            </DialogTitle>
-            <DialogDescription>
-              Choose a verification method to proceed with creating your
-              attestation
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center p-4 border border-zinc-800 rounded-lg hover:bg-zinc-800/50 transition-colors cursor-pointer">
-                <div className="h-10 w-10 rounded-full bg-blue-900/30 flex items-center justify-center mr-4">
-                  <Twitter className="h-5 w-5 text-blue-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Twitter</h3>
-                  <p className="text-sm text-zinc-400">
-                    Verify using your Twitter account
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center p-4 border border-zinc-800 rounded-lg hover:bg-zinc-800/50 transition-colors cursor-pointer">
-                <div className="h-10 w-10 rounded-full bg-purple-900/30 flex items-center justify-center mr-4">
-                  <Wallet className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Solana Wallet</h3>
-                  <p className="text-sm text-zinc-400">
-                    Verify using your Solana wallet
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center p-4 border border-zinc-800 rounded-lg hover:bg-zinc-800/50 transition-colors cursor-pointer">
-                <div className="h-10 w-10 rounded-full bg-red-900/30 flex items-center justify-center mr-4">
-                  <Mail className="h-5 w-5 text-red-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Email</h3>
-                  <p className="text-sm text-zinc-400">
-                    Verify using your email address
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center mt-2">
-              <Info className="h-4 w-4 text-zinc-500 mr-2" />
-              <span className="text-xs text-zinc-500">
-                Select a verification method to continue
-              </span>
-            </div>
-          </div>
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                className="border-zinc-700 sm:w-auto w-full"
-              >
-                Cancel
-              </Button>
-            </DialogClose>
-
-            <Button
-              className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 sm:w-auto w-full"
-              onClick={handleVerifyConfirm}
-            >
-              Check Verification Status
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Second Verification Status Modal */}
-      <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              Your Verification Status
-            </DialogTitle>
-            <DialogDescription>
-              Review your current verification status for different identity
-              methods
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-1 gap-4">
-              {verificationStatus.map((method) => (
-                <div
-                  key={method.id}
-                  className="flex items-center justify-between p-4 border border-zinc-800 rounded-lg"
-                >
-                  <div className="flex items-center">
-                    <div
-                      className={`h-10 w-10 rounded-full ${method.iconBgClass} flex items-center justify-center mr-4`}
-                    >
-                      <method.icon
-                        className={`h-5 w-5 ${method.iconColorClass}`}
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{method.name}</h3>
-                      <p className="text-sm text-zinc-400">
-                        {method.isVerified ? "Verified" : "Not verified"}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    {method.isVerified ? (
-                      <div className="flex items-center text-green-400">
-                        <CheckCircle2 className="h-5 w-5 mr-1" />
-                        <span className="text-sm">Verified</span>
-                      </div>
-                    ) : (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-zinc-700 hover:bg-zinc-800"
-                            >
-                              Verify
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <p>Not active in mockup</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Alert className="bg-zinc-800 border-zinc-700">
-              <Shield className="h-4 w-4 text-blue-400" />
-              <AlertTitle>Verification Required</AlertTitle>
-              <AlertDescription>
-                This schema requires at least one verified identity method to
-                create an attestation.
-              </AlertDescription>
-            </Alert>
-          </div>
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              className="border-zinc-700 sm:w-auto w-full"
-              onClick={() => {
-                setIsStatusModalOpen(false);
-                setIsVerifyModalOpen(true);
-              }}
-            >
-              Back
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 sm:w-auto w-full"
-              onClick={handleStatusConfirm}
-            >
-              Continue
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Wallet connection check */}
+      {!wallet.connected && (
+        <Alert className="bg-amber-900/20 border-amber-800 text-amber-100">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Wallet not connected</AlertTitle>
+          <AlertDescription>
+            You need to connect your Solana wallet to create an attestation.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {!showHumanMessage ? (
         <Card className="bg-zinc-900 border-zinc-800">
@@ -566,9 +395,9 @@ export default function CreateAttestationFromSchemaPage({
                 <Button
                   type="submit"
                   className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-                  disabled={!allFieldsFilled}
+                  disabled={!allFieldsFilled || !wallet.connected}
                 >
-                  Create Attestation
+                  Continue
                 </Button>
               </div>
             </form>
@@ -590,10 +419,10 @@ export default function CreateAttestationFromSchemaPage({
 
             <Alert className="bg-zinc-800 border-zinc-700">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Verification Required</AlertTitle>
+              <AlertTitle>Blockchain attestation</AlertTitle>
               <AlertDescription>
-                This attestation requires verification methods specified in the
-                schema.
+                Creating this attestation will store it permanently on the
+                Solana blockchain.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -608,7 +437,7 @@ export default function CreateAttestationFromSchemaPage({
             <Button
               className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
               onClick={handleCreateAttestation}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !wallet.connected}
             >
               {isSubmitting ? "Creating..." : "Create Attestation"}
             </Button>

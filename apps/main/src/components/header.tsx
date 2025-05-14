@@ -7,6 +7,7 @@ import { FileText, Database, User, Menu, X, LogIn } from "lucide-react";
 import { Button as ButtonComponent } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { WalletButton } from "@/components/solana/solana-provider";
 
 // Use type assertions to fix compatibility issues
 const Link = NextLink as any;
@@ -28,7 +29,6 @@ export default function Header(): JSX.Element {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true); // For demo purposes
 
   const navItems: NavItem[] = [
     {
@@ -41,21 +41,12 @@ export default function Header(): JSX.Element {
       href: "/schemas",
       icon: IconDatabase,
     },
-    {
-      name: "Profile",
-      href: "/profile",
-      icon: IconUser,
-    },
+    // {
+    //   name: "Profile",
+    //   href: "/profile",
+    //   icon: IconUser,
+    // },
   ];
-
-  const handleLogin = () => {
-    router.push("/login");
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    router.push("/login");
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black">
@@ -89,30 +80,10 @@ export default function Header(): JSX.Element {
         </nav>
 
         <div className="flex items-center gap-4">
-          {isLoggedIn ? (
-            <>
-              <div className="hidden md:flex items-center gap-2 text-sm text-zinc-400">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                Connected
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="hidden md:flex border-zinc-700 hover:bg-zinc-800"
-              >
-                Disconnect
-              </Button>
-            </>
-          ) : (
-            <Button
-              size="sm"
-              onClick={handleLogin}
-              className="hidden md:flex bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-            >
-              <IconLogIn className="mr-2 h-4 w-4" /> Login
-            </Button>
-          )}
+          {/* Solana Wallet Connect Button */}
+          <div className="hidden md:flex">
+            <WalletButton />
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
@@ -150,22 +121,10 @@ export default function Header(): JSX.Element {
                 {item.name}
               </Link>
             ))}
-            {isLoggedIn ? (
-              <Button
-                variant="outline"
-                onClick={handleLogout}
-                className="w-full border-zinc-700 hover:bg-zinc-800"
-              >
-                Disconnect
-              </Button>
-            ) : (
-              <Button
-                onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-              >
-                <IconLogIn className="mr-2 h-4 w-4" /> Login
-              </Button>
-            )}
+            {/* Solana Wallet Connect Button for Mobile */}
+            <div className="w-full flex justify-center mt-2">
+              <WalletButton />
+            </div>
           </nav>
         </div>
       )}

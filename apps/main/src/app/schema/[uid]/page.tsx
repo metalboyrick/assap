@@ -509,26 +509,33 @@ export default function SchemaDetailPage({
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {schema.verification_requirements?.issuer_verifiers?.map(
-                  (verification: IdentityVerifier, index: number) => {
-                    const displayProps =
-                      getVerificationMethodDisplayProps(verification);
-                    return (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border", // Base styles for bigger badge
-                          displayProps.bgColor,
-                          displayProps.textColor,
-                          displayProps.borderColor,
-                        )}
-                      >
-                        <displayProps.Icon className="h-4 w-4" />
-                        <span>{displayProps.label}</span>
-                      </Badge>
-                    );
-                  },
+                {schema.verification_requirements?.issuer_verifiers?.length >
+                0 ? (
+                  schema.verification_requirements.issuer_verifiers.map(
+                    (verification: IdentityVerifier, index: number) => {
+                      const displayProps =
+                        getVerificationMethodDisplayProps(verification);
+                      return (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border", // Base styles for bigger badge
+                            displayProps.bgColor,
+                            displayProps.textColor,
+                            displayProps.borderColor,
+                          )}
+                        >
+                          <displayProps.Icon className="h-4 w-4" />
+                          <span>{displayProps.label}</span>
+                        </Badge>
+                      );
+                    },
+                  )
+                ) : (
+                  <p className="text-zinc-400 italic">
+                    No verification methods required
+                  </p>
                 )}
               </div>
             </CardContent>

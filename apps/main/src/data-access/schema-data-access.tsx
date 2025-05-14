@@ -66,12 +66,14 @@ export function useSchemaProgram() {
       schemaName,
       issuerVerifiers,
       attesteeVerifiers,
+      humanMessage,
     }: {
       payer: PublicKey;
       schemaData: SchemaData[];
       schemaName: string;
       issuerVerifiers: IdentityVerifier[];
       attesteeVerifiers: IdentityVerifier[];
+      humanMessage?: string;
     }) => {
       return sdkRegisterSchema(
         cluster.network as Cluster,
@@ -81,6 +83,7 @@ export function useSchemaProgram() {
         issuerVerifiers,
         attesteeVerifiers,
         provider,
+        humanMessage,
       );
     },
     onSuccess: (signature) => {
