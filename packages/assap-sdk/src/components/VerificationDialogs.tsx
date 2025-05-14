@@ -384,45 +384,62 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
           ) : (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-1 gap-4">
-                {selectedSchemaDataSet?.schema.verification_requirements?.issuer_verifiers.map(
-                  (verifier) => {
-                    switch (verifier) {
-                      case IdentityVerifier.SolBalance:
-                      case IdentityVerifier.SolMinTx:
-                      case IdentityVerifier.SolName:
-                        return (
-                          <VerificationCardButton
-                            icon={Wallet}
-                            iconBgClass="bg-purple-900/30"
-                            iconColorClass="text-purple-400"
-                            title="Solana Wallet"
-                            description="Verify using your Solana wallet"
-                          />
-                        );
-                      case IdentityVerifier.Twitter:
-                        return (
-                          <VerificationCardButton
-                            icon={Twitter}
-                            iconBgClass="bg-blue-900/30"
-                            iconColorClass="text-blue-400"
-                            title="Twitter"
-                            description="Verify using your Twitter account"
-                          />
-                        );
-                      case IdentityVerifier.Email:
-                        return (
-                          <VerificationCardButton
-                            icon={Mail}
-                            iconBgClass="bg-red-900/30"
-                            iconColorClass="text-red-400"
-                            title="Email"
-                            description="Verify using your email address"
-                          />
-                        );
-                      default:
-                        return null;
-                    }
-                  },
+                {selectedSchemaDataSet?.schema.verification_requirements
+                  ?.issuer_verifiers &&
+                selectedSchemaDataSet.schema.verification_requirements
+                  .issuer_verifiers.length > 0 ? (
+                  selectedSchemaDataSet.schema.verification_requirements.issuer_verifiers.map(
+                    (verifier) => {
+                      switch (verifier) {
+                        case IdentityVerifier.SolBalance:
+                        case IdentityVerifier.SolMinTx:
+                        case IdentityVerifier.SolName:
+                          return (
+                            <VerificationCardButton
+                              key="solana-wallet-verifier"
+                              icon={Wallet}
+                              iconBgClass="bg-purple-900/30"
+                              iconColorClass="text-purple-400"
+                              title="Solana Wallet"
+                              description="Verify using your Solana wallet"
+                            />
+                          );
+                        case IdentityVerifier.Twitter:
+                          return (
+                            <VerificationCardButton
+                              key="twitter-verifier"
+                              icon={Twitter}
+                              iconBgClass="bg-blue-900/30"
+                              iconColorClass="text-blue-400"
+                              title="Twitter"
+                              description="Verify using your Twitter account"
+                            />
+                          );
+                        case IdentityVerifier.Email:
+                          return (
+                            <VerificationCardButton
+                              key="email-verifier"
+                              icon={Mail}
+                              iconBgClass="bg-red-900/30"
+                              iconColorClass="text-red-400"
+                              title="Email"
+                              description="Verify using your email address"
+                            />
+                          );
+                        default:
+                          return null;
+                      }
+                    },
+                  )
+                ) : (
+                  <Alert className="bg-zinc-800 border-zinc-700">
+                    <Info className="h-4 w-4 text-blue-400" />
+                    <AlertTitle>No Verifications Required</AlertTitle>
+                    <AlertDescription>
+                      This attestation does not require verifications, you can
+                      proceed.
+                    </AlertDescription>
+                  </Alert>
                 )}
               </div>
 
