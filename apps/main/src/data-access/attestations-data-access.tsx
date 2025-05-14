@@ -11,11 +11,10 @@ import { useAnchorProvider } from "../components/solana/solana-provider";
 import { useTransactionToast } from "../components/ui/ui-layout";
 import {
   createAttestation as sdkCreateAttestation,
-  type AttestationData,
+  AttestationData,
 } from "@assap/assap-sdk";
 
 export function useAttestationProgram() {
-  const { connection } = useConnection();
   const { cluster } = useCluster();
   const transactionToast = useTransactionToast();
   const provider = useAnchorProvider();

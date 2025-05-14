@@ -1,6 +1,6 @@
 import { GatewayProvider } from "@civic/solana-gateway-react";
 import { CivicAuthProvider } from "@civic/auth-web3";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Cluster, Connection, PublicKey } from "@solana/web3.js";
 import { clusterApiUrl } from "@solana/web3.js";
 import React, { createContext, useContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,6 +32,8 @@ interface AssapContextValue {
   setIsSchemaDataSetLoading: (isSchemaDataSetLoading: boolean) => void;
   attestationData: AttestationData;
   setAttestationData: (attestationData: AttestationData) => void;
+  cluster: Cluster;
+  setCluster: (cluster: Cluster) => void;
 }
 
 // Create a context for the AssapProvider
@@ -70,6 +72,7 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
   const [attestationData, setAttestationData] = useState<AttestationData>(
     {} as AttestationData,
   );
+  const [cluster, setCluster] = useState<Cluster>("devnet");
 
   return (
     <AssapContext.Provider
@@ -82,6 +85,8 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
         setIsSchemaDataSetLoading,
         attestationData,
         setAttestationData,
+        cluster,
+        setCluster,
       }}
     >
       <QueryClientProvider client={queryClient}>

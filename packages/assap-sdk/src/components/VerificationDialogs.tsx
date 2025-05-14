@@ -39,6 +39,7 @@ import {
 import { UserButton, useUser } from "@civic/auth-web3/react";
 import { IdentityVerifier } from "@/core";
 import { useAssapContext } from "./AssapProvider";
+import { userHasWallet } from "@civic/auth-web3";
 
 export type VerificationMethod = {
   id: string;
@@ -97,7 +98,8 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
   verificationStatus,
   onClose,
 }) => {
-  const { user } = useUser();
+  const userContext = useUser();
+  const { user } = userContext;
 
   const { selectedSchemaDataSet, isSchemaDataSetLoading, attestationData } =
     useAssapContext();
@@ -109,16 +111,40 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
     }
   }, [user, currentVerificationStep, setCurrentVerificationStep]);
 
+  // this will help to create wallet connection
+  useEffect(() => {
+    if (userContext.user && !userHasWallet(userContext)) {
+      userContext.createWallet();
+    }
+  }, [userContext]);
+
   const handleLoginConfirm = () => {
-    setCurrentVerificationStep(1.5); // Go to data preview step
+    setCurrentVerificationStep(2); // Go to data preview step (was 1.5)
   };
 
   const handleDataPreviewConfirm = () => {
-    setCurrentVerificationStep(2); // Go to verification methods step
+    setCurrentVerificationStep(3); // Go to verification methods step (was 2)
   };
 
-  const handleVerifyConfirm = () => {
-    setCurrentVerificationStep(3);
+  // temporarily set this step as the final step.
+  const handleVerifyConfirm = async () => {
+    // create the attestation
+    // const transaction = await createAttestation(
+    //   "devnet",
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    //   userContext.solana.wallet,
+    // );
+
+    // // send the transaction to the user
+    // sendTransaction(transaction);
+
+    // set the current verification step to the verification status step
+    setCurrentVerificationStep(4); // Go to verification status step (was 3)
   };
 
   const handleStatusConfirm = () => {
@@ -200,6 +226,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                     borderColor: "white",
                   }}
                 />
+
                 <div className="mt-4 flex gap-2 items-center justify-center w-full">
                   <div className="text-xs text-zinc-500">Powered by</div>
                   <img
@@ -232,9 +259,9 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
 
       {/* Data Preview Modal - The new step */}
       <Dialog
-        open={currentVerificationStep === 1.5}
+        open={currentVerificationStep === 2}
         onOpenChange={(open) =>
-          open ? setCurrentVerificationStep(1.5) : setCurrentVerificationStep(0)
+          open ? setCurrentVerificationStep(2) : setCurrentVerificationStep(0)
         }
       >
         <DialogContent className="sm:max-w-md">
@@ -341,9 +368,9 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
 
       {/* First Verification Modal */}
       <Dialog
-        open={currentVerificationStep === 2}
+        open={currentVerificationStep === 3}
         onOpenChange={(open) =>
-          open ? setCurrentVerificationStep(2) : setCurrentVerificationStep(0)
+          open ? setCurrentVerificationStep(3) : setCurrentVerificationStep(0)
         }
       >
         <DialogContent className="sm:max-w-md">
@@ -456,7 +483,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
             <Button
               variant="outline"
               className="border-zinc-700 sm:w-auto w-full"
-              onClick={() => setCurrentVerificationStep(1.5)}
+              onClick={() => setCurrentVerificationStep(2)}
             >
               Back
             </Button>
@@ -482,9 +509,9 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
 
       {/* Second Verification Status Modal */}
       <Dialog
-        open={currentVerificationStep === 3}
+        open={currentVerificationStep === 4}
         onOpenChange={(open) =>
-          open ? setCurrentVerificationStep(3) : setCurrentVerificationStep(0)
+          open ? setCurrentVerificationStep(4) : setCurrentVerificationStep(0)
         }
       >
         <DialogContent className="sm:max-w-md">
@@ -563,7 +590,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
             <Button
               variant="outline"
               className="border-zinc-700 sm:w-auto w-full"
-              onClick={() => setCurrentVerificationStep(2)}
+              onClick={() => setCurrentVerificationStep(3)}
             >
               Back
             </Button>

@@ -1,7 +1,7 @@
 import {
+  AttestationData,
   getSchemaById,
   getSchemaDataFromBlobId,
-  type AttestationData,
 } from "@/core";
 import { useAssapContext } from "../components/AssapProvider";
 import { Cluster } from "@solana/web3.js";
@@ -11,7 +11,6 @@ import { useEffect } from "react";
 
 export interface UseAssapAttestProps {
   schemaId: string;
-  attestData: AttestationData;
   onAttestComplete: () => void;
   cluster: Cluster;
 }
@@ -19,7 +18,7 @@ export interface UseAssapAttestProps {
 export function useAssapAttest({
   schemaId,
   onAttestComplete: _onAttestComplete,
-  cluster: _cluster,
+  cluster,
 }: UseAssapAttestProps) {
   const { user } = useUser();
 
@@ -27,7 +26,7 @@ export function useAssapAttest({
     setCurrentVerificationStep,
     setIsSchemaDataSetLoading,
     setSelectedSchemaDataSet,
-    setAttestationData,
+    setCluster,
   } = useAssapContext();
 
   const { data: schemaDataSet, isLoading: isSchemaDataSetLoading } = useQuery({
@@ -42,18 +41,29 @@ export function useAssapAttest({
   useEffect(() => {
     setIsSchemaDataSetLoading(isSchemaDataSetLoading);
     setSelectedSchemaDataSet(schemaDataSet);
+    setCluster(cluster);
   }, [schemaDataSet, isSchemaDataSetLoading]);
 
-  const attest = () => {
-    setCurrentVerificationStep(1);
-  };
+  // cluster: Cluster,
+  // payer: PublicKey,
+  // schemaRegistry: PublicKey,
+  // attestData: AttestationData,
+  // receiver: PublicKey,
+  // issuerAttachedSolAccount: PublicKey,
+  // attesteeAttachedSolAccount: PublicKey,
+  // provider: AnchorProvider,
 
-  // this function initiates an attestation process by opening a window.
-  const initiateAttestation = (attestData: AttestationData) => {
-    // set Attestation Data
-    setAttestationData(attestData);
+  const inititateAttestation = ({
+    attestData,
+    receiver,
+    issuer,
+  }: {
+    attestData: AttestationData;
+    receiver: string;
+    issuer: string;
+  }) => {
+    console.log({ attestData, receiver, issuer });
 
-    // set modals according to steps
     if (!user) {
       setCurrentVerificationStep(1);
     } else {
@@ -62,8 +72,7 @@ export function useAssapAttest({
   };
 
   return {
-    attest,
-    initiateAttestation,
+    inititateAttestation,
     isSchemaDataSetLoading,
   };
 }

@@ -16,7 +16,7 @@ import {
   getSchemaDataFromBlobId,
   getSchemaById,
   useAssapAttest,
-  SchemaData,
+  type SchemaData,
 } from "@assap/assap-sdk";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 

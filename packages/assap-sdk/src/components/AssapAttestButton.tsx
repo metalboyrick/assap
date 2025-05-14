@@ -1,19 +1,31 @@
+import { AttestationData } from "@/core";
 import { useAssapAttest, type UseAssapAttestProps } from "../hooks";
 import { Button } from "./ui/button";
 
-type AssapAttestButtonProps = UseAssapAttestProps;
+type AssapAttestButtonProps = UseAssapAttestProps & {
+  receiver: string;
+  issuer: string;
+  attestData: AttestationData;
+};
 
 export const AssapAttestButton = ({
   onAttestComplete,
   schemaId,
-  attestData,
   cluster,
+  attestData,
+  receiver,
+  issuer,
 }: AssapAttestButtonProps) => {
-  const { attest } = useAssapAttest({
+  const { inititateAttestation } = useAssapAttest({
     onAttestComplete,
     schemaId,
-    attestData,
     cluster,
   });
-  return <Button onClick={attest}>Attest Now</Button>;
+  return (
+    <Button
+      onClick={() => inititateAttestation({ attestData, receiver, issuer })}
+    >
+      Attest Now
+    </Button>
+  );
 };

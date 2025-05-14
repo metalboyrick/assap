@@ -1,33 +1,38 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Database, Users, Plus } from "lucide-react"
-import { StatsCard } from "@/components/stats-card"
-import { DataTable } from "@/components/ui/data-table"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton" // You can use a Skeleton component from your UI library or create a custom one
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Database, Users, Plus } from "lucide-react";
+import { StatsCard } from "@/components/stats-card";
+import { DataTable } from "@/components/ui/data-table";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton"; // You can use a Skeleton component from your UI library or create a custom one
 
 export default function SchemasPage() {
-  const [schemas, setSchemas] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+  const [schemas, setSchemas] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch schemas from the API
   useEffect(() => {
     const fetchSchemas = async () => {
       try {
-        const response = await axios.get("/api/schemas") // Replace with your actual API endpoint
-        setSchemas(response.data)
+        const response = await axios.get("/api/schemas", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }); // Replace with your actual API endpoint
+        setSchemas(response.data);
       } catch (error) {
-        console.error("Error fetching schemas:", error)
+        console.error("Error fetching schemas:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSchemas()
-  }, [])
+    fetchSchemas();
+  }, []);
 
   // Define columns based on the data structure from your API
   const columns = [
@@ -35,8 +40,13 @@ export default function SchemasPage() {
       key: "schema_uid",
       title: "UID",
       render: (value: string) => (
-        <Link href={`/schema/${value}`} className="text-blue-400 hover:underline font-mono text-sm">
-          {value}
+        <Link
+          href={`/schema/${value}`}
+          className="text-blue-400 hover:underline font-mono text-sm"
+        >
+          {value.length > 8
+            ? `${value.substring(0, 5)}...${value.substring(value.length - 5)}`
+            : value}
         </Link>
       ),
     },
@@ -48,18 +58,24 @@ export default function SchemasPage() {
     {
       key: "creator_uid",
       title: "Creator",
-      render: (value: string) => <span className="font-mono text-sm">{value}</span>,
+      render: (value: string) => (
+        <span className="font-mono text-sm">
+          {value.length > 8
+            ? `${value.substring(0, 5)}...${value.substring(value.length - 5)}`
+            : value}
+        </span>
+      ),
     },
-    {
-      key: "human_message_template",
-      title: "Attestation Message",
-      render: (value: number) => <span>{value}</span>,
-    },
-    {
-      key: "creation_cost",
-      title: "Cost",
-      render: (value: string) => <span>{value}</span>,
-    },
+    // {
+    //   key: "human_message_template",
+    //   title: "Attestation Message",
+    //   render: (value: number) => <span>{value}</span>,
+    // },
+    // {
+    //   key: "creation_cost",
+    //   title: "Cost",
+    //   render: (value: string) => <span>{value}</span>,
+    // },
     {
       key: "creation_timestamp", // Assuming creation_date exists in the data
       title: "Created",
@@ -70,12 +86,12 @@ export default function SchemasPage() {
         }
 
         // Custom date formatting: yyyy-mm-dd hh:mm:ss
-        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
 
         return <span>{formattedDate}</span>;
       },
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -93,7 +109,11 @@ export default function SchemasPage() {
         {loading ? (
           <Skeleton className="h-12 w-1/2" />
         ) : (
-          <StatsCard title="Total Schemas" value={schemas.length.toString()} icon={<Database className="h-5 w-5" />} />
+          <StatsCard
+            title="Total Schemas"
+            value={schemas.length.toString()}
+            icon={<Database className="h-5 w-5" />}
+          />
         )}
       </div>
 
@@ -105,8 +125,13 @@ export default function SchemasPage() {
           <Skeleton className="h-8 w-full" />
         </div>
       ) : (
-        <DataTable columns={columns} data={schemas} onRowClick={(row) => console.log(row)} searchKey="schema_name" />
+        <DataTable
+          columns={columns}
+          data={schemas}
+          onRowClick={(row) => console.log(row)}
+          searchKey="schema_name"
+        />
       )}
     </div>
-  )
+  );
 }

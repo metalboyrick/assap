@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -51,25 +51,45 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  getSchemaDataFromBlobId,
+  SchemaData,
+  IdentityVerifier,
+} from "@assap/assap-sdk";
+import { useCluster } from "@/components/cluster/cluster-data-access";
 
-// Mock schema data
-const schemaDetail = {
-  uid: "sch_01234567890123456789",
-  name: "Identity Verification",
-  cost: "0.01 SOL",
-  humanMessage:
-    "{fullName} declares that they have completed KYC verification approved by {approver}",
-  fields: [
-    { name: "fullName", type: "string", required: true },
-    { name: "dateOfBirth", type: "string", required: true },
-    { name: "nationality", type: "string", required: true },
-    { name: "idType", type: "string", required: true },
-    { name: "idNumber", type: "string", required: true },
-    { name: "approver", type: "string", required: true },
-    { name: "verificationLevel", type: "integer", required: false },
-  ],
-  verifications: ["Email", "Human", "Solana Balance"],
-};
+// Define types for schema and field
+interface Field {
+  name: string;
+  type: string;
+}
+
+// Custom type for our extended schema field
+interface ExtendedSchemaField {
+  name: string;
+  type: string;
+  data: any;
+}
+
+interface SchemaMetadata {
+  schema_name: string;
+  creation_timestamp: string;
+  creation_cost: string;
+  creator_uid: string;
+  creation_transaction_id: string;
+  transactionId: string;
+  schema_data: string;
+  human_message_template: string;
+  verification_requirements: {
+    issuer_verifiers: IdentityVerifier[];
+    attester_verifiers: IdentityVerifier[];
+  };
+}
+
+interface SchemaDataset {
+  humanMessage: string;
+  schemaData: SchemaData[];
+}
 
 // Mock verification status data
 const verificationStatus = [
@@ -112,15 +132,46 @@ export default function CreateAttestationFromSchemaPage({
 }: {
   params: { uid: string };
 }) {
-  // In a real app, you would fetch the schema data using the UID
-  const schema = schemaDetail;
+  const { cluster } = useCluster();
 
+  const [schema, setSchema] = useState<SchemaMetadata | null>(null);
+  const [schemaDataset, setSchemaDataset] = useState<SchemaDataset | null>(
+    null,
+  );
+  const [schemaFields, setSchemaFields] = useState<ExtendedSchemaField[]>([]);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [showHumanMessage, setShowHumanMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+
+  // Fetch schema data from the backend
+  useEffect(() => {
+    async function fetchSchema() {
+      const res = await fetch(`/api/schemas/${params.uid}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = (await res.json()) as SchemaMetadata;
+
+      const _schemaDataset = await getSchemaDataFromBlobId(data.schema_data);
+
+      // Create extended schema fields
+      const _schemaFields = _schemaDataset.schemaData.map((field) => ({
+        name: field.name,
+        type: field.type,
+        data: field.data,
+      }));
+
+      setSchema(data);
+      setSchemaDataset(_schemaDataset);
+      setSchemaFields(_schemaFields);
+    }
+    fetchSchema();
+  }, [params.uid]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormValues((prev) => ({
@@ -153,19 +204,24 @@ export default function CreateAttestationFromSchemaPage({
     }, 1500);
   };
 
-  const allRequiredFieldsFilled = schema.fields
-    .filter((field) => field.required)
-    .every(
+  // Check if all fields are filled
+  const allFieldsFilled =
+    schemaFields.every(
       (field) => formValues[field.name] && formValues[field.name].trim() !== "",
-    );
+    ) || false;
 
   const renderHumanMessage = () => {
-    let message = schema.humanMessage;
+    if (!schemaDataset) return "";
+    let message = schemaDataset.humanMessage;
     Object.entries(formValues).forEach(([key, value]) => {
       message = message.replace(`{${key}}`, value);
     });
     return message;
   };
+
+  if (!schema || !schemaDataset) {
+    return <div className="text-white">Loading schema...</div>;
+  }
 
   if (isSuccess) {
     return (
@@ -222,11 +278,14 @@ export default function CreateAttestationFromSchemaPage({
         <h1 className="text-3xl font-bold tracking-tighter">
           Create Attestation
         </h1>
-        <div className="flex flex-col md:flex-row md:items-center gap-2 mt-1">
-          <p className="text-zinc-400">Using schema: {schema.name}</p>
-          <Badge className="bg-green-900/20 text-green-400 border-green-800 md:ml-2">
-            Cost: {schema.cost}
-          </Badge>
+        <div className="flex flex-col md:flex-row md:items-center gap-2 mt-3">
+          <div className="flex flex-col p-3 border border-zinc-700 rounded-md bg-zinc-900/50">
+            <p className="text-zinc-400">{schema.schema_name}</p>
+            <p className="text-xs text-zinc-500">{params.uid}</p>
+          </div>
+          {/* <Badge className="bg-green-900/20 text-green-400 border-green-800 md:ml-2">
+            Cost: 0.01 SOL
+          </Badge> */}
         </div>
       </div>
 
@@ -410,36 +469,39 @@ export default function CreateAttestationFromSchemaPage({
           <CardHeader>
             <CardTitle>Fill Attestation Details</CardTitle>
             <CardDescription>
-              Complete all required fields to create an attestation using this
-              schema
+              Complete all fields to create an attestation using this schema
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {schema.fields.map((field, index) => (
+                {schemaFields.map((field, index) => (
                   <div key={index} className="space-y-2">
                     <Label
                       htmlFor={field.name}
                       className="flex items-center gap-1"
                     >
                       {field.name}
-                      {field.required && (
-                        <span className="text-red-500">*</span>
-                      )}
                       <Badge
-                          variant="outline"
-                          className={cn(
-                            "ml-2 text-xs",
-                            field.type.includes("string") ? "bg-blue-900/20 border-blue-800 text-blue-400" : "",
-                            field.type.includes("integer") ? "bg-purple-900/20 border-purple-800 text-purple-400" : "",
-                            field.type.includes("boolean") ? "bg-green-900/20 border-green-800 text-green-400" : ""
-                          )}
-                        >
+                        variant="outline"
+                        className={cn(
+                          "ml-2 text-xs",
+                          field.type.toLowerCase().includes("string")
+                            ? "bg-blue-900/20 border-blue-800 text-blue-400"
+                            : "",
+                          field.type.toLowerCase().includes("number") ||
+                            field.type.toLowerCase().includes("integer")
+                            ? "bg-purple-900/20 border-purple-800 text-purple-400"
+                            : "",
+                          field.type.toLowerCase().includes("boolean")
+                            ? "bg-green-900/20 border-green-800 text-green-400"
+                            : "",
+                        )}
+                      >
                         {field.type}
                       </Badge>
                     </Label>
-                    {field.type === "string" && (
+                    {field.type.toLowerCase().includes("string") && (
                       <Input
                         id={field.name}
                         value={formValues[field.name] || ""}
@@ -448,10 +510,10 @@ export default function CreateAttestationFromSchemaPage({
                         }
                         placeholder={`Enter ${field.name}`}
                         className="bg-zinc-900 border-zinc-800"
-                        required={field.required}
                       />
                     )}
-                    {field.type === "integer" && (
+                    {(field.type.toLowerCase().includes("number") ||
+                      field.type.toLowerCase().includes("integer")) && (
                       <Input
                         id={field.name}
                         type="number"
@@ -461,10 +523,9 @@ export default function CreateAttestationFromSchemaPage({
                         }
                         placeholder={`Enter ${field.name}`}
                         className="bg-zinc-900 border-zinc-800"
-                        required={field.required}
                       />
                     )}
-                    {field.type === "boolean" && (
+                    {field.type.toLowerCase().includes("boolean") && (
                       <Select
                         value={formValues[field.name] || ""}
                         onValueChange={(value) =>
@@ -505,7 +566,7 @@ export default function CreateAttestationFromSchemaPage({
                 <Button
                   type="submit"
                   className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-                  disabled={!allRequiredFieldsFilled}
+                  disabled={!allFieldsFilled}
                 >
                   Create Attestation
                 </Button>
@@ -531,8 +592,8 @@ export default function CreateAttestationFromSchemaPage({
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Verification Required</AlertTitle>
               <AlertDescription>
-                This attestation requires the following verifications:{" "}
-                {schema.verifications.join(", ")}
+                This attestation requires verification methods specified in the
+                schema.
               </AlertDescription>
             </Alert>
           </CardContent>
