@@ -1,3 +1,5 @@
+import { IdentityVerifier } from "../actions/schema";
+
 export interface Schema {
   schema_uid: string;
   creation_transaction_id: string;
@@ -7,7 +9,10 @@ export interface Schema {
   schema_data: string;
   creation_cost: number;
   human_message_template?: string;
-  verification_requirements?: any;
+  verification_requirements?: {
+    issuer_verifiers: IdentityVerifier[];
+    attestee_verifiers: IdentityVerifier[];
+  };
 }
 
 export interface Attestation {

@@ -5,6 +5,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 import React, { createContext, useContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { VerificationDialogs, VerificationMethod } from "./VerificationDialogs";
+import { AttestationData, Schema, SchemaData } from "@/core";
 
 const gatekeeperNetwork = new PublicKey(
   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
@@ -13,6 +14,24 @@ const gatekeeperNetwork = new PublicKey(
 interface AssapContextValue {
   currentVerificationStep: number;
   setCurrentVerificationStep: (step: number) => void;
+  selectedSchemaDataSet:
+    | {
+        schema: Schema;
+        data: { humanMessage: string; schemaData: SchemaData[] };
+      }
+    | undefined;
+  setSelectedSchemaDataSet: (
+    schemaDataSet:
+      | {
+          schema: Schema;
+          data: { humanMessage: string; schemaData: SchemaData[] };
+        }
+      | undefined,
+  ) => void;
+  isSchemaDataSetLoading: boolean;
+  setIsSchemaDataSetLoading: (isSchemaDataSetLoading: boolean) => void;
+  attestationData: AttestationData;
+  setAttestationData: (attestationData: AttestationData) => void;
 }
 
 // Create a context for the AssapProvider
@@ -40,10 +59,30 @@ export function useAssapContext() {
 export function AssapProvider({ children }: { children: React.ReactNode }) {
   const [currentVerificationStep, setCurrentVerificationStep] = useState(0);
   const [verificationStatus] = useState<VerificationMethod[]>([]);
+  const [selectedSchemaDataSet, setSelectedSchemaDataSet] = useState<
+    | {
+        schema: Schema;
+        data: { humanMessage: string; schemaData: SchemaData[] };
+      }
+    | undefined
+  >(undefined);
+  const [isSchemaDataSetLoading, setIsSchemaDataSetLoading] = useState(false);
+  const [attestationData, setAttestationData] = useState<AttestationData>(
+    {} as AttestationData,
+  );
 
   return (
     <AssapContext.Provider
-      value={{ currentVerificationStep, setCurrentVerificationStep }}
+      value={{
+        currentVerificationStep,
+        setCurrentVerificationStep,
+        selectedSchemaDataSet,
+        setSelectedSchemaDataSet,
+        isSchemaDataSetLoading,
+        setIsSchemaDataSetLoading,
+        attestationData,
+        setAttestationData,
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <GatewayProvider
@@ -54,20 +93,13 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
         >
           {/* client id hard coded for now, this will be moved to some sort of injection mechanism later */}
           <CivicAuthProvider clientId={"6b1a9573-300c-4777-ad91-27cbea305f1b"}>
-            {children}
             <VerificationDialogs
-              onClose={() => setCurrentVerificationStep(0)}
-              isLoginModalOpen={currentVerificationStep === 1}
-              setIsLoginModalOpen={() => setCurrentVerificationStep(1)}
-              isVerifyModalOpen={currentVerificationStep === 2}
-              setIsVerifyModalOpen={() => setCurrentVerificationStep(2)}
-              isStatusModalOpen={currentVerificationStep === 3}
-              setIsStatusModalOpen={() => setCurrentVerificationStep(3)}
+              currentVerificationStep={currentVerificationStep}
+              setCurrentVerificationStep={setCurrentVerificationStep}
               verificationStatus={verificationStatus}
-              onLoginConfirm={() => setCurrentVerificationStep(2)}
-              onVerifyConfirm={() => setCurrentVerificationStep(3)}
-              onStatusConfirm={() => setCurrentVerificationStep(0)}
+              onClose={() => setCurrentVerificationStep(0)}
             />
+            {children}
           </CivicAuthProvider>
         </GatewayProvider>
       </QueryClientProvider>

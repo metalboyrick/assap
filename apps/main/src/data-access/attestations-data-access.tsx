@@ -11,7 +11,7 @@ import { useAnchorProvider } from "../components/solana/solana-provider";
 import { useTransactionToast } from "../components/ui/ui-layout";
 import {
   createAttestation as sdkCreateAttestation,
-  AttestationData,
+  type AttestationData,
 } from "@assap/assap-sdk";
 
 export function useAttestationProgram() {

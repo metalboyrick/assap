@@ -13,10 +13,10 @@ import { useUserProgram } from "@/data-access/user-data-access";
 import { CONTRACTS_PROGRAM_ID } from "@project/anchor";
 import {
   SchemaType,
-  type SchemaData,
   getSchemaDataFromBlobId,
   getSchemaById,
   useAssapAttest,
+  SchemaData,
 } from "@assap/assap-sdk";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
@@ -154,13 +154,12 @@ export default function ContractsPage() {
     fetchSchema();
   }, [attestSchemaIdForAttestation]);
 
-  const { attest } = useAssapAttest({
+  const { initiateAttestation } = useAssapAttest({
     schemaId: attestSchemaIdForAttestation,
     cluster: "devnet",
     onAttestComplete: () => {
       console.log("Attestation complete");
     },
-    attestData: attestationValues,
   });
 
   // Placeholder handlers for UI interaction
@@ -252,14 +251,16 @@ export default function ContractsPage() {
     // Log the data object being sent
     console.log("Sending Attestation Data Object:", attestationValues);
 
-    createAttestation.mutateAsync({
-      payer: publicKey,
-      schemaRegistry: new PublicKey(attestSchemaIdForAttestation),
-      attestData: attestationValues, // Pass the object directly
-      receiver: new PublicKey(attestReceiver),
-      issuerAttachedSolAccount: publicKey, // Placeholder, adjust as needed
-      attesteeAttachedSolAccount: new PublicKey(attestReceiver), // Placeholder, adjust as needed
-    });
+    // createAttestation.mutateAsync({
+    //   payer: publicKey,
+    //   schemaRegistry: new PublicKey(attestSchemaIdForAttestation),
+    //   attestData: attestationValues, // Pass the object directly
+    //   receiver: new PublicKey(attestReceiver),
+    //   issuerAttachedSolAccount: publicKey, // Placeholder, adjust as needed
+    //   attesteeAttachedSolAccount: new PublicKey(attestReceiver), // Placeholder, adjust as needed
+    // });
+
+    initiateAttestation(attestationValues);
   };
 
   const handleUpdateUser = () => {
@@ -294,7 +295,7 @@ export default function ContractsPage() {
       <div style={{ padding: "20px" }}>
         <h2>Solana Contracts Interaction</h2>
         <p>Please connect your wallet to see the UI.</p>
-        {/* Ensure WalletMultiButton is rendered by your app's layout/provider setup */}
+        <WalletMultiButton />
       </div>
     );
   }
@@ -302,7 +303,12 @@ export default function ContractsPage() {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h2>Solana Contracts Interaction</h2>
-      <p>Connected: {publicKey.toBase58()}</p>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}
+      >
+        <p style={{ marginRight: "15px" }}>Connected: {publicKey.toBase58()}</p>
+        <WalletMultiButton />
+      </div>
       {/* Feedback UI removed as feedback state is removed */}
 
       <hr style={{ margin: "20px 0" }} />
@@ -709,7 +715,7 @@ export default function ContractsPage() {
         </button>
       </section>
 
-      <section>
+      {/* <section>
         <button
           style={{
             padding: "10px",
@@ -723,7 +729,7 @@ export default function ContractsPage() {
         >
           Test One Click Attestation
         </button>
-      </section>
+      </section> */}
     </div>
   );
 }
