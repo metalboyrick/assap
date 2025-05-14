@@ -22,6 +22,7 @@
   --border: 0 0% 20%;
   --input: 0 0% 15%;
   --ring: 0 100% 50%;
+  --radius: 0.5rem;
 }
 
 .dark {
@@ -44,6 +45,7 @@
   --border: 0 0% 20%;
   --input: 0 0% 15%;
   --ring: 0 100% 50%;
+  --radius: 0.5rem;
 }
 
 @layer base {
@@ -75,7 +77,9 @@
   border-radius: 0.5rem;
   padding: 1px;
   background: linear-gradient(to right, #ff0000, #0000ff);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
