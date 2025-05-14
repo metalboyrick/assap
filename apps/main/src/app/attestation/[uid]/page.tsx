@@ -326,7 +326,7 @@ export default function AttestationDetailPage({
                 <span className="text-zinc-400">Schema</span>
                 <Link
                   href={`/schema/${attestation.schema_uid}`}
-                  className="text-blue-400 hover:underline"
+                  className="text-blue-400 hover:underline font-mono text-sm"
                 >
                   {attestation.schema_uid.length > 10
                     ? `${attestation.schema_uid.substring(0, 4)}...${attestation.schema_uid.substring(attestation.schema_uid.length - 4)}`

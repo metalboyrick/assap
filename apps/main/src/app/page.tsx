@@ -49,7 +49,7 @@ export default function AttestationsPage() {
       render: (value: string, row: any) => (
         <Link
           href={`/schema/${row.schema_uid || "sch_default"}`}
-          className="text-blue-400 hover:underline"
+          className="text-blue-400 hover:underline font-mono text-sm"
         >
           {`${value.slice(0, 5)}...${value.slice(-5)}`}
         </Link>
