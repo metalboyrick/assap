@@ -31,31 +31,17 @@ import {
 } from "lucide-react";
 import {
   createAttestation,
-  createUser,
-  getUserByAddress,
+  // createUser,
+  // getUserByAddress,
   IdentityVerifier,
 } from "@/core";
-import { useAssapContext } from "./AssapProvider";
-import { PrivyLogin, PrivyLogout } from "./privy";
-import { usePrivy, useSolanaWallets } from "@privy-io/react-auth";
-import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
-import { updateUser } from "@/core/actions/users";
-import {
-  AnchorWallet,
-  useAnchorWallet,
-  useConnection,
-} from "@solana/wallet-adapter-react";
+import { useAssapContext, VerificationMethod } from "./AssapProvider";
+import { PublicKey } from "@solana/web3.js";
+// import { updateUser } from "@/core/actions/users";
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { useAnchorWalletFromPrivy } from "@/hooks/useAnchorWalletFromPrivy";
-
-export type VerificationMethod = {
-  id: string;
-  name: string;
-  isVerified: boolean;
-  icon: React.ElementType; // For Lucide icons
-  iconBgClass: string;
-  iconColorClass: string;
-};
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 
 interface VerificationCardButtonProps {
   icon: LucideIcon;
@@ -105,143 +91,87 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
   verificationStatus,
 }) => {
   const { cluster } = useAssapContext();
-  const { user } = usePrivy();
-  const { wallets } = useSolanaWallets();
+  const { publicKey } = useWallet();
+  const { connection } = useConnection();
+  const anchorWallet = useAnchorWallet();
 
-  const { anchorProvider } = useAnchorWalletFromPrivy();
-
-  // EVERYONE has to create an embedded wallet, this will be used to mint the user acount
-  const embeddedWallet = wallets.find(
-    (wallet) => wallet.walletClientType === "privy",
-  );
+  const anchorProvider = useMemo(() => {
+    if (!anchorWallet || !connection) return undefined;
+    return new AnchorProvider(connection, anchorWallet, {
+      preflightCommitment: "processed",
+    });
+  }, [anchorWallet, connection]);
 
   const { selectedSchemaDataSet, isSchemaDataSetLoading, attestationData } =
     useAssapContext();
 
   useEffect(() => {
-    if (!user && currentVerificationStep > 1) {
-      console.log({ user });
+    if (!publicKey && currentVerificationStep > 1) {
+      console.log({ user: publicKey });
       setCurrentVerificationStep(1);
     }
-  }, [user, currentVerificationStep, setCurrentVerificationStep]);
+  }, [publicKey, currentVerificationStep, setCurrentVerificationStep]);
 
-  // const handleCreateWallet = async () => {
+  // const handleCreateUser = async () => {
   //   try {
-  //     const wallet = await createWallet();
-
-  //     if (!wallet) {
-  //       throw new Error("Wallet creation failed");
+  //     if (!anchorProvider) {
+  //       throw new Error("Anchor provider not found");
+  //     }
+  //     if (!publicKey) {
+  //       throw new Error("Wallet not connected");
   //     }
 
-  //     // mint user account with this address
-  //     const user = await createUser(
+  //     const userInSolana = await getUserByAddress(
   //       "devnet",
-  //       new PublicKey(wallet.address),
+  //       publicKey,
   //       anchorProvider,
   //     );
 
-  //     console.log({ wallet, user });
+  //     console.log({ userInSolana });
+
+  //     return userInSolana;
   //   } catch (error) {
   //     console.error({ error });
+
+  //     if (!anchorProvider) {
+  //       throw new Error("Anchor provider not found");
+  //     }
+  //     if (!publicKey) {
+  //       throw new Error("Wallet not connected for user creation");
+  //     }
+
+  //     await createUser("devnet", publicKey, anchorProvider);
+
+  //     await updateUser("devnet", publicKey, anchorProvider, {
+  //       emailAccount: false,
+  //       twitterAccount: false,
+  //       solAccount: publicKey ? publicKey : undefined,
+  //     });
+
+  //     console.log({ user: publicKey });
+
+  //     return { address: publicKey.toBase58() };
   //   }
   // };
 
-  // // wallet creation side effect
   // useEffect(() => {
-  //   if (user && (!user.wallet || !embeddedWallet)) {
-  //     handleCreateWallet();
+  //   if (publicKey && anchorProvider) {
+  //     handleCreateUser();
   //   }
-  // }, [user, handleCreateWallet]);
-
-  const handleCreateUser = async () => {
-    try {
-      if (!anchorProvider) {
-        throw new Error("Anchor provider not found");
-      }
-
-      const userInSolana = await getUserByAddress(
-        "devnet",
-        new PublicKey(embeddedWallet!.address),
-        anchorProvider,
-      );
-
-      console.log({ userInSolana });
-
-      return userInSolana;
-    } catch (error) {
-      // if account cannot be found, it will error out.
-      console.error({ error });
-
-      if (!anchorProvider) {
-        throw new Error("Anchor provider not found");
-      }
-
-      // mint user account with this address
-      await createUser(
-        "devnet",
-        new PublicKey(embeddedWallet!.address),
-        anchorProvider,
-      );
-
-      // update user account with the existing credentials
-      await updateUser(
-        "devnet",
-        new PublicKey(embeddedWallet!.address),
-        anchorProvider,
-        {
-          emailAccount: !!user?.email,
-          twitterAccount: !!user?.twitter,
-          solAccount: !!user?.wallet ? new PublicKey(user.wallet) : undefined,
-        },
-      );
-
-      console.log({ user });
-
-      return user;
-    }
-  };
-
-  useEffect(() => {
-    if (user && embeddedWallet) {
-      handleCreateUser();
-    }
-  }, [user, embeddedWallet]);
+  // }, [publicKey, anchorProvider]);
 
   const handleLoginConfirm = () => {
-    setCurrentVerificationStep(2); // Go to data preview step (was 1.5)
+    setCurrentVerificationStep(2);
   };
 
   const handleDataPreviewConfirm = () => {
-    setCurrentVerificationStep(3); // Go to verification methods step (was 2)
+    setCurrentVerificationStep(3);
   };
 
-  // temporarily set this step as the final step.
   const handleVerifyConfirm = async () => {
-    // create the attestation
-    // const transaction = await createAttestation(
-    //   "devnet",
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    //   userContext.solana.wallet,
-    // );
-
-    // // send the transaction to the user
-    // sendTransaction(transaction);
-
-    // set the current verification step to the verification status step
-    setCurrentVerificationStep(4); // Go to verification status step (was 3)
+    setCurrentVerificationStep(4);
   };
 
-  // const handleStatusConfirm = () => {
-  //   setCurrentVerificationStep(0);
-  //   onClose();
-  // };
-
-  // Helper function to display data value
   const formatDataValue = (data: any): string => {
     if (Array.isArray(data)) {
       return data.join(", ");
@@ -249,7 +179,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
     return String(data);
   };
 
-  // Helper function to interpolate attestationData into humanMessage
   function renderHumanMessage(
     template: string,
     data: Record<string, any>,
@@ -260,7 +189,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
     });
   }
 
-  // Helper function to get badge color based on data type
   const getTypeColor = (type: string): string => {
     switch (type.toLowerCase()) {
       case "string":
@@ -282,7 +210,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
 
   return (
     <>
-      {/* Login Modal */}
       <Dialog
         open={currentVerificationStep === 1}
         onOpenChange={(open) =>
@@ -317,7 +244,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   Your data is encrypted and securely stored on the Solana
                   blockchain
                 </p>
-                {user ? <PrivyLogout /> : <PrivyLogin />}
+                <DynamicWidget />
               </div>
             </div>
           </div>
@@ -328,7 +255,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                 Cancel
               </Button>
             </DialogClose>
-            {user && (
+            {publicKey && (
               <Button
                 onClick={handleLoginConfirm}
                 className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
@@ -340,7 +267,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Data Preview Modal - The new step */}
       <Dialog
         open={currentVerificationStep === 2}
         onOpenChange={(open) =>
@@ -373,7 +299,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   </div>
                 </div>
 
-                {/* Human Message Preview Section */}
                 {selectedSchemaDataSet?.data.humanMessage && (
                   <div className="mb-4">
                     <div className="text-xs text-zinc-400 mb-1 font-semibold uppercase tracking-wide">
@@ -461,7 +386,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* First Verification Modal */}
       <Dialog
         open={currentVerificationStep === 3}
         onOpenChange={(open) =>
@@ -479,23 +403,12 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Current User Section */}
           <div className="border border-zinc-800 rounded-lg p-4 mb-4">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Wallet className="h-4 w-4 text-zinc-400" />
-                  {user ? (
-                    <span className="text-sm text-zinc-300">
-                      {wallets[0]?.address?.slice(0, 6)}...
-                      {wallets[0]?.address?.slice(-4)}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-zinc-500">Not connected</span>
-                  )}
-                </div>
-                {user ? <PrivyLogout /> : <PrivyLogin />}
+              <div className="text-xs text-zinc-400 mb-1 font-semibold uppercase tracking-wide">
+                Your Account
               </div>
+              <DynamicWidget />
             </div>
           </div>
 
@@ -605,7 +518,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Second Verification Status Modal (now Review Window) */}
       <Dialog
         open={currentVerificationStep === 4}
         onOpenChange={(open) =>
@@ -624,7 +536,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            {/* Schema Name */}
             <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700 mb-2">
               <div className="flex items-center">
                 <FileText className="h-4 w-4 text-blue-400 mr-2" />
@@ -634,7 +545,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
               </div>
             </div>
 
-            {/* Human Message Preview Section */}
             {selectedSchemaDataSet?.data.humanMessage && (
               <div className="mb-2">
                 <div className="text-xs text-zinc-400 mb-1 font-semibold uppercase tracking-wide">
@@ -651,7 +561,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
               </div>
             )}
 
-            {/* Data Table */}
             <Table>
               <TableHeader>
                 <TableRow>
@@ -683,7 +592,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
               </TableBody>
             </Table>
 
-            {/* Completed Verifications */}
             <div>
               <div className="text-xs text-zinc-400 mb-1 font-semibold uppercase tracking-wide">
                 Completed Verifications
@@ -737,7 +645,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   return;
                 }
 
-                if (!wallets[0]?.address) {
+                if (!publicKey) {
                   alert(
                     "Please connect your wallet before performing attestation.",
                   );
@@ -751,12 +659,12 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                 try {
                   await createAttestation(
                     cluster,
-                    new PublicKey(wallets[0].address),
+                    publicKey,
                     new PublicKey(selectedSchemaDataSet.schema.schema_uid),
                     attestationData,
-                    new PublicKey(wallets[0].address),
-                    new PublicKey(wallets[0].address),
-                    new PublicKey(wallets[0].address),
+                    publicKey,
+                    publicKey,
+                    publicKey,
                     anchorProvider,
                   );
                 } catch (err) {

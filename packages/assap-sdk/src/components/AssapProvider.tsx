@@ -9,13 +9,9 @@ import React, {
   useCallback,
 } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { VerificationDialogs, VerificationMethod } from "./VerificationDialogs";
+import { VerificationDialogs } from "./VerificationDialogs";
 import { AttestationData, Schema, SchemaData } from "@/core";
-import { PrivyProvider } from "@privy-io/react-auth";
-import { AnchorProvider, setProvider } from "@coral-xyz/anchor";
 import {
-  useWallet,
-  AnchorWallet,
   ConnectionProvider,
   WalletProvider,
   useConnection,
@@ -23,7 +19,8 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { WalletError } from "@solana/wallet-adapter-base";
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 
 // Import wallet adapter UI styles
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -32,6 +29,15 @@ import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 const gatekeeperNetwork = new PublicKey(
   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
 );
+
+export type VerificationMethod = {
+  id: string;
+  name: string;
+  isVerified: boolean;
+  icon: React.ElementType; // For Lucide icons
+  iconBgClass: string;
+  iconColorClass: string;
+};
 
 interface AssapContextValue {
   currentVerificationStep: number;
@@ -115,9 +121,18 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
     console.error("Wallet Adapter Error:", error);
   }, []);
 
+  // Define wallets for WalletProvider if not using DynamicContextProvider exclusively
+  const wallets = useMemo(
+    () => [
+      new SolflareWalletAdapter(),
+      // Add other wallets here e.g. new PhantomWalletAdapter(),
+    ],
+    [],
+  );
+
   let content = (
     <QueryClientProvider client={queryClient}>
-      <PrivyProvider
+      {/* <PrivyProvider
         appId="cmaohnlg900dkl70m51s5kx7e"
         clientId="client-WY6LJbGdikecgEK2dmh8kn4RvktCAzWEzVVq6DyPePPkG"
         config={{
@@ -139,32 +154,39 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
             },
           },
         }}
+      > */}
+      <DynamicContextProvider
+        settings={{
+          environmentId: "102aa782-c66d-4651-9738-33f5665bfcbb",
+          walletConnectors: [SolanaWalletConnectors],
+        }}
       >
         <ConnectionProvider endpoint={endpoint}>
-          {/* <WalletProvider
-            wallets={[...toSolanaWalletConnectors()]}
+          <WalletProvider
+            wallets={wallets}
             onError={onError}
             autoConnect={true}
-          > */}
-          <WalletModalProvider>
-            <GatewayProvider
-              connection={connection}
-              cluster={cluster}
-              wallet={wallet}
-              gatekeeperNetwork={gatekeeperNetwork}
-            >
-              <VerificationDialogs
-                currentVerificationStep={currentVerificationStep}
-                setCurrentVerificationStep={setCurrentVerificationStep}
-                verificationStatus={verificationStatus}
-                onClose={() => setCurrentVerificationStep(0)}
-              />
-              {children}
-            </GatewayProvider>
-          </WalletModalProvider>
-          {/* </WalletProvider> */}
+          >
+            <WalletModalProvider>
+              <GatewayProvider
+                connection={connection}
+                cluster={cluster}
+                wallet={wallet}
+                gatekeeperNetwork={gatekeeperNetwork}
+              >
+                <VerificationDialogs
+                  currentVerificationStep={currentVerificationStep}
+                  setCurrentVerificationStep={setCurrentVerificationStep}
+                  verificationStatus={verificationStatus}
+                  onClose={() => setCurrentVerificationStep(0)}
+                />
+                {children}
+              </GatewayProvider>
+            </WalletModalProvider>
+          </WalletProvider>
         </ConnectionProvider>
-      </PrivyProvider>
+        {/* </PrivyProvider> */}
+      </DynamicContextProvider>
     </QueryClientProvider>
   );
 
