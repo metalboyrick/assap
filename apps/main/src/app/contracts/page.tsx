@@ -260,7 +260,11 @@ export default function ContractsPage() {
     //   attesteeAttachedSolAccount: new PublicKey(attestReceiver), // Placeholder, adjust as needed
     // });
 
-    initiateAttestation(attestationValues);
+    initiateAttestation({
+      attestData: attestationValues,
+      receiver: new PublicKey(attestReceiver),
+      issuer: publicKey,
+    });
   };
 
   const handleUpdateUser = () => {

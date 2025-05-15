@@ -3,13 +3,13 @@ import { ClusterProvider } from "@/components/cluster/cluster-data-access";
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { UiLayout } from "@/components/ui/ui-layout";
 import { ReactQueryProvider } from "./react-query-provider";
-import { Inter } from "next/font/google";
-import { Darker_Grotesque } from "next/font/google"; // assuming you're using this as well
+import { Archivo, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/header";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const darkerGrotesque = Darker_Grotesque({ subsets: ["latin"], variable: "--font-darker-grotesque" });
+const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo" });
 
 export const metadata = {
   title: "Contracts",
@@ -28,22 +28,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${darkerGrotesque.variable} font-sans`}>
-        <ReactQueryProvider>
-          <ClusterProvider>
-            <SolanaProvider>
-              <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-                <div className="flex flex-col min-h-screen bg-black text-white">
-                  <Header />
-                  <main className="flex-1 p-6 md:p-8 overflow-auto max-w-7xl mx-auto w-full">{children}</main>
-                </div>
-              </ThemeProvider>
-            </SolanaProvider>
-          </ClusterProvider>
-        </ReactQueryProvider>
+      <body className={`${inter.variable} ${archivo.variable} font-sans`}>
+        <Providers>
+          <div className="flex flex-col min-h-screen bg-black text-white">
+            <Header />
+            <main className="flex-1 p-6 md:p-8 overflow-auto max-w-7xl mx-auto w-full">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
 }
-
-

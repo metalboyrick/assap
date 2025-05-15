@@ -1,11 +1,33 @@
 import { GatewayProvider } from "@civic/solana-gateway-react";
-import { CivicAuthProvider } from "@civic/auth-web3";
-import { Cluster, Connection, PublicKey } from "@solana/web3.js";
+import { Cluster, PublicKey } from "@solana/web3.js";
 import { clusterApiUrl } from "@solana/web3.js";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { VerificationDialogs, VerificationMethod } from "./VerificationDialogs";
 import { AttestationData, Schema, SchemaData } from "@/core";
+import { PrivyProvider } from "@privy-io/react-auth";
+import { AnchorProvider, setProvider } from "@coral-xyz/anchor";
+import {
+  useWallet,
+  AnchorWallet,
+  ConnectionProvider,
+  WalletProvider,
+  useConnection,
+  useAnchorWallet,
+} from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { WalletError } from "@solana/wallet-adapter-base";
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+
+// Import wallet adapter UI styles
+import "@solana/wallet-adapter-react-ui/styles.css";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 const gatekeeperNetwork = new PublicKey(
   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
@@ -34,6 +56,10 @@ interface AssapContextValue {
   setAttestationData: (attestationData: AttestationData) => void;
   cluster: Cluster;
   setCluster: (cluster: Cluster) => void;
+  receiver: PublicKey;
+  setReceiver: (receiver: PublicKey) => void;
+  issuer: PublicKey;
+  setIssuer: (issuer: PublicKey) => void;
 }
 
 // Create a context for the AssapProvider
@@ -73,6 +99,74 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
     {} as AttestationData,
   );
   const [cluster, setCluster] = useState<Cluster>("devnet");
+  const [receiver, setReceiver] = useState<PublicKey>({} as PublicKey);
+  const [issuer, setIssuer] = useState<PublicKey>({} as PublicKey);
+
+  // AnchorProvider setup
+  const wallet = useAnchorWallet();
+  const { connection } = useConnection();
+
+  // Endpoint for ConnectionProvider
+  const endpoint = useMemo(() => {
+    return typeof cluster === "string" ? clusterApiUrl(cluster) : cluster;
+  }, [cluster]);
+
+  const onError = useCallback((error: WalletError) => {
+    console.error("Wallet Adapter Error:", error);
+  }, []);
+
+  let content = (
+    <QueryClientProvider client={queryClient}>
+      <PrivyProvider
+        appId="cmaohnlg900dkl70m51s5kx7e"
+        clientId="client-WY6LJbGdikecgEK2dmh8kn4RvktCAzWEzVVq6DyPePPkG"
+        config={{
+          // Create embedded wallets for users who don't have a wallet
+          embeddedWallets: {
+            solana: {
+              createOnLogin: "users-without-wallets",
+            },
+          },
+          solanaClusters: [
+            {
+              name: "devnet",
+              rpcUrl: "https://api.devnet.solana.com",
+            },
+          ],
+          externalWallets: {
+            solana: {
+              connectors: toSolanaWalletConnectors(),
+            },
+          },
+        }}
+      >
+        <ConnectionProvider endpoint={endpoint}>
+          {/* <WalletProvider
+            wallets={[...toSolanaWalletConnectors()]}
+            onError={onError}
+            autoConnect={true}
+          > */}
+          <WalletModalProvider>
+            <GatewayProvider
+              connection={connection}
+              cluster={cluster}
+              wallet={wallet}
+              gatekeeperNetwork={gatekeeperNetwork}
+            >
+              <VerificationDialogs
+                currentVerificationStep={currentVerificationStep}
+                setCurrentVerificationStep={setCurrentVerificationStep}
+                verificationStatus={verificationStatus}
+                onClose={() => setCurrentVerificationStep(0)}
+              />
+              {children}
+            </GatewayProvider>
+          </WalletModalProvider>
+          {/* </WalletProvider> */}
+        </ConnectionProvider>
+      </PrivyProvider>
+    </QueryClientProvider>
+  );
 
   return (
     <AssapContext.Provider
@@ -87,27 +181,13 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
         setAttestationData,
         cluster,
         setCluster,
+        receiver,
+        setReceiver,
+        issuer,
+        setIssuer,
       }}
     >
-      <QueryClientProvider client={queryClient}>
-        <GatewayProvider
-          connection={new Connection(clusterApiUrl("devnet"), "confirmed")}
-          cluster="devnet"
-          // wallet={wallet}
-          gatekeeperNetwork={gatekeeperNetwork}
-        >
-          {/* client id hard coded for now, this will be moved to some sort of injection mechanism later */}
-          <CivicAuthProvider clientId={"6b1a9573-300c-4777-ad91-27cbea305f1b"}>
-            <VerificationDialogs
-              currentVerificationStep={currentVerificationStep}
-              setCurrentVerificationStep={setCurrentVerificationStep}
-              verificationStatus={verificationStatus}
-              onClose={() => setCurrentVerificationStep(0)}
-            />
-            {children}
-          </CivicAuthProvider>
-        </GatewayProvider>
-      </QueryClientProvider>
+      {content}
     </AssapContext.Provider>
   );
 }

@@ -16,14 +16,14 @@ export const AssapAttestButton = ({
   receiver,
   issuer,
 }: AssapAttestButtonProps) => {
-  const { inititateAttestation } = useAssapAttest({
+  const { initiateAttestation } = useAssapAttest({
     onAttestComplete,
     schemaId,
     cluster,
   });
   return (
     <Button
-      onClick={() => inititateAttestation({ attestData, receiver, issuer })}
+      onClick={() => initiateAttestation({ attestData, receiver, issuer })}
     >
       Attest Now
     </Button>

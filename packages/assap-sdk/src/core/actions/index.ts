@@ -2,4 +2,5 @@ export * from "./schema";
 
 export * from "./attestations";
 
-export * from "./users";
+// we do not expose update user
+export { createUser, getUserByAddress } from "./users";

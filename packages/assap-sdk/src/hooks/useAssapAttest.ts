@@ -4,7 +4,7 @@ import {
   getSchemaDataFromBlobId,
 } from "@/core";
 import { useAssapContext } from "../components/AssapProvider";
-import { Cluster } from "@solana/web3.js";
+import { Cluster, PublicKey } from "@solana/web3.js";
 import { useUser } from "@civic/auth-web3/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -27,6 +27,9 @@ export function useAssapAttest({
     setIsSchemaDataSetLoading,
     setSelectedSchemaDataSet,
     setCluster,
+    setAttestationData,
+    setReceiver,
+    setIssuer,
   } = useAssapContext();
 
   const { data: schemaDataSet, isLoading: isSchemaDataSetLoading } = useQuery({
@@ -53,7 +56,7 @@ export function useAssapAttest({
   // attesteeAttachedSolAccount: PublicKey,
   // provider: AnchorProvider,
 
-  const inititateAttestation = ({
+  const initiateAttestation = ({
     attestData,
     receiver,
     issuer,
@@ -62,7 +65,9 @@ export function useAssapAttest({
     receiver: string;
     issuer: string;
   }) => {
-    console.log({ attestData, receiver, issuer });
+    setReceiver(new PublicKey(receiver));
+    setIssuer(new PublicKey(issuer));
+    setAttestationData(attestData);
 
     if (!user) {
       setCurrentVerificationStep(1);
@@ -72,7 +77,7 @@ export function useAssapAttest({
   };
 
   return {
-    inititateAttestation,
+    initiateAttestation,
     isSchemaDataSetLoading,
   };
 }
