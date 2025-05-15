@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,10 +38,8 @@ import {
 import { useAssapContext, VerificationMethod } from "./AssapProvider";
 import { PublicKey } from "@solana/web3.js";
 // import { updateUser } from "@/core/actions/users";
-import { AnchorProvider } from "@coral-xyz/anchor";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
+import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useAnchorProviderFromDynamic } from "@/hooks/useAnchorProviderFromDynamic";
 
 interface VerificationCardButtonProps {
   icon: LucideIcon;
@@ -90,27 +88,20 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
   setCurrentVerificationStep,
   verificationStatus,
 }) => {
-  const { cluster } = useAssapContext();
-  const { publicKey } = useWallet();
-  const { connection } = useConnection();
-  const anchorWallet = useAnchorWallet();
+  const { cluster, onAttestComplete } = useAssapContext();
+  const { user, primaryWallet } = useDynamicContext();
 
-  const anchorProvider = useMemo(() => {
-    if (!anchorWallet || !connection) return undefined;
-    return new AnchorProvider(connection, anchorWallet, {
-      preflightCommitment: "processed",
-    });
-  }, [anchorWallet, connection]);
+  const { anchorProvider } = useAnchorProviderFromDynamic();
 
   const { selectedSchemaDataSet, isSchemaDataSetLoading, attestationData } =
     useAssapContext();
 
   useEffect(() => {
-    if (!publicKey && currentVerificationStep > 1) {
-      console.log({ user: publicKey });
+    if (!user && currentVerificationStep > 1) {
+      console.log({ user });
       setCurrentVerificationStep(1);
     }
-  }, [publicKey, currentVerificationStep, setCurrentVerificationStep]);
+  }, [user, currentVerificationStep, setCurrentVerificationStep]);
 
   // const handleCreateUser = async () => {
   //   try {
@@ -236,7 +227,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
             </div>
 
             <div className="flex items-center justify-center p-6 border border-zinc-800 rounded-lg">
-              <div className="text-center">
+              <div className="text-center w-full flex items-center justify-center flex-col">
                 <h3 className="font-medium text-lg mb-2">
                   Secure Authentication
                 </h3>
@@ -244,7 +235,14 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   Your data is encrypted and securely stored on the Solana
                   blockchain
                 </p>
-                <DynamicWidget />
+                <DynamicWidget
+                  variant="modal"
+                  innerButtonComponent={
+                    <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 w-full">
+                      Connect Account
+                    </Button>
+                  }
+                />
               </div>
             </div>
           </div>
@@ -255,7 +253,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                 Cancel
               </Button>
             </DialogClose>
-            {publicKey && (
+            {!!user && (
               <Button
                 onClick={handleLoginConfirm}
                 className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
@@ -645,7 +643,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   return;
                 }
 
-                if (!publicKey) {
+                if (!primaryWallet?.address) {
                   alert(
                     "Please connect your wallet before performing attestation.",
                   );
@@ -656,8 +654,10 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   throw new Error("Anchor provider not found");
                 }
 
+                const publicKey = new PublicKey(primaryWallet.address);
+
                 try {
-                  await createAttestation(
+                  const txnHash = await createAttestation(
                     cluster,
                     publicKey,
                     new PublicKey(selectedSchemaDataSet.schema.schema_uid),
@@ -667,6 +667,10 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                     publicKey,
                     anchorProvider,
                   );
+
+                  setCurrentVerificationStep(1);
+
+                  onAttestComplete(txnHash);
                 } catch (err) {
                   console.error("Failed to create attestation:", err);
                   alert("Failed to create attestation. Please try again.");

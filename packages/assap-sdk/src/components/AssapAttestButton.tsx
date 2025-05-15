@@ -3,8 +3,7 @@ import { useAssapAttest, type UseAssapAttestProps } from "../hooks";
 import { Button } from "./ui/button";
 
 type AssapAttestButtonProps = UseAssapAttestProps & {
-  receiver: string;
-  issuer: string;
+  receiver?: string;
   attestData: AttestationData;
 };
 
@@ -14,7 +13,6 @@ export const AssapAttestButton = ({
   cluster,
   attestData,
   receiver,
-  issuer,
 }: AssapAttestButtonProps) => {
   const { initiateAttestation } = useAssapAttest({
     onAttestComplete,
@@ -22,9 +20,7 @@ export const AssapAttestButton = ({
     cluster,
   });
   return (
-    <Button
-      onClick={() => initiateAttestation({ attestData, receiver, issuer })}
-    >
+    <Button onClick={() => initiateAttestation({ attestData, receiver })}>
       Attest Now
     </Button>
   );

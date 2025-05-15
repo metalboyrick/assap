@@ -262,8 +262,7 @@ export default function ContractsPage() {
 
     initiateAttestation({
       attestData: attestationValues,
-      receiver: new PublicKey(attestReceiver),
-      issuer: publicKey,
+      receiver: attestReceiver,
     });
   };
 
@@ -294,99 +293,18 @@ export default function ContractsPage() {
     });
   };
 
-  if (!publicKey) {
-    return (
-      <div style={{ padding: "20px" }}>
-        <h2>Solana Contracts Interaction</h2>
-        <p>Please connect your wallet to see the UI.</p>
-        <WalletMultiButton />
-      </div>
-    );
-  }
+  // if (!publicKey) {
+  //   return (
+  //     <div style={{ padding: "20px" }}>
+  //       <h2>Solana Contracts Interaction</h2>
+  //       <p>Please connect your wallet to see the UI.</p>
+  //       <WalletMultiButton />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2>Solana Contracts Interaction</h2>
-      <div
-        style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}
-      >
-        <p style={{ marginRight: "15px" }}>Connected: {publicKey.toBase58()}</p>
-        <WalletMultiButton />
-      </div>
-      {/* Feedback UI removed as feedback state is removed */}
-
-      <hr style={{ margin: "20px 0" }} />
-
-      <section>
-        <h3>User Management</h3>
-        <button
-          onClick={handleCreateUser}
-          style={{
-            marginRight: "10px",
-            padding: "10px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Create/Ensure My User Account
-        </button>
-
-        <h4>Update My User Account</h4>
-        <div>
-          <label style={{ marginRight: "10px" }}>
-            <input
-              type="checkbox"
-              checked={hasTwitter}
-              onChange={(e) => setHasTwitter(e.target.checked)}
-            />{" "}
-            Has Twitter
-          </label>
-          <label style={{ marginRight: "10px" }}>
-            <input
-              type="checkbox"
-              checked={hasDiscord}
-              onChange={(e) => setHasDiscord(e.target.checked)}
-            />{" "}
-            Has Discord
-          </label>
-          <label style={{ marginRight: "10px" }}>
-            <input
-              type="checkbox"
-              checked={hasGithub}
-              onChange={(e) => setHasGithub(e.target.checked)}
-            />{" "}
-            Has GitHub
-          </label>
-          <label style={{ marginRight: "10px" }}>
-            <input
-              type="checkbox"
-              checked={hasTelegram}
-              onChange={(e) => setHasTelegram(e.target.checked)}
-            />{" "}
-            Has Telegram
-          </label>
-        </div>
-        <button
-          onClick={handleUpdateUser}
-          style={{
-            marginTop: "10px",
-            padding: "10px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Update My User Profile
-        </button>
-      </section>
-
-      <hr style={{ margin: "20px 0" }} />
-
       <section>
         <h3>Schema Registry</h3>
         <div style={{ marginBottom: "10px" }}>

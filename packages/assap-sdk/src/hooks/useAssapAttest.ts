@@ -4,14 +4,14 @@ import {
   getSchemaDataFromBlobId,
 } from "@/core";
 import { useAssapContext } from "../components/AssapProvider";
-import { Cluster, PublicKey } from "@solana/web3.js";
+import { Cluster } from "@solana/web3.js";
 import { useUser } from "@civic/auth-web3/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export interface UseAssapAttestProps {
   schemaId: string;
-  onAttestComplete: () => void;
+  onAttestComplete: (txnHash: string) => void;
   cluster: Cluster;
 }
 
@@ -28,8 +28,7 @@ export function useAssapAttest({
     setSelectedSchemaDataSet,
     setCluster,
     setAttestationData,
-    setReceiver,
-    setIssuer,
+    setOnAttestComplete,
   } = useAssapContext();
 
   const { data: schemaDataSet, isLoading: isSchemaDataSetLoading } = useQuery({
@@ -58,15 +57,15 @@ export function useAssapAttest({
 
   const initiateAttestation = ({
     attestData,
-    receiver,
-    issuer,
   }: {
     attestData: AttestationData;
-    receiver: string;
-    issuer: string;
+    receiver?: string;
   }) => {
-    setReceiver(new PublicKey(receiver));
-    setIssuer(new PublicKey(issuer));
+    // if (!primaryWallet?.address) {
+    //   return;
+    // }
+
+    setOnAttestComplete(_onAttestComplete);
     setAttestationData(attestData);
 
     if (!user) {

@@ -19,8 +19,12 @@
       "cache": false,
       "persistent": true
     },
+
     "assap-sdk#build": {
       "outputs": ["dist/**", ".turbo/build.log"]
+    },
+    "main#build": {
+      "dependsOn": ["^assap-sdk#build"]
     },
     "assap-sdk#lint": {
       "outputs": [".turbo/lint.log"]

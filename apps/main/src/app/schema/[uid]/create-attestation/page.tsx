@@ -28,13 +28,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   getSchemaDataFromBlobId,
   SchemaData,
-  IdentityVerifier,
   AttestationData,
+  useAssapAttest,
 } from "@assap/assap-sdk";
 import { useCluster } from "@/components/cluster/cluster-data-access";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { useAttestationProgram } from "@/data-access/attestations-data-access";
 import toast from "react-hot-toast";
 
 // Define types for schema and field
@@ -77,8 +74,6 @@ export default function CreateAttestationFromSchemaPage({
   params: { uid: string };
 }) {
   const { cluster } = useCluster();
-  const wallet = useWallet();
-  const { createAttestation } = useAttestationProgram();
 
   const [schema, setSchema] = useState<SchemaMetadata | null>(null);
   const [schemaDataset, setSchemaDataset] = useState<SchemaDataset | null>(
@@ -92,6 +87,16 @@ export default function CreateAttestationFromSchemaPage({
   const [transactionSignature, setTransactionSignature] = useState<
     string | null
   >(null);
+
+  const { initiateAttestation } = useAssapAttest({
+    schemaId: params.uid,
+    onAttestComplete: (txnHash: string) => {
+      setIsSubmitting(false);
+      setTransactionSignature(txnHash);
+      setIsSuccess(true);
+    },
+    cluster: "devnet",
+  });
 
   // Fetch schema data from the backend
   useEffect(() => {
@@ -135,10 +140,10 @@ export default function CreateAttestationFromSchemaPage({
   };
 
   const handleCreateAttestation = async () => {
-    if (!wallet.publicKey || !schema) {
-      toast.error("Wallet not connected or schema not loaded");
-      return;
-    }
+    // if (!wallet.publicKey || !schema) {
+    //   toast.error("Wallet not connected or schema not loaded");
+    //   return;
+    // }
 
     try {
       setIsSubmitting(true);
@@ -152,25 +157,26 @@ export default function CreateAttestationFromSchemaPage({
       });
 
       // Create attestation on-chain
-      const schemaRegistryPublicKey = new PublicKey(schema.schema_uid);
+      // const schemaRegistryPublicKey = new PublicKey(schema.schema_uid);
 
       // Using wallet.publicKey which we've already confirmed is not null above
-      const payer = wallet.publicKey;
-      const issuerAttachedSolAccount = wallet.publicKey;
-      const attesteeAttachedSolAccount = wallet.publicKey;
-      const receiver = wallet.publicKey;
+      // const payer = wallet.publicKey;
+      // const issuerAttachedSolAccount = wallet.publicKey;
+      // const attesteeAttachedSolAccount = wallet.publicKey;
+      // const receiver = wallet.publicKey;
 
-      const signature = await createAttestation.mutateAsync({
-        payer,
-        schemaRegistry: schemaRegistryPublicKey,
+      // const signature = await createAttestation.mutateAsync({
+      //   payer,
+      //   schemaRegistry: schemaRegistryPublicKey,
+      //   attestData,
+      //   receiver,
+      //   issuerAttachedSolAccount,
+      //   attesteeAttachedSolAccount,
+      // });
+
+      initiateAttestation({
         attestData,
-        receiver,
-        issuerAttachedSolAccount,
-        attesteeAttachedSolAccount,
       });
-
-      setTransactionSignature(signature);
-      setIsSuccess(true);
     } catch (error) {
       console.error("Error creating attestation:", error);
       toast.error("Failed to create attestation");
@@ -283,7 +289,7 @@ export default function CreateAttestationFromSchemaPage({
       </div>
 
       {/* Wallet connection check */}
-      {!wallet.connected && (
+      {/* {!wallet.connected && (
         <Alert className="bg-amber-900/20 border-amber-800 text-amber-100">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Wallet not connected</AlertTitle>
@@ -291,7 +297,7 @@ export default function CreateAttestationFromSchemaPage({
             You need to connect your Solana wallet to create an attestation.
           </AlertDescription>
         </Alert>
-      )}
+      )} */}
 
       {!showHumanMessage ? (
         <Card className="bg-zinc-900 border-zinc-800">
@@ -395,7 +401,7 @@ export default function CreateAttestationFromSchemaPage({
                 <Button
                   type="submit"
                   className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
-                  disabled={!allFieldsFilled || !wallet.connected}
+                  disabled={!allFieldsFilled}
                 >
                   Continue
                 </Button>
@@ -437,7 +443,7 @@ export default function CreateAttestationFromSchemaPage({
             <Button
               className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
               onClick={handleCreateAttestation}
-              disabled={isSubmitting || !wallet.connected}
+              disabled={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create Attestation"}
             </Button>

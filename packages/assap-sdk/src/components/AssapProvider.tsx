@@ -1,6 +1,4 @@
-import { GatewayProvider } from "@civic/solana-gateway-react";
 import { Cluster, PublicKey } from "@solana/web3.js";
-import { clusterApiUrl } from "@solana/web3.js";
 import React, {
   createContext,
   useContext,
@@ -14,21 +12,22 @@ import { AttestationData, Schema, SchemaData } from "@/core";
 import {
   ConnectionProvider,
   WalletProvider,
-  useConnection,
-  useAnchorWallet,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { WalletError } from "@solana/wallet-adapter-base";
-import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import {
+  DynamicContextProvider,
+  overrideNetworkRpcUrl,
+} from "@dynamic-labs/sdk-react-core";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 
 // Import wallet adapter UI styles
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 
-const gatekeeperNetwork = new PublicKey(
-  "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
-);
+// const gatekeeperNetwork = new PublicKey(
+//   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
+// );
 
 export type VerificationMethod = {
   id: string;
@@ -39,6 +38,8 @@ export type VerificationMethod = {
   iconColorClass: string;
 };
 
+const RPC_URL =
+  "https://devnet.helius-rpc.com/?api-key=8e185d94-102d-4cdf-9655-da941c6bf58c";
 interface AssapContextValue {
   currentVerificationStep: number;
   setCurrentVerificationStep: (step: number) => void;
@@ -66,6 +67,9 @@ interface AssapContextValue {
   setReceiver: (receiver: PublicKey) => void;
   issuer: PublicKey;
   setIssuer: (issuer: PublicKey) => void;
+
+  onAttestComplete: (txnHash: string) => void;
+  setOnAttestComplete: (onAttestComplete: (txnHash: string) => void) => void;
 }
 
 // Create a context for the AssapProvider
@@ -107,15 +111,9 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
   const [cluster, setCluster] = useState<Cluster>("devnet");
   const [receiver, setReceiver] = useState<PublicKey>({} as PublicKey);
   const [issuer, setIssuer] = useState<PublicKey>({} as PublicKey);
-
-  // AnchorProvider setup
-  const wallet = useAnchorWallet();
-  const { connection } = useConnection();
-
-  // Endpoint for ConnectionProvider
-  const endpoint = useMemo(() => {
-    return typeof cluster === "string" ? clusterApiUrl(cluster) : cluster;
-  }, [cluster]);
+  const [onAttestComplete, setOnAttestComplete] = useState<
+    (txnHash: string) => void
+  >(() => {});
 
   const onError = useCallback((error: WalletError) => {
     console.error("Wallet Adapter Error:", error);
@@ -157,31 +155,44 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
       > */}
       <DynamicContextProvider
         settings={{
-          environmentId: "102aa782-c66d-4651-9738-33f5665bfcbb",
+          environmentId: "12d0cb43-b719-4251-80fb-d6446132fb5c",
           walletConnectors: [SolanaWalletConnectors],
+          overrides: {
+            solNetworks: (networks) =>
+              overrideNetworkRpcUrl(networks, {
+                "103": [RPC_URL],
+              }),
+          },
+          walletsFilter: (wallets) =>
+            wallets.filter(
+              (w) =>
+                w.key.includes("solflare") ||
+                w.key.includes("phantom") ||
+                w.key.includes("backpack"),
+            ),
         }}
       >
-        <ConnectionProvider endpoint={endpoint}>
+        <ConnectionProvider endpoint={RPC_URL}>
           <WalletProvider
             wallets={wallets}
             onError={onError}
             autoConnect={true}
           >
             <WalletModalProvider>
-              <GatewayProvider
+              {/* <GatewayProvider
                 connection={connection}
                 cluster={cluster}
                 wallet={wallet}
                 gatekeeperNetwork={gatekeeperNetwork}
-              >
-                <VerificationDialogs
-                  currentVerificationStep={currentVerificationStep}
-                  setCurrentVerificationStep={setCurrentVerificationStep}
-                  verificationStatus={verificationStatus}
-                  onClose={() => setCurrentVerificationStep(0)}
-                />
-                {children}
-              </GatewayProvider>
+              > */}
+              <VerificationDialogs
+                currentVerificationStep={currentVerificationStep}
+                setCurrentVerificationStep={setCurrentVerificationStep}
+                verificationStatus={verificationStatus}
+                onClose={() => setCurrentVerificationStep(0)}
+              />
+              {children}
+              {/* </GatewayProvider> */}
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>
@@ -207,6 +218,8 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
         setReceiver,
         issuer,
         setIssuer,
+        onAttestComplete,
+        setOnAttestComplete,
       }}
     >
       {content}
