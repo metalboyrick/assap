@@ -1,84 +1,135 @@
-# Turborepo starter
+# ASSAP - Anti Sybil Solana Attestation Protocol
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **Note:** This project uses PNPM as the primary package manager.
 
-## Using this example
+## Monorepo Composition
 
-Run the following command:
+This monorepo is structured with the following main applications and packages:
+
+## Project Summary
+
+ASSAP (Anti-Sybil Attestation Protocol) is a decentralized identity verification protocol built on Solana. It empowers users and developers with secure, human-readable attestations, modular sybil protection, and easy-to-use SDKs, aiming to redefine trust on-chain. ([Read More](https://www.assap.xyz/))
+
+### Applications (`apps/`)
+
+- `main`: The main Next.js application serving as the ASSAP explorer and user interface.
+- `landing`: The public landing page for ASSAP.
+- `deck`: (Deprecated) Contains the pitch deck for ASSAP (using Slidev).
+- `docs`: (WIP) Houses the documentation for the ASSAP protocol and its components.
+
+### Packages (`packages/`)
+
+- `assap-sdk`: The core Software Development Kit (SDK) for integrating ASSAP functionalities into your projects.
+- `ui`: A shared UI component library used across different applications in the monorepo.
+- `eslint-config`: Shared ESLint configurations for consistent code linting.
+- `typescript-config`: Shared TypeScript configurations (`tsconfig.json`) for the monorepo.
+
+## Using the `@assap-xyz/assap-sdk`
+
+The `@assap-xyz/assap-sdk` provides the necessary tools to integrate ASSAP's attestation functionality into your Solana applications.
+
+### Installation
+
+To get started, install the SDK using pnpm:
 
 ```sh
-npx create-turbo@latest
+pnpm add @assap-xyz/assap-sdk
 ```
 
-## What's inside?
+Or using npm:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+```sh
+npm install @assap-xyz/assap-sdk
 ```
 
-### Develop
+Or using yarn:
 
-To develop all apps and packages, run the following command:
-
+```sh
+yarn add @assap-xyz/assap-sdk
 ```
-cd my-turborepo
+
+### Quick Start: `AttestButton`
+
+The easiest way to allow users to create attestations is by using the `AttestButton` component.
+
+1.  **Wrap your application (or the relevant part) with `AssapProvider`**:
+    This provider component sets up the necessary context for the SDK components to function correctly.
+
+    ```tsx
+    // Example: src/app/layout.tsx or your main app component
+    import { AssapProvider } from "@assap-xyz/assap-sdk";
+    import "@assap-xyz/assap-sdk/dist/style.css"; // Import default styles
+
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      return (
+        <html lang="en">
+          <body>
+            <AssapProvider>{children}</AssapProvider>
+          </body>
+        </html>
+      );
+    }
+    ```
+
+2.  **Use the `AttestButton` component**:
+    Place the `AttestButton` where you want the attestation functionality. You'll need to provide a `schemaId`, `attestData`, `cluster` and an `onAttestComplete` callback.
+
+    ```tsx
+    import { AttestButton, AttestationData } from "@assap-xyz/assap-sdk";
+    import { Cluster } from "@solana/web3.js";
+
+    function MyComponent() {
+      const handleAttestationComplete = (txnHash: string) => {
+        console.log("Attestation successful, transaction hash:", txnHash);
+        // Handle post-attestation logic here
+      };
+
+      // Define your attestation data according to your schema
+      const attestationData: AttestationData = {
+        // ... your data fields
+      };
+
+      const P_SCHEMA_ID = "YOUR_SCHEMA_ID"; // Replace with your actual schema ID
+      const P_CLUSTER: Cluster = "devnet"; // Or "mainnet-beta", "testnet"
+
+      return (
+        <div>
+          {/* Other components */}
+          <AttestButton
+            schemaId={P_SCHEMA_ID}
+            attestData={attestationData}
+            onAttestComplete={handleAttestationComplete}
+            cluster={P_CLUSTER}
+            className="my-custom-styles" // Optional: for custom styling
+          />
+        </div>
+      );
+    }
+    ```
+
+    Refer to the `AttestButton.tsx` and `AssapProvider.tsx` components within the SDK for more details on props and usage.
+
+## Running the `main` Application (Explorer Page)
+
+The `main` application located in `apps/main` serves as the explorer and interface for interacting with the ASSAP protocol.
+
+To run the `main` app in development mode:
+
+```sh
+cd apps/main
 pnpm dev
 ```
 
-### Remote Caching
+This will typically start the Next.js development server on `http://localhost:3000`.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Devnet Program ID
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+The ASSAP smart contract is deployed on the Solana Devnet with the following Program ID:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+`4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e`
 
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+This ID is used by the SDK and the explorer to interact with the on-chain program.
