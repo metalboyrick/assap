@@ -69,11 +69,9 @@ interface SchemaDataset {
   schemaData: SchemaData[];
 }
 
-export default function CreateAttestationFromSchemaPage(
-  props: {
-    params: Promise<{ uid: string }>;
-  }
-) {
+export default function CreateAttestationFromSchemaPage(props: {
+  params: Promise<{ uid: string }>;
+}) {
   const params = use(props.params);
   const { cluster } = useCluster();
 
