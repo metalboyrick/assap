@@ -2,13 +2,13 @@
 
 > **Note:** This project uses PNPM as the primary package manager.
 
-## Monorepo Composition
-
-This monorepo is structured with the following main applications and packages:
-
 ## Project Summary
 
 ASSAP (Anti-Sybil Attestation Protocol) is a decentralized identity verification protocol built on Solana. It empowers users and developers with secure, human-readable attestations, modular sybil protection, and easy-to-use SDKs, aiming to redefine trust on-chain. ([Read More](https://www.assap.xyz/))
+
+## Monorepo Composition
+
+This monorepo is structured with the following main applications and packages:
 
 ### Applications (`apps/`)
 
