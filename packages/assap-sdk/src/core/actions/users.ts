@@ -1,10 +1,25 @@
 import { Cluster, PublicKey, SystemProgram } from "@solana/web3.js";
-import { AnchorProvider } from "@coral-xyz/anchor";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   getContractsProgram,
   getContractsProgramId,
   CONTRACTS_PROGRAM_ID,
 } from "@/lib/contracts";
+
+/**
+ * Type representing an on-chain user account.
+ */
+export type OnchainUser = {
+  createdAt: BN;
+  dataCid: string;
+  did: PublicKey;
+  emailAccount: boolean;
+  humanVerification: boolean;
+  lastActive: BN;
+  solAccount: PublicKey;
+  solName: boolean;
+  twitterAccount: boolean;
+};
 
 /**
  * Creates a new user on the Solana blockchain.
@@ -43,14 +58,13 @@ export async function createUser(
  * @param cluster The Solana cluster to use.
  * @param address The public key of the user PDA.
  * @param provider The AnchorProvider instance.
- * @returns Promise<User> The user account data.
+ * @returns Promise<OnchainUser> The user account data.
  */
 export async function getUserByAddress(
   cluster: Cluster,
   address: PublicKey,
   provider: AnchorProvider,
-): Promise<any> {
-  // Replace 'any' with a proper User interface if available
+): Promise<OnchainUser> {
   const programId = getContractsProgramId(cluster);
   const program = getContractsProgram(provider, programId);
 

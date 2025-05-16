@@ -444,6 +444,9 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
     devDependencies:
+      '@dynamic-labs/types':
+        specifier: ^4.18.5
+        version: 4.18.5
       '@radix-ui/react-dialog':
         specifier: ^1.1.11
         version: 1.1.13(@types/react-dom@19.1.3(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1470,6 +1473,9 @@ packages:
   '@dynamic-labs/assert-package-version@4.18.3':
     resolution: {integrity: sha512-Pdf0xvfzBzpeu9n05ccWZd6xG+VQxfbEnsZJXhhtt//Q3A/K4s3HunuJT5YjS5QrTJWjf258TLBfgfJLAcyefw==}
 
+  '@dynamic-labs/assert-package-version@4.18.5':
+    resolution: {integrity: sha512-2JcfzE6veGl0n3RwAV1FrQhjenhzWMsEth/cj0oiE+kbWsgDzdsfVoM2LlMB8PtBmWXJj8bxUiuBXQNF77UNeg==}
+
   '@dynamic-labs/embedded-wallet-solana@4.18.3':
     resolution: {integrity: sha512-782dJVb2sQt0p+2bgk9oXPNFk2xLWFEKzHZh1lncBLTd7Vh3jhHwTdezLr6f2sbCkLi5lzGNXOzI1GYqgb9uSA==}
 
@@ -1485,6 +1491,9 @@ packages:
   '@dynamic-labs/logger@4.18.3':
     resolution: {integrity: sha512-rPeYArO3e3xZ8mj9hZIV5/0FHFzISmrU3q3+0BgnsDl1+Q//aqD7O/Tx9JeyBsxyBPrrDhpsNWXpGmJbb2waNQ==}
 
+  '@dynamic-labs/logger@4.18.5':
+    resolution: {integrity: sha512-xEPCfLcTv4OZbdSILRPxkpaE35aNVcKngOUN3KJhWjs8cxXYz/hrnvo93z9UheTTC5arXP9XwyRRstq2cFx9/g==}
+
   '@dynamic-labs/multi-wallet@4.18.3':
     resolution: {integrity: sha512-27Sr1DssbvjbdULNXI/aYxgsbCqIGQbh1c7o9Eucca5ZujRfVH3NwHRZzk2mnBCW3hox0+1t6NpIJVOdiADnTg==}
 
@@ -1493,6 +1502,9 @@ packages:
 
   '@dynamic-labs/sdk-api-core@0.0.663':
     resolution: {integrity: sha512-w88sRyMFVTHhvf2VKs9RqeR46rF8hKw6WggWcMP4wFiYrc0xFRY+k+dm+XfQaX++mWxB5g2h6UGjUFKNYCQhGw==}
+
+  '@dynamic-labs/sdk-api-core@0.0.667':
+    resolution: {integrity: sha512-n4XKkZvSh4T4qa5NZQuUnRERClRfIVgTsMYnCEQb+8iuS0G5KstThI0kcm3PD3W8IWXhD9mB6Xe7i+u25QCSRg==}
 
   '@dynamic-labs/sdk-react-core@4.18.3':
     resolution: {integrity: sha512-ZNkPBlc+02HXJ2S9usC6R0ROBRUXRG2WqcnJY4cLLYsZ6Wp82tU+GBWNIOqAVEw+KUVYyBO1QEkQ58rHMgKZ+Q==}
@@ -1511,6 +1523,9 @@ packages:
 
   '@dynamic-labs/types@4.18.3':
     resolution: {integrity: sha512-inIa1pRc5TBejZBghrBc0qIKKn2nrd20bcVkCPUUg+UVUfXh/gb+WwnE5hF4G5DY6UgHL8m7PuR8IvTwq2ZWbw==}
+
+  '@dynamic-labs/types@4.18.5':
+    resolution: {integrity: sha512-nIwN5CiZ+clqLCkDOhkAkYCZRxeguMCF56k6g/TXejthONcfytHqVsp/GDnKe9vHOg409edEqFrOy4J8QwL3Zg==}
 
   '@dynamic-labs/utils@4.18.3':
     resolution: {integrity: sha512-T/+lfzf6Nsi9WSBgissaxa8rmttJeVEVU+0SSk4W4wJSDn+Ga3FLc9CmBSvRCFipD93YkqVR4wGxFxmlwo6iYg==}
@@ -14239,6 +14254,10 @@ snapshots:
     dependencies:
       '@dynamic-labs/logger': 4.18.3
 
+  '@dynamic-labs/assert-package-version@4.18.5':
+    dependencies:
+      '@dynamic-labs/logger': 4.18.5
+
   '@dynamic-labs/embedded-wallet-solana@4.18.3(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.3.20)(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)':
     dependencies:
       '@dynamic-labs/assert-package-version': 4.18.3
@@ -14310,6 +14329,10 @@ snapshots:
     dependencies:
       eventemitter3: 5.0.1
 
+  '@dynamic-labs/logger@4.18.5':
+    dependencies:
+      eventemitter3: 5.0.1
+
   '@dynamic-labs/multi-wallet@4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@dynamic-labs/assert-package-version': 4.18.3
@@ -14330,6 +14353,8 @@ snapshots:
       '@dynamic-labs/types': 4.18.3
 
   '@dynamic-labs/sdk-api-core@0.0.663': {}
+
+  '@dynamic-labs/sdk-api-core@0.0.667': {}
 
   '@dynamic-labs/sdk-react-core@4.18.3(@types/react@18.3.20)(react-dom@19.1.0(react@19.1.0))(react-native@0.74.0(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.3.20)(bufferutil@4.0.9)(encoding@0.1.13)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)':
     dependencies:
@@ -14446,6 +14471,11 @@ snapshots:
     dependencies:
       '@dynamic-labs/assert-package-version': 4.18.3
       '@dynamic-labs/sdk-api-core': 0.0.663
+
+  '@dynamic-labs/types@4.18.5':
+    dependencies:
+      '@dynamic-labs/assert-package-version': 4.18.5
+      '@dynamic-labs/sdk-api-core': 0.0.667
 
   '@dynamic-labs/utils@4.18.3':
     dependencies:

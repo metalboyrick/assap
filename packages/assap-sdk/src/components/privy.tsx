@@ -1,12 +1,7 @@
 import { useState } from "react";
-import {
-  usePrivy,
-  useLoginWithEmail,
-  useLoginWithOAuth,
-  useLogin,
-} from "@privy-io/react-auth";
+import { usePrivy, useLoginWithEmail, useLogin } from "@privy-io/react-auth";
 import { Button } from "./ui/button";
-import { User, Mail, Twitter, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 
 export const PrivyLogin = () => {
   const { ready: isReady, authenticated: isAuthenticated } = usePrivy();

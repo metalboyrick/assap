@@ -1,11 +1,5 @@
 import { Cluster, PublicKey } from "@solana/web3.js";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { VerificationDialogs } from "./VerificationDialogs";
 import { AttestationData, Schema, SchemaData } from "@/core";
@@ -14,16 +8,15 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { WalletError } from "@solana/wallet-adapter-base";
 import {
   DynamicContextProvider,
   overrideNetworkRpcUrl,
 } from "@dynamic-labs/sdk-react-core";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
+import { WalletError } from "@solana/wallet-adapter-base";
 
 // Import wallet adapter UI styles
 import "@solana/wallet-adapter-react-ui/styles.css";
-import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 // const gatekeeperNetwork = new PublicKey(
 //   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
@@ -38,8 +31,78 @@ export type VerificationMethod = {
   iconColorClass: string;
 };
 
-const RPC_URL =
-  "https://devnet.helius-rpc.com/?api-key=8e185d94-102d-4cdf-9655-da941c6bf58c";
+export type NameServiceData = {
+  avatar?: string;
+  name?: string;
+};
+
+export type WalletProviderEnum =
+  | "browserExtension"
+  | "custodialService"
+  | "walletConnect"
+  | "qrCode"
+  | "deepLink"
+  | "embeddedWallet"
+  | "smartContractWallet";
+
+export type WalletProperties = {
+  turnkeySubOrganizationId?: string;
+  turnkeyHDWalletId?: string;
+  isAuthenticatorAttached?: boolean;
+};
+
+export type JwtVerifiedCredentialFormatEnum =
+  | "blockchain"
+  | "email"
+  | "oauth"
+  | "passkey";
+
+export type SocialSignInProviderEnum =
+  | "emailOnly"
+  | "magicLink"
+  | "apple"
+  | "bitbucket"
+  | "discord"
+  | "facebook"
+  | "github"
+  | "gitlab"
+  | "google"
+  | "instagram"
+  | "linkedin"
+  | "microsoft"
+  | "twitch"
+  | "twitter"
+  | "blocto"
+  | "banxa"
+  | "dynamic"
+  | "alchemy"
+  | "zerodev"
+  | "turnkey";
+
+export type JwtVerifiedCredential = {
+  id: string;
+  address?: string;
+  chain?: string;
+  refId?: string;
+  signerRefId?: boolean;
+  email?: string;
+  nameService?: NameServiceData;
+  publicIdentifier?: string;
+  walletName?: string;
+  walletProvider?: WalletProviderEnum;
+  walletProperties?: WalletProperties;
+  format?: JwtVerifiedCredentialFormatEnum;
+  oauthProvider?: SocialSignInProviderEnum;
+  oauthUsername?: string;
+  oauthDisplayName?: string;
+  oauthAccountId?: string;
+  oauthAccountPhotos?: string[];
+  oauthEmails?: string;
+  previousUsers?: string[];
+  embeddedWalletId?: string | null;
+};
+
+const RPC_URL = "https://api.devnet.solana.com";
 interface AssapContextValue {
   currentVerificationStep: number;
   setCurrentVerificationStep: (step: number) => void;
@@ -108,6 +171,7 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
   const [attestationData, setAttestationData] = useState<AttestationData>(
     {} as AttestationData,
   );
+
   const [cluster, setCluster] = useState<Cluster>("devnet");
   const [receiver, setReceiver] = useState<PublicKey>({} as PublicKey);
   const [issuer, setIssuer] = useState<PublicKey>({} as PublicKey);
@@ -115,18 +179,9 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
     (txnHash: string) => void
   >(() => {});
 
-  const onError = useCallback((error: WalletError) => {
+  const onError = (error: WalletError) => {
     console.error("Wallet Adapter Error:", error);
-  }, []);
-
-  // Define wallets for WalletProvider if not using DynamicContextProvider exclusively
-  const wallets = useMemo(
-    () => [
-      new SolflareWalletAdapter(),
-      // Add other wallets here e.g. new PhantomWalletAdapter(),
-    ],
-    [],
-  );
+  };
 
   let content = (
     <QueryClientProvider client={queryClient}>
@@ -173,11 +228,7 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
         }}
       >
         <ConnectionProvider endpoint={RPC_URL}>
-          <WalletProvider
-            wallets={wallets}
-            onError={onError}
-            autoConnect={true}
-          >
+          <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
             <WalletModalProvider>
               {/* <GatewayProvider
                 connection={connection}

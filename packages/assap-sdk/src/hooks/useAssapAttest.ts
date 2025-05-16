@@ -8,6 +8,10 @@ import { Cluster } from "@solana/web3.js";
 import { useUser } from "@civic/auth-web3/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import {
+  PENDING_SCHEMA_DATA_LOCAL_STORAGE_KEY,
+  PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY,
+} from "@/lib/local-storage";
 
 export interface UseAssapAttestProps {
   schemaId: string;
@@ -36,6 +40,19 @@ export function useAssapAttest({
     queryFn: async () => {
       const schema = await getSchemaById(schemaId);
       const schemaData = await getSchemaDataFromBlobId(schema.schema_data);
+
+      // Save the schemaData to local storage and put it as a constant
+      if (typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem(
+            PENDING_SCHEMA_DATA_LOCAL_STORAGE_KEY,
+            JSON.stringify({ schema, data: schemaData }),
+          );
+        } catch (e) {
+          // Ignore storage errors
+        }
+      }
+
       return { schema, data: schemaData };
     },
   });
@@ -64,6 +81,22 @@ export function useAssapAttest({
     // if (!primaryWallet?.address) {
     //   return;
     // }
+
+    if (typeof window !== "undefined") {
+      try {
+        // Clear the pending attestation data key
+        window.localStorage.removeItem(
+          PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY,
+        );
+        // Add the current attest data
+        window.localStorage.setItem(
+          PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY,
+          JSON.stringify(attestData),
+        );
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
 
     setOnAttestComplete(_onAttestComplete);
     setAttestationData(attestData);
