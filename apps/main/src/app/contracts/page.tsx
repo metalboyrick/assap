@@ -17,7 +17,7 @@ import {
   getSchemaById,
   useAssapAttest,
   type SchemaData,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 // Removed PROGRAM_ID, clientSideSha256, getCreateSchemaSeedParams

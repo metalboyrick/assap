@@ -31,7 +31,7 @@ import {
   AttestationData,
   useAssapAttest,
   IdentityVerifier,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 import { useCluster } from "@/components/cluster/cluster-data-access";
 import toast from "react-hot-toast";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactQueryProvider } from "@/app/react-query-provider";
-import { AssapProvider } from "@assap/assap-sdk";
+import { AssapProvider } from "@assap-xyz/assap-sdk";
 import { SolanaProvider } from "./solana/solana-provider";
 import { ThemeProvider } from "next-themes";
 import { ClusterProvider } from "./cluster/cluster-data-access";

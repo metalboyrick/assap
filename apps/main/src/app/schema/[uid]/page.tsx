@@ -28,7 +28,7 @@ import {
   getSchemaDataFromBlobId,
   SchemaData,
   IdentityVerifier,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 import { useCluster } from "@/components/cluster/cluster-data-access";
 
 function cn(...classes: string[]) {

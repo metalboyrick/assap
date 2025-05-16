@@ -23,7 +23,7 @@ import { getCreateSchemaSeedParams } from "@/lib/contracts";
 import {
   registerSchema as sdkRegisterSchema,
   type SchemaData,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 
 export enum IdentityVerifier {
   SolBalance = "sol_balance",

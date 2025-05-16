@@ -27,7 +27,7 @@ import {
   getAttestationDataFromBlobId,
   getSchemaDataFromBlobId,
   getSchemaById,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 
 const columns = [
   {
@@ -133,7 +133,7 @@ export default function AttestationDetailPage({
             } catch (err) {
               console.error("Error generating human-readable message:", err);
               setHumanReadableMessage(
-                `Attestation for ${schemaMetadata.name || "Unknown Schema"}`,
+                `Attestation for ${schemaMetadata.schema_name || "Unknown Schema"}`,
               );
             }
           }

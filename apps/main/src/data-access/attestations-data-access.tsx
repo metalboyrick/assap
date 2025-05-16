@@ -12,7 +12,7 @@ import { useTransactionToast } from "../components/ui/ui-layout";
 import {
   createAttestation as sdkCreateAttestation,
   AttestationData,
-} from "@assap/assap-sdk";
+} from "@assap-xyz/assap-sdk";
 
 export function useAttestationProgram() {
   const { cluster } = useCluster();

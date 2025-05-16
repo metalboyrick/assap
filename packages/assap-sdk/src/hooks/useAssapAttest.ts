@@ -5,13 +5,13 @@ import {
 } from "@/core";
 import { useAssapContext } from "../components/AssapProvider";
 import { Cluster } from "@solana/web3.js";
-import { useUser } from "@civic/auth-web3/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
   PENDING_SCHEMA_DATA_LOCAL_STORAGE_KEY,
   PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY,
 } from "@/lib/local-storage";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export interface UseAssapAttestProps {
   schemaId: string;
@@ -24,7 +24,7 @@ export function useAssapAttest({
   onAttestComplete: _onAttestComplete,
   cluster,
 }: UseAssapAttestProps) {
-  const { user } = useUser();
+  const { user } = useDynamicContext();
 
   const {
     setCurrentVerificationStep,

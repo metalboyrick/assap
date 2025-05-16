@@ -24,7 +24,7 @@ import {
   IdentityVerifier,
   useSchemaProgram,
 } from "@/data-access/schema-data-access";
-import type { SchemaData } from "@assap/assap-sdk";
+import type { SchemaData } from "@assap-xyz/assap-sdk";
 
 // Data types available for schema fields
 const dataTypes = [
