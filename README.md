@@ -1,4 +1,4 @@
-# ASSAP - Anti Sybil Solana Attestation Protocol
+# 🟥🟦 ASSAP - Anti Sybil Solana Attestation Protocol 🟥🟦
 
 > **Note:** This project uses PNPM as the primary package manager.
 
