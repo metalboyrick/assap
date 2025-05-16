@@ -3,6 +3,7 @@ import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { SchemaRegistry } from "./schema"; // Assuming SchemaRegistry is exported from schema.ts
 import { getContractsProgram, getContractsProgramId } from "@/lib/contracts";
 import * as walrus from "@/lib/walrus";
+import { OnchainUser } from "./users";
 
 export type AttestationData = Record<
   string,
@@ -47,8 +48,6 @@ export async function createAttestation(
   schemaRegistry: PublicKey,
   attestData: AttestationData,
   receiver: PublicKey,
-  issuerAttachedSolAccount: PublicKey,
-  attesteeAttachedSolAccount: PublicKey,
   provider: AnchorProvider,
 ): Promise<string> {
   const programId = getContractsProgramId(cluster);
@@ -65,10 +64,12 @@ export async function createAttestation(
     new PublicKey(programId),
   );
 
-  // Fetch the schema registry account to get the current attestation count
-  const schemaAccount = (await program.account.schemaRegistry.fetch(
-    schemaRegistry,
-  )) as unknown as SchemaRegistry;
+  const [issueAccount, attesteeAccount, schemaAccount] = (await Promise.all([
+    program.account.user.fetch(issuerPda) as Promise<unknown>,
+    program.account.user.fetch(attesteePda) as Promise<unknown>,
+    program.account.schemaRegistry.fetch(schemaRegistry) as Promise<unknown>,
+  ])) as [OnchainUser, OnchainUser, SchemaRegistry];
+
   const attestCount = schemaAccount.attestCount.toNumber() + 1;
 
   // Derive the attestation PDA
@@ -76,7 +77,6 @@ export async function createAttestation(
     getCreateAttestationSeedParams(payer, schemaRegistry, attestCount),
     new PublicKey(programId),
   );
-
   // TODO: verify data with schema (can be later)
 
   // store attestData in walrus
@@ -89,8 +89,8 @@ export async function createAttestation(
       schemaRegistry,
       issuer: issuerPda,
       attestee: attesteePda,
-      issuerAttachedSolAccount,
-      attesteeAttachedSolAccount,
+      issuerAttachedSolAccount: issueAccount.solAccount,
+      attesteeAttachedSolAccount: attesteeAccount.solAccount,
       attestation: attestationPda,
       systemProgram: SystemProgram.programId,
     })

@@ -55,15 +55,11 @@ export function useAttestationProgram() {
       schemaRegistry,
       attestData,
       receiver,
-      issuerAttachedSolAccount,
-      attesteeAttachedSolAccount,
     }: {
       payer: PublicKey;
       schemaRegistry: PublicKey;
       attestData: AttestationData;
       receiver: PublicKey;
-      issuerAttachedSolAccount: PublicKey;
-      attesteeAttachedSolAccount: PublicKey;
     }) => {
       return sdkCreateAttestation(
         cluster.network as Cluster,
@@ -71,8 +67,6 @@ export function useAttestationProgram() {
         schemaRegistry,
         attestData,
         receiver,
-        issuerAttachedSolAccount,
-        attesteeAttachedSolAccount,
         provider,
       );
     },

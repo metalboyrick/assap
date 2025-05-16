@@ -1073,8 +1073,6 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                     new PublicKey(selectedSchemaDataSet.schema.schema_uid),
                     attestationData,
                     publicKey,
-                    publicKey,
-                    publicKey,
                     anchorProvider,
                   );
 
