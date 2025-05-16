@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -37,20 +37,16 @@ export function HeroSection() {
               and attestations.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-all text-white border-none h-14 px-8 text-lg rounded-lg">
-                <span className="flex items-center">
-                  Coming Soon
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </span>
-              </Button>
-
-              {/* <Button
-                variant="outline"
-                className="border-zinc-700 hover:border-[#4A90E2] bg-black/40 text-white hover:bg-black/60 transition-all h-14 px-8 text-lg rounded-lg"
+            <div className="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <Link
+                href="https://explorer.assap.xyz"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Learn More
-              </Button> */}
+                <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-all text-white border-none h-14 px-8 text-lg rounded-lg">
+                  <span className="flex items-center">Try out Explorer</span>
+                </Button>
+              </Link>
             </div>
 
             {/* <div className="flex items-center gap-x-6 pt-4">

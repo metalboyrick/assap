@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 export function Navbar() {
@@ -38,13 +38,19 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-opacity text-white border-none">
-            <span className="flex items-center">
-              Coming Soon
-              {/* <ExternalLink className="ml-2 h-4 w-4" /> */}
-            </span>
-          </Button>
+        <div className="flex items-center space-x-4">
+          <Link
+            href="https://explorer.assap.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-gradient-to-r from-[#C00000] to-[#4A90E2] hover:opacity-90 transition-opacity text-white border-none">
+              <span className="flex items-center">
+                Try out Explorer
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </span>
+            </Button>
+          </Link>
           <button className="md:hidden text-white">
             <Menu className="h-6 w-6" />
           </button>
