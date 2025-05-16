@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
@@ -78,11 +78,12 @@ const columns = [
   },
 ];
 
-export default function AttestationDetailPage({
-  params,
-}: {
-  params: { uid: string };
-}) {
+export default function AttestationDetailPage(
+  props: {
+    params: Promise<{ uid: string }>;
+  }
+) {
+  const params = use(props.params);
   const [attestation, setAttestation] = useState<any | null>(null);
   const [attestationData, setAttestationData] =
     useState<AttestationData | null>(null);

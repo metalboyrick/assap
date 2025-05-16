@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { FileText, Database, User, Menu, X, LogIn } from "lucide-react";
 import { Button as ButtonComponent } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { useRouter } from "next/navigation";
 import { WalletButton } from "@/components/solana/solana-provider";
 

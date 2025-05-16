@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft, AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,11 +69,12 @@ interface SchemaDataset {
   schemaData: SchemaData[];
 }
 
-export default function CreateAttestationFromSchemaPage({
-  params,
-}: {
-  params: { uid: string };
-}) {
+export default function CreateAttestationFromSchemaPage(
+  props: {
+    params: Promise<{ uid: string }>;
+  }
+) {
+  const params = use(props.params);
   const { cluster } = useCluster();
 
   const [schema, setSchema] = useState<SchemaMetadata | null>(null);

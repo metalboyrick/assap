@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -125,11 +125,12 @@ const getVerificationMethodDisplayProps = (method: IdentityVerifier) => {
   }
 };
 
-export default function SchemaDetailPage({
-  params,
-}: {
-  params: { uid: string };
-}) {
+export default function SchemaDetailPage(
+  props: {
+    params: Promise<{ uid: string }>;
+  }
+) {
+  const params = use(props.params);
   const { cluster } = useCluster();
 
   const [schema, setSchema] = useState<SchemaMetadata | null>(null);
