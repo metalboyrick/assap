@@ -80,11 +80,6 @@ export default function Header(): JSX.Element {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* Solana Wallet Connect Button */}
-          <div className="hidden md:flex">
-            <WalletButton />
-          </div>
-
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"
@@ -121,10 +116,6 @@ export default function Header(): JSX.Element {
                 {item.name}
               </Link>
             ))}
-            {/* Solana Wallet Connect Button for Mobile */}
-            <div className="w-full flex justify-center mt-2">
-              <WalletButton />
-            </div>
           </nav>
         </div>
       )}
