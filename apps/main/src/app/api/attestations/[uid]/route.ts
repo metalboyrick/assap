@@ -29,16 +29,16 @@ export async function GET(request: NextRequest) {
   // Fetch recent attestations using the same schema, excluding the current one
   const { data: relatedAttestations, error: relatedError } = await supabaseAdmin
     .from("attestations")
-    .select("attestation_uid, schema_uid, attestee_uid, attestor_uid, creation_date")
-    .eq("attestation_uid", attestation.attestation_uid)
+    .select(
+      "attestation_uid, schema_uid, attestee_uid, attestor_uid, creation_date",
+    )
+    .eq("schema_uid", attestation.schema_uid)
+    .neq("attestation_uid", attestation.attestation_uid)
     .order("creation_date", { ascending: false })
     .limit(25);
 
   if (relatedError) {
-    return NextResponse.json(
-      { error: relatedError.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: relatedError.message }, { status: 500 });
   }
 
   return NextResponse.json({

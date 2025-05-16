@@ -1,0 +1,788 @@
+{
+  "address": "4PbTBdcZP5CHTVzmQTNpQzGeLHkVvMAdhu7TopkjtQ4e",
+  "metadata": {
+    "name": "contracts",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_attestation",
+      "discriminator": [
+        49,
+        24,
+        67,
+        80,
+        12,
+        249,
+        96,
+        239
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "schema_registry",
+          "writable": true
+        },
+        {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "attestee",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "receiver"
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuer_attached_sol_account",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
+          "name": "attestee_attached_sol_account",
+          "docs": [
+            "We're using AccountInfo because we're only checking its public key against the stored address."
+          ]
+        },
+        {
+          "name": "attestation",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "attest_data",
+          "type": "string"
+        },
+        {
+          "name": "receiver",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "create_user",
+      "discriminator": [
+        108,
+        227,
+        130,
+        130,
+        252,
+        109,
+        75,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register_schema",
+      "discriminator": [
+        177,
+        252,
+        118,
+        252,
+        113,
+        195,
+        220,
+        14
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "schema_registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  99,
+                  104,
+                  101,
+                  109,
+                  97
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "schema"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "schema",
+          "type": "string"
+        },
+        {
+          "name": "schema_name",
+          "type": "string"
+        },
+        {
+          "name": "issuer_verifiers",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "attestee_verifiers",
+          "type": {
+            "vec": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_user",
+      "discriminator": [
+        9,
+        2,
+        160,
+        169,
+        118,
+        12,
+        207,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "sol_account",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "twitter_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "email_account",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "human_verification",
+          "type": {
+            "option": "bool"
+          }
+        },
+        {
+          "name": "sol_name",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Attestation",
+      "discriminator": [
+        152,
+        125,
+        183,
+        86,
+        36,
+        146,
+        121,
+        73
+      ]
+    },
+    {
+      "name": "SchemaRegistry",
+      "discriminator": [
+        67,
+        184,
+        244,
+        100,
+        7,
+        70,
+        92,
+        51
+      ]
+    },
+    {
+      "name": "User",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AttestationCreated",
+      "discriminator": [
+        217,
+        170,
+        19,
+        203,
+        128,
+        51,
+        29,
+        163
+      ]
+    },
+    {
+      "name": "SchemaRegistered",
+      "discriminator": [
+        142,
+        85,
+        205,
+        242,
+        94,
+        187,
+        233,
+        76
+      ]
+    },
+    {
+      "name": "UserCreated",
+      "discriminator": [
+        145,
+        177,
+        42,
+        214,
+        0,
+        65,
+        40,
+        69
+      ]
+    },
+    {
+      "name": "UserUpdated",
+      "discriminator": [
+        61,
+        217,
+        252,
+        178,
+        176,
+        29,
+        219,
+        145
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidSchemaAccount",
+      "msg": "The provided schema account does not match the expected account"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidUserAccount",
+      "msg": "The provided user account does not match the expected account"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidAttestationAccount",
+      "msg": "The provided attestation account does not match the expected account"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidAttestData",
+      "msg": "The provided attest data is invalid"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidAttestee",
+      "msg": "The provided attestee account does not match the expected account"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidIssuer",
+      "msg": "The provided issuer account does not match the expected account"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidIssuerAttachedSolAccount",
+      "msg": "The provided issuer attached sol account does not match the expected account"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAttesteeAttachedSolAccount",
+      "msg": "The provided attestee attached sol account does not match the expected account"
+    },
+    {
+      "code": 6008,
+      "name": "SchemaAlreadyRegistered",
+      "msg": "The provided schema is already registered"
+    }
+  ],
+  "types": [
+    {
+      "name": "Attestation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attest_data",
+            "type": "string"
+          },
+          {
+            "name": "attest_index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AttestationCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "receiver",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "attest_data",
+            "type": "string"
+          },
+          {
+            "name": "attest_index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SchemaRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "schema_name",
+            "type": "string"
+          },
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "issuer_verifiers",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "attestee_verifiers",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SchemaRegistry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uid",
+            "type": "u64"
+          },
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "schema_name",
+            "type": "string"
+          },
+          {
+            "name": "issuer_verifiers",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "attestee_verifiers",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "attest_count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "User",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "last_active",
+            "type": "u64"
+          },
+          {
+            "name": "sol_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitter_account",
+            "type": "bool"
+          },
+          {
+            "name": "email_account",
+            "type": "bool"
+          },
+          {
+            "name": "human_verification",
+            "type": "bool"
+          },
+          {
+            "name": "sol_name",
+            "type": "bool"
+          },
+          {
+            "name": "data_cid",
+            "docs": [
+              "points to additional data in IPFS",
+              "TODO: might use this for non-solana accounts related data, this might be slightly hard to verify as we need offcain verification that is trustworthy.s"
+            ],
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "last_active",
+            "type": "u64"
+          },
+          {
+            "name": "sol_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "twitter_account",
+            "type": "bool"
+          },
+          {
+            "name": "email_account",
+            "type": "bool"
+          },
+          {
+            "name": "human_verification",
+            "type": "bool"
+          },
+          {
+            "name": "sol_name",
+            "type": "bool"
+          },
+          {
+            "name": "data_cid",
+            "type": "string"
+          },
+          {
+            "name": "updated_at",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
