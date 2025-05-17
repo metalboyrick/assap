@@ -127,7 +127,11 @@ export default function SchemasPage() {
       ) : (
         <DataTable
           columns={columns}
-          data={schemas}
+          data={[...schemas].sort(
+            (a, b) =>
+              new Date(b.creation_timestamp).getTime() -
+              new Date(a.creation_timestamp).getTime(),
+          )}
           onRowClick={(row) => console.log(row)}
           searchKey="schema_name"
         />

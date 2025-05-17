@@ -87,12 +87,13 @@ export default function CreateAttestationFromSchemaPage(props: {
   const [transactionSignature, setTransactionSignature] = useState<
     string | null
   >(null);
-
+  const [attestationUid, setAttestationUid] = useState<string | null>(null);
   const { initiateAttestation } = useAssapAttest({
     schemaId: params.uid,
-    onAttestComplete: (txnHash: string) => {
+    onAttestComplete: (txnHash: string, attestationUid: string) => {
       setIsSubmitting(false);
       setTransactionSignature(txnHash);
+      setAttestationUid(attestationUid);
       setIsSuccess(true);
     },
     cluster: "devnet",
@@ -254,9 +255,9 @@ export default function CreateAttestationFromSchemaPage(props: {
                 Back to Schema
               </Button>
             </Link>
-            <Link href="/">
+            <Link href={`/attestation/${attestationUid}`}>
               <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700">
-                View All Attestations
+                View attestation
               </Button>
             </Link>
           </CardFooter>

@@ -125,11 +125,9 @@ const getVerificationMethodDisplayProps = (method: IdentityVerifier) => {
   }
 };
 
-export default function SchemaDetailPage(
-  props: {
-    params: Promise<{ uid: string }>;
-  }
-) {
+export default function SchemaDetailPage(props: {
+  params: Promise<{ uid: string }>;
+}) {
   const params = use(props.params);
   const { cluster } = useCluster();
 

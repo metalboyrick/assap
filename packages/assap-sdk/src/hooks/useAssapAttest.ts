@@ -15,7 +15,7 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export interface UseAssapAttestProps {
   schemaId: string;
-  onAttestComplete: (txnHash: string) => void;
+  onAttestComplete: (txnHash: string, attestationUid: string) => void;
   cluster: Cluster;
 }
 

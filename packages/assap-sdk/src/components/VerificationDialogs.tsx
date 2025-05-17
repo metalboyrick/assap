@@ -49,6 +49,7 @@ import {
 import { useDynamicContext, DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { getPendingAttestationDataFromLocalStorage } from "@/lib/local-storage";
 import { useAccountLinking } from "@/hooks/useAccountLinking";
+import { toast } from "sonner";
 
 interface VerificationCardButtonProps {
   icon: LucideIcon | (() => React.ReactNode);
@@ -362,7 +363,10 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
       switch (verifier) {
         case IdentityVerifier.SolBalance:
         case IdentityVerifier.SolMinTx:
-          return !!onchainUser.solAccount;
+          return (
+            onchainUser.solAccount.toString() !==
+            "11111111111111111111111111111111"
+          );
         case IdentityVerifier.SolName:
           return !!onchainUser.solName;
         case IdentityVerifier.Twitter:
@@ -1067,7 +1071,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                 const publicKey = new PublicKey(primaryWallet.address);
 
                 try {
-                  const txnHash = await createAttestation(
+                  const attestResult = await createAttestation(
                     cluster,
                     publicKey,
                     new PublicKey(selectedSchemaDataSet.schema.schema_uid),
@@ -1076,11 +1080,32 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                     anchorProvider,
                   );
 
-                  setCurrentVerificationStep(1);
+                  setCurrentVerificationStep(0);
 
-                  onAttestComplete(txnHash);
+                  toast.success(
+                    <>
+                      <div>Attestation created successfully</div>
+                      <div className="text-xs text-zinc-400 break-all">
+                        Txn Hash:{" "}
+                        <a
+                          href={`https://explorer.solana.com/tx/${attestResult.txnHash}?cluster=${cluster}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-400 hover:text-blue-600"
+                        >
+                          {attestResult.txnHash}
+                        </a>
+                      </div>
+                    </>,
+                  );
+
+                  onAttestComplete(
+                    attestResult.txnHash,
+                    attestResult.attestationUid,
+                  );
                 } catch (err) {
                   console.error("Failed to create attestation:", err);
+                  toast.error("Failed to create attestation");
                 }
               }}
             >

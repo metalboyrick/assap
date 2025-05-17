@@ -117,7 +117,11 @@ export default function AttestationsPage() {
       ) : (
         <DataTable
           columns={columns}
-          data={attestations}
+          data={[...attestations].sort(
+            (a, b) =>
+              new Date(b.creation_date).getTime() -
+              new Date(a.creation_date).getTime(),
+          )}
           onRowClick={(row) => console.log(row)}
           searchKey="attestation_uid"
         />

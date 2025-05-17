@@ -17,6 +17,8 @@ import { WalletError } from "@solana/wallet-adapter-base";
 
 // Import wallet adapter UI styles
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { Toaster } from "./ui/sonner";
+import { PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY } from "@/lib/local-storage";
 
 // const gatekeeperNetwork = new PublicKey(
 //   "ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6",
@@ -131,8 +133,10 @@ interface AssapContextValue {
   issuer: PublicKey;
   setIssuer: (issuer: PublicKey) => void;
 
-  onAttestComplete: (txnHash: string) => void;
-  setOnAttestComplete: (onAttestComplete: (txnHash: string) => void) => void;
+  onAttestComplete: (txnHash: string, attestationUid: string) => void;
+  setOnAttestComplete: (
+    onAttestComplete: (txnHash: string, attestationUid: string) => void,
+  ) => void;
 }
 
 // Create a context for the AssapProvider
@@ -169,14 +173,23 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
   >(undefined);
   const [isSchemaDataSetLoading, setIsSchemaDataSetLoading] = useState(false);
   const [attestationData, setAttestationData] = useState<AttestationData>(
-    {} as AttestationData,
+    () => {
+      if (typeof window === "undefined") {
+        return {} as AttestationData;
+      }
+
+      const storedData = window.localStorage.getItem(
+        PENDING_ATTESTATION_DATA_LOCAL_STORAGE_KEY,
+      );
+      return storedData ? JSON.parse(storedData) : ({} as AttestationData);
+    },
   );
 
   const [cluster, setCluster] = useState<Cluster>("devnet");
   const [receiver, setReceiver] = useState<PublicKey>({} as PublicKey);
   const [issuer, setIssuer] = useState<PublicKey>({} as PublicKey);
   const [onAttestComplete, setOnAttestComplete] = useState<
-    (txnHash: string) => void
+    (txnHash: string, attestationUid: string) => void
   >(() => {});
 
   const onError = (error: WalletError) => {
@@ -244,6 +257,7 @@ export function AssapProvider({ children }: { children: React.ReactNode }) {
               />
               {children}
               {/* </GatewayProvider> */}
+              <Toaster />
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>

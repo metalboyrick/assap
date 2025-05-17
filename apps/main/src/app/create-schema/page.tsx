@@ -25,6 +25,7 @@ import {
   useSchemaProgram,
 } from "@/data-access/schema-data-access";
 import type { SchemaData } from "@assap-xyz/assap-sdk";
+import { WalletButton } from "@/components/solana/solana-provider";
 
 // Data types available for schema fields
 const dataTypes = [
@@ -124,17 +125,20 @@ export default function CreateSchemaPage() {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div>
-        <Link
-          href="/schemas"
-          className="inline-flex items-center text-zinc-400 hover:text-white mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Schemas
-        </Link>
-        <h1 className="text-3xl font-bold tracking-tighter">Create Schema</h1>
-        <p className="text-zinc-400 mt-1">
-          Define a new schema for attestations
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <Link
+            href="/schemas"
+            className="inline-flex items-center text-zinc-400 hover:text-white mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Schemas
+          </Link>
+          <h1 className="text-3xl font-bold tracking-tighter">Create Schema</h1>
+          <p className="text-zinc-400 mt-1">
+            Define a new schema for attestations
+          </p>
+        </div>
+        <WalletButton />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

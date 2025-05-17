@@ -47,7 +47,7 @@ export type WalrusCreateBlobResponse =
  * ```
  */
 export async function storeData(data: any): Promise<string> {
-  const response = await fetch(`${PUBLISHER}/v1/blobs`, {
+  const response = await fetch(`${PUBLISHER}/v1/blobs?epochs=50`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

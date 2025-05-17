@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+nextjs-portal {
+  display: none;
+}
+
+body {
+  padding: 0 !important;
+  overflow: auto !important;
+}
+
 :root {
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;

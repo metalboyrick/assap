@@ -49,7 +49,7 @@ export async function createAttestation(
   attestData: AttestationData,
   receiver: PublicKey,
   provider: AnchorProvider,
-): Promise<string> {
+): Promise<{ txnHash: string; attestationUid: string }> {
   const programId = getContractsProgramId(cluster);
   const program = getContractsProgram(provider, programId);
 
@@ -82,19 +82,22 @@ export async function createAttestation(
   // store attestData in walrus
   const attestDataBlobId = await walrus.storeData({ attestData });
 
-  return program.methods
-    .createAttestation(attestDataBlobId, receiver)
-    .accountsPartial({
-      payer,
-      schemaRegistry,
-      issuer: issuerPda,
-      attestee: attesteePda,
-      issuerAttachedSolAccount: issueAccount.solAccount,
-      attesteeAttachedSolAccount: attesteeAccount.solAccount,
-      attestation: attestationPda,
-      systemProgram: SystemProgram.programId,
-    })
-    .rpc();
+  return {
+    txnHash: await program.methods
+      .createAttestation(attestDataBlobId, receiver)
+      .accountsPartial({
+        payer,
+        schemaRegistry,
+        issuer: issuerPda,
+        attestee: attesteePda,
+        issuerAttachedSolAccount: issueAccount.solAccount,
+        attesteeAttachedSolAccount: attesteeAccount.solAccount,
+        attestation: attestationPda,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc(),
+    attestationUid: attestationPda.toBase58(),
+  };
 }
 
 export async function getAttestationDataFromBlobId(
