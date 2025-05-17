@@ -70,8 +70,8 @@ export function useAttestationProgram() {
         provider,
       );
     },
-    onSuccess: (signature) => {
-      transactionToast(signature);
+    onSuccess: ({ txnHash, attestationUid }) => {
+      transactionToast(txnHash);
       return attestations.refetch();
     },
     onError: () => toast.error("Failed to create attestation"),
