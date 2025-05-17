@@ -6,10 +6,6 @@
 
 ASSAP (Anti-Sybil Attestation Protocol) is a decentralized identity verification protocol built on Solana. It empowers users and developers with secure, human-readable attestations, modular sybil protection, and easy-to-use SDKs, aiming to redefine trust on-chain. ([Read More](https://www.assap.xyz/))
 
-## Monorepo Composition
-
-This monorepo is structured with the following main applications and packages:
-
 ## Architecture and how it works
 
 ![ASSAP Architecture](apps/main/public/Architecture.drawio.svg)
@@ -22,6 +18,10 @@ This monorepo is structured with the following main applications and packages:
 - The **Backend** acts as an indexer, where it processes requests, manages data, and listens for on-chain events via Helius Webhooks, forwarding relevant updates to the frontend.
 - **Embedded wallets** by Dynamic helps us with seamless onboarding for non-Web3 Native users and identity verification.
 - All attestation and verification data is registered and referenced on-chain, ensuring transparency and security. Data is stored on Walrus for cost-saving reasons and easy retrieval.
+
+## Monorepo Composition
+
+This monorepo is structured with the following main applications and packages:
 
 ### Applications (`apps/`)
 
