@@ -10,6 +10,19 @@ ASSAP (Anti-Sybil Attestation Protocol) is a decentralized identity verification
 
 This monorepo is structured with the following main applications and packages:
 
+## Architecture and how it works
+
+![ASSAP Architecture](apps/main/public/Architecture.drawio.svg)
+
+**How ASSAP Works:**
+
+- **Users** interact with the ASSAP Explorer or third-party frontends, which use the ASSAP SDK.
+- The **ASSAP SDK** communicates with the ASSAP Backend and directly with Solana smart contracts.
+- **Smart contracts** on Solana handle schema creation, attestation, and verification, storing metadata and references on-chain.
+- The **Backend** acts as an indexer, where it processes requests, manages data, and listens for on-chain events via Helius Webhooks, forwarding relevant updates to the frontend.
+- **Embedded wallets** by Dynamic helps us with seamless onboarding for non-Web3 Native users and identity verification.
+- All attestation and verification data is registered and referenced on-chain, ensuring transparency and security. Data is stored on Walrus for cost-saving reasons and easy retrieval.
+
 ### Applications (`apps/`)
 
 - `main`: The main Next.js application serving as the ASSAP explorer and user interface.
