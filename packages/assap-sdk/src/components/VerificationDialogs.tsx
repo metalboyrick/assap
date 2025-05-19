@@ -1105,7 +1105,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                   );
                 } catch (err) {
                   console.error("Failed to create attestation:", err);
-                  toast.error("Failed to create attestation");
+                  // toast.error("Failed to create attestation");
                 }
               }}
             >
