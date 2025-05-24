@@ -413,7 +413,8 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                 </h3>
                 <p className="text-sm text-zinc-400 mb-4">
                   Your data is encrypted and securely stored on the Solana
-                  blockchain
+                  blockchain, Make sure your wallet has some funds since we do
+                  not support gas sponsorship yet.
                 </p>
                 <SignCredentials
                   handleCreateUser={handleCreateUser}
