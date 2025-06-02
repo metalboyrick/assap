@@ -235,7 +235,7 @@ export default function CreateAttestationFromSchemaPage(props: {
                   {transactionSignature}
                 </p>
                 <a
-                  href={`https://explorer.solana.com/tx/${transactionSignature}?cluster=${cluster.network}`}
+                  href={`https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 text-sm hover:underline mt-2 inline-block"

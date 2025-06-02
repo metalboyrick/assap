@@ -365,7 +365,7 @@ export default function SchemaDetailPage(props: {
                   </h3>
                   <div className="flex items-center mt-1">
                     <Link
-                      href={`https://explorer.solana.com/tx/${schema.creation_transaction_id}?cluster=${cluster.name}`}
+                      href={`https://explorer.solana.com/tx/${schema.creation_transaction_id}?cluster=devnet`}
                       target="_blank"
                       className="font-mono text-sm text-blue-400 hover:underline flex items-center"
                     >

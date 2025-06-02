@@ -78,11 +78,9 @@ const columns = [
   },
 ];
 
-export default function AttestationDetailPage(
-  props: {
-    params: Promise<{ uid: string }>;
-  }
-) {
+export default function AttestationDetailPage(props: {
+  params: Promise<{ uid: string }>;
+}) {
   const params = use(props.params);
   const [attestation, setAttestation] = useState<any | null>(null);
   const [attestationData, setAttestationData] =
@@ -305,14 +303,27 @@ export default function AttestationDetailPage(
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Transaction ID</span>
+                <span className="text-zinc-400">Account ID</span>
                 <Link
-                  href={`https://explorer.solana.com/tx/${attestation.attestation_uid}`}
+                  href={`https://explorer.solana.com/address/${attestation.attestation_uid}?cluster=devnet`}
                   target="_blank"
                   className="font-mono text-sm text-blue-400 hover:underline flex items-center"
                 >
                   {attestation.attestation_uid
                     ? `${attestation.attestation_uid.substring(0, 10)}...`
+                    : "N/A"}
+                  <ExternalLink className="ml-1 h-3 w-3" />
+                </Link>
+              </div>{" "}
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Transaction Hash</span>
+                <Link
+                  href={`https://explorer.solana.com/tx/${attestation.transaction_id}?cluster=devnet`}
+                  target="_blank"
+                  className="font-mono text-sm text-blue-400 hover:underline flex items-center"
+                >
+                  {attestation.transaction_id
+                    ? `${attestation.transaction_id.substring(0, 10)}...`
                     : "N/A"}
                   <ExternalLink className="ml-1 h-3 w-3" />
                 </Link>

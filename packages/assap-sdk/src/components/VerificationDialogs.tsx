@@ -1089,7 +1089,7 @@ export const VerificationDialogs: React.FC<VerificationDialogsProps> = ({
                       <div className="text-xs text-zinc-400 break-all">
                         Txn Hash:{" "}
                         <a
-                          href={`https://explorer.solana.com/tx/${attestResult.txnHash}?cluster=${cluster}`}
+                          href={`https://explorer.solana.com/tx/${attestResult.txnHash}?cluster=devnet`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="underline text-blue-400 hover:text-blue-600"
