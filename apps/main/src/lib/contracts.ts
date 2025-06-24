@@ -26,13 +26,13 @@ export type SchemaRegisteredEvent = {
 };
 
 export function getCreateAttestationSeedParams(
-  payer: PublicKey,
+  issuer: PublicKey,
   schemaRegistry: PublicKey,
   attestCount: number,
 ) {
   return [
     Buffer.from("attestation"),
-    payer.toBuffer(),
+    issuer.toBuffer(),
     schemaRegistry.toBuffer(),
     new BN(attestCount).toArrayLike(Buffer, "le", 8),
   ];
