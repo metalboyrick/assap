@@ -23,7 +23,6 @@ export function Navbar() {
             "About",
             "Problems",
             "Solution",
-            "Comparison",
             "How It Works",
             "Use Cases",
           ].map((item) => (
